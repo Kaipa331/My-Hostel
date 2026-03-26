@@ -27,43 +27,43 @@ export function Header() {
           <span className="text-xl sm:text-2xl text-blue-600">HostelFinder</span>
         </Link>
 
-        <nav className="flex items-center gap-2 sm:gap-4 w-full sm:w-auto justify-end">
+        <nav className="flex flex-wrap items-center gap-2 sm:gap-4 w-full sm:w-auto justify-center sm:justify-end">
           {landlord ? (
             <>
               <Link to="/landlord/dashboard">
-                <Button variant="ghost" className="gap-2">
-                  <LayoutDashboard className="h-4 w-4" />
+                <Button variant="ghost" className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-4 h-8 sm:h-10">
+                  <LayoutDashboard className="h-3 w-3 sm:h-4 sm:w-4" />
                   Dashboard
                 </Button>
               </Link>
-              <Button variant="ghost" onClick={handleLogout} className="gap-2">
-                <LogOut className="h-4 w-4" />
+              <Button variant="ghost" onClick={handleLogout} className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-4 h-8 sm:h-10">
+                <LogOut className="h-3 w-3 sm:h-4 sm:w-4" />
                 Logout
               </Button>
             </>
           ) : student ? (
             <>
               <Link to="/student/dashboard">
-                <Button variant="ghost" className="gap-2">
-                  <LayoutDashboard className="h-4 w-4" />
-                  Student Dashboard
+                <Button variant="ghost" className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-4 h-8 sm:h-10">
+                  <LayoutDashboard className="h-3 w-3 sm:h-4 sm:w-4" />
+                  Dashboard
                 </Button>
               </Link>
-              <Button variant="ghost" onClick={handleStudentLogout} className="gap-2">
-                <LogOut className="h-4 w-4" />
+              <Button variant="ghost" onClick={handleStudentLogout} className="gap-1 sm:gap-2 text-xs sm:text-sm px-2 sm:px-4 h-8 sm:h-10">
+                <LogOut className="h-3 w-3 sm:h-4 sm:w-4" />
                 Logout
               </Button>
             </>
           ) : (
             <>
               <Link to="/">
-                <Button variant="ghost">Find Hostels</Button>
+                <Button variant="ghost" className="text-xs sm:text-sm px-2 sm:px-4 h-8 sm:h-10">Find Hostels</Button>
               </Link>
               <Link to="/student/auth">
-                <Button variant="outline">Student Login</Button>
+                <Button variant="outline" className="text-xs sm:text-sm px-2 sm:px-4 h-8 sm:h-10">Student Login</Button>
               </Link>
               <Link to="/landlord/auth">
-                <Button>Landlord Login</Button>
+                <Button className="text-xs sm:text-sm px-2 sm:px-4 h-8 sm:h-10">Landlord Login</Button>
               </Link>
             </>
           )}
