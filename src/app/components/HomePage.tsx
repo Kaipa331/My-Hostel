@@ -31,11 +31,11 @@ export function HomePage() {
   });
 
   return (
-    <div className="container mx-auto px-4 py-8">
+    <div className="container mx-auto px-4 py-6 md:py-8">
       {/* Hero Section */}
-      <div className="text-center mb-12">
-        <h1 className="text-4xl mb-4 text-gray-900">Find Your Perfect Student Hostel</h1>
-        <p className="text-xl text-gray-600 mb-8">Discover comfortable and affordable accommodation near your university</p>
+      <div className="text-center mb-8 md:mb-12">
+        <h1 className="text-3xl md:text-4xl lg:text-5xl mb-4 text-gray-900 font-bold tracking-tight">Find Your Perfect Student Hostel</h1>
+        <p className="text-lg md:text-xl text-gray-600 mb-6 md:mb-8">Discover comfortable and affordable accommodation near your university</p>
         
         {/* Search Bar */}
         <div className="max-w-2xl mx-auto">
@@ -46,7 +46,7 @@ export function HomePage() {
               placeholder="Search by hostel name or location..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-10 pr-4 py-6 text-lg"
+              className="pl-10 pr-4 py-4 md:py-6 text-base md:text-lg w-full rounded-full shadow-sm"
             />
           </div>
         </div>

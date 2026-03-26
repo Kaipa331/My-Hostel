@@ -69,7 +69,7 @@ interface DataContextType {
   deleteHostel: (id: string) => Promise<void>;
   getHostelById: (id: string) => Hostel | undefined;
   addInquiry: (inquiry: Omit<Inquiry, 'id' | 'date'>) => Promise<void>;
-  getInquiriesByLandlord: (landlordId: string) => Promise<Inquiry[]>;
+  getInquiriesByLandlord: (landlordId: string) => Inquiry[];
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -509,7 +509,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
     }]);
   };
 
-  const getInquiriesByLandlord = async (landlordId: string) => {
+  const getInquiriesByLandlord = (landlordId: string) => {
     const landlordHostelIds = hostels.filter(h => h.landlordId === landlordId).map(h => h.id);
     return inquiries.filter(i => landlordHostelIds.includes(i.hostelId));
   };

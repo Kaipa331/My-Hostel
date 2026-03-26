@@ -74,7 +74,7 @@ export function HostelDetails() {
   return (
     <div className="bg-gray-50 min-h-screen">
       {/* Hero Image */}
-      <div className="relative h-96 bg-gray-300">
+      <div className="relative h-64 sm:h-80 md:h-96 bg-gray-300">
         <ImageWithFallback 
           src={imageUrl}
           alt={hostel.name}
@@ -88,7 +88,7 @@ export function HostelDetails() {
               Back to Search
             </Button>
           </Link>
-          <h1 className="text-4xl text-white mb-2">{hostel.name}</h1>
+          <h1 className="text-3xl md:text-4xl text-white mb-2 font-bold">{hostel.name}</h1>
           <div className="flex items-center gap-4 text-white">
             <div className="flex items-center gap-1">
               <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />

@@ -444,7 +444,7 @@ export function AddEditHostel() {
             </div>
 
             {/* Submit */}
-            <div className="flex gap-4 pt-4 border-t">
+            <div className="flex flex-col sm:flex-row gap-4 pt-4 border-t">
               <Button type="submit" disabled={isLoading} className="flex-1">
                 {isLoading ? 'Saving...' : (isEditing ? 'Update Hostel' : 'Add Hostel')}
               </Button>
