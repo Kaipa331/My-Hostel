@@ -151,7 +151,7 @@ export function LandlordAuth() {
                     <Input
                       id="signup-name"
                       type="text"
-                      placeholder="John Doe"
+                  placeholder="Precious Kaipa"
                       value={signupForm.name}
                       onChange={(e) => setSignupForm({...signupForm, name: e.target.value})}
                       required

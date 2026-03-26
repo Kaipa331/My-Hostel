@@ -147,7 +147,7 @@ export function StudentAuth() {
                 <Label htmlFor="signup-name">Full Name *</Label>
                 <Input
                   id="signup-name"
-                  placeholder="Chisomo Banda"
+                  placeholder="Precious Kaipa"
                   value={signupForm.name}
                   onChange={(e) => setSignupForm({...signupForm, name: e.target.value})}
                   required
