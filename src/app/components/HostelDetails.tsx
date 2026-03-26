@@ -1,0 +1,316 @@
+import { useState } from 'react';
+import { useParams, Link } from 'react-router';
+import { useData } from '../context/AppContext';
+import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
+import { Button } from './ui/button';
+import { Badge } from './ui/badge';
+import { Input } from './ui/input';
+import { Textarea } from './ui/textarea';
+import { Label } from './ui/label';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
+import { MapPin, Star, Phone, Mail, Users, DollarSign, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { ImageWithFallback } from './figma/ImageWithFallback';
+import { toast } from 'sonner';
+
+const hostelImages = [
+  'https://images.unsplash.com/photo-1763924636780-4da2a7c3327c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwZG9ybWl0b3J5JTIwcm9vbXxlbnwxfHx8fDE3NzQ0NTAxMDJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
+  'https://images.unsplash.com/photo-1697494794128-0cdc5e4314c1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwYWNjb21tb2RhdGlvbiUyMGJ1aWxkaW5nfGVufDF8fHx8MTc3NDQ1MDEwMnww&ixlib=rb-4.1.0&q=80&w=1080',
+  'https://images.unsplash.com/photo-1635151926449-b9e7e5246fa6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob3N0ZWwlMjBjb21tb24lMjBhcmVhJTIwbG91bmdlfGVufDF8fHx8MTc3NDQ1MDEwM3ww&ixlib=rb-4.1.0&q=80&w=1080',
+  'https://images.unsplash.com/photo-1615431303449-9ad9207d05de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBob3N0ZWwlMjBleHRlcmlvciUyMGJ1aWxkaW5nfGVufDF8fHx8MTc3NDQ1MDEwM3ww&ixlib=rb-4.1.0&q=80&w=1080',
+];
+
+export function HostelDetails() {
+  const { id } = useParams();
+  const { getHostelById, addInquiry } = useData();
+  const [isInquiryOpen, setIsInquiryOpen] = useState(false);
+  const [inquiryForm, setInquiryForm] = useState({
+    studentName: '',
+    studentEmail: '',
+    studentPhone: '',
+    roomType: '',
+    message: '',
+  });
+
+  const hostel = getHostelById(id || '');
+
+  if (!hostel) {
+    return (
+      <div className="container mx-auto px-4 py-8">
+        <Card>
+          <CardContent className="py-12 text-center">
+            <p className="mb-4">Hostel not found</p>
+            <Link to="/">
+              <Button>Back to Home</Button>
+            </Link>
+          </CardContent>
+        </Card>
+      </div>
+    );
+  }
+
+  const handleInquirySubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    addInquiry({
+      hostelId: hostel.id,
+      hostelName: hostel.name,
+      ...inquiryForm,
+    });
+    toast.success('Inquiry sent successfully! The landlord will contact you soon.');
+    setIsInquiryOpen(false);
+    setInquiryForm({
+      studentName: '',
+      studentEmail: '',
+      studentPhone: '',
+      roomType: '',
+      message: '',
+    });
+  };
+
+  const imageUrl = hostel.photos && hostel.photos.length > 0
+    ? hostel.photos[0]
+    : hostelImages[parseInt(hostel.id, 10) % hostelImages.length];
+
+  return (
+    <div className="bg-gray-50 min-h-screen">
+      {/* Hero Image */}
+      <div className="relative h-96 bg-gray-300">
+        <ImageWithFallback 
+          src={imageUrl}
+          alt={hostel.name}
+          className="w-full h-full object-cover"
+        />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/60 to-transparent" />
+        <div className="absolute bottom-0 left-0 right-0 container mx-auto px-4 pb-8">
+          <Link to="/">
+            <Button variant="ghost" className="text-white hover:bg-white/20 mb-4 gap-2">
+              <ArrowLeft className="h-4 w-4" />
+              Back to Search
+            </Button>
+          </Link>
+          <h1 className="text-4xl text-white mb-2">{hostel.name}</h1>
+          <div className="flex items-center gap-4 text-white">
+            <div className="flex items-center gap-1">
+              <Star className="h-5 w-5 fill-yellow-400 text-yellow-400" />
+              <span className="text-xl">{hostel.rating.toFixed(1)}</span>
+              <span className="text-gray-300">({hostel.reviews.length} reviews)</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <MapPin className="h-5 w-5" />
+              <span>{hostel.distance} km from {hostel.university}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {hostel.photos && hostel.photos.length > 1 && (
+        <div className="container mx-auto px-4 pb-6">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {hostel.photos.map((photo, index) => (
+              <ImageWithFallback
+                key={`${hostel.id}-photo-${index}`}
+                src={photo}
+                alt={`Hostel photo ${index + 1}`}
+                className="h-24 w-full object-cover rounded-md"
+              />
+            ))}
+          </div>
+        </div>
+      )}
+
+      <div className="container mx-auto px-4 py-8">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Main Content */}
+          <div className="lg:col-span-2 space-y-6">
+            {/* Description */}
+            <Card>
+              <CardHeader>
+                <CardTitle>About This Hostel</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-gray-700 mb-4">{hostel.description}</p>
+                <div className="flex items-center gap-2 text-gray-600">
+                  <MapPin className="h-4 w-4" />
+                  <span>{hostel.address}</span>
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Amenities */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Amenities</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                  {hostel.amenities.map(amenity => (
+                    <div key={amenity} className="flex items-center gap-2">
+                      <CheckCircle2 className="h-5 w-5 text-green-600" />
+                      <span>{amenity}</span>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+
+            {/* Available Rooms */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Available Rooms</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {hostel.rooms.map(room => (
+                  <div key={room.id} className="border rounded-lg p-4">
+                    <div className="flex items-start justify-between mb-3">
+                      <div>
+                        <h3 className="text-lg capitalize mb-1">{room.type} Room</h3>
+                        <div className="flex items-center gap-4 text-sm text-gray-600">
+                          <div className="flex items-center gap-1">
+                            <Users className="h-4 w-4" />
+                            <span>Capacity: {room.capacity}</span>
+                          </div>
+                          <div className="flex items-center gap-1">
+                            <DollarSign className="h-4 w-4" />
+                            <span className="text-xl text-blue-600">MK {room.rent.toLocaleString()}/month</span>
+                          </div>
+                        </div>
+                      </div>
+                      <Badge variant={room.available > 0 ? 'default' : 'secondary'}>
+                        {room.available > 0 ? `${room.available} Available` : 'Full'}
+                      </Badge>
+                    </div>
+                    <div className="flex flex-wrap gap-2">
+                      {room.amenities.map(amenity => (
+                        <Badge key={amenity} variant="outline">{amenity}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+
+            {/* Reviews */}
+            <Card>
+              <CardHeader>
+                <CardTitle>Student Reviews</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                {hostel.reviews.map(review => (
+                  <div key={review.id} className="border-b last:border-b-0 pb-4 last:pb-0">
+                    <div className="flex items-start justify-between mb-2">
+                      <div>
+                        <p>{review.studentName}</p>
+                        <p className="text-sm text-gray-500">{new Date(review.date).toLocaleDateString()}</p>
+                      </div>
+                      <div className="flex items-center gap-1">
+                        <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
+                        <span>{review.rating.toFixed(1)}</span>
+                      </div>
+                    </div>
+                    <p className="text-gray-700">{review.comment}</p>
+                  </div>
+                ))}
+              </CardContent>
+            </Card>
+          </div>
+
+          {/* Sidebar */}
+          <div className="lg:col-span-1">
+            <Card className="sticky top-24">
+              <CardHeader>
+                <CardTitle>Contact & Inquiry</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-4">
+                <div className="text-center py-4 bg-blue-50 rounded-lg">
+                  <p className="text-sm text-gray-600 mb-1">Starting from</p>
+                  <p className="text-3xl text-blue-600">MK {Math.min(...hostel.rooms.map(r => r.rent)).toLocaleString()}</p>
+                  <p className="text-sm text-gray-600">/month</p>
+                </div>
+
+                <Dialog open={isInquiryOpen} onOpenChange={setIsInquiryOpen}>
+                  <DialogTrigger asChild>
+                    <Button className="w-full" size="lg">Send Inquiry</Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-md">
+                    <DialogHeader>
+                      <DialogTitle>Send Inquiry</DialogTitle>
+                    </DialogHeader>
+                    <form onSubmit={handleInquirySubmit} className="space-y-4">
+                      <div>
+                        <Label htmlFor="name">Your Name</Label>
+                        <Input
+                          id="name"
+                          value={inquiryForm.studentName}
+                          onChange={(e) => setInquiryForm({...inquiryForm, studentName: e.target.value})}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="email">Email</Label>
+                        <Input
+                          id="email"
+                          type="email"
+                          value={inquiryForm.studentEmail}
+                          onChange={(e) => setInquiryForm({...inquiryForm, studentEmail: e.target.value})}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="phone">Phone</Label>
+                        <Input
+                          id="phone"
+                          type="tel"
+                          value={inquiryForm.studentPhone}
+                          onChange={(e) => setInquiryForm({...inquiryForm, studentPhone: e.target.value})}
+                          required
+                        />
+                      </div>
+                      <div>
+                        <Label htmlFor="roomType">Interested Room Type</Label>
+                        <Select value={inquiryForm.roomType} onValueChange={(value) => setInquiryForm({...inquiryForm, roomType: value})}>
+                          <SelectTrigger>
+                            <SelectValue placeholder="Select room type" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {hostel.rooms.map(room => (
+                              <SelectItem key={room.id} value={room.type} disabled={room.available === 0}>
+                                {room.type} - MK {room.rent.toLocaleString()} ({room.available} available)
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
+                      <div>
+                        <Label htmlFor="message">Message</Label>
+                        <Textarea
+                          id="message"
+                          value={inquiryForm.message}
+                          onChange={(e) => setInquiryForm({...inquiryForm, message: e.target.value})}
+                          placeholder="Any specific questions or requirements..."
+                          rows={4}
+                        />
+                      </div>
+                      <Button type="submit" className="w-full">Submit Inquiry</Button>
+                    </form>
+                  </DialogContent>
+                </Dialog>
+
+                <div className="pt-4 border-t space-y-3">
+                  <p className="text-sm text-gray-600">Need help? Contact the landlord</p>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Phone className="h-4 w-4 text-gray-600" />
+                    <span>+265 991 234 567</span>
+                  </div>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Mail className="h-4 w-4 text-gray-600" />
+                    <span>landlord@hostel.mw</span>
+                  </div>
+                </div>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
