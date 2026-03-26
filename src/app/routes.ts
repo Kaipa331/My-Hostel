@@ -5,6 +5,10 @@ import { HostelDetails } from "./components/HostelDetails";
 import { LandlordAuth } from "./components/LandlordAuth";
 import { LandlordDashboard } from "./components/LandlordDashboard";
 import { AddEditHostel } from "./components/AddEditHostel";
+import { AdminAuth } from "./components/AdminAuth";
+import { AdminDashboard } from "./components/AdminDashboard";
+import { StudentAuth } from "./components/StudentAuth";
+import { StudentDashboard } from "./components/StudentDashboard";
 import { NotFound } from "./components/NotFound";
 
 export const router = createBrowserRouter([
@@ -18,6 +22,10 @@ export const router = createBrowserRouter([
       { path: "landlord/dashboard", Component: LandlordDashboard },
       { path: "landlord/hostel/add", Component: AddEditHostel },
       { path: "landlord/hostel/edit/:id", Component: AddEditHostel },
+      { path: "admin/auth", Component: AdminAuth },
+      { path: "admin/dashboard", Component: AdminDashboard },
+      { path: "student/auth", Component: StudentAuth },
+      { path: "student/dashboard", Component: StudentDashboard },
       { path: "*", Component: NotFound },
     ],
   },

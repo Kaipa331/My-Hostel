@@ -1,14 +1,21 @@
 import { Link, useNavigate } from 'react-router';
 import { useAuth } from '../context/AppContext';
+import { useAllAuth } from '../context/AuthContext';
 import { Button } from './ui/button';
 import { Building2, LogOut, LayoutDashboard } from 'lucide-react';
 
 export function Header() {
   const { landlord, logout } = useAuth();
+  const { student, studentLogout } = useAllAuth();
   const navigate = useNavigate();
 
   const handleLogout = () => {
     logout();
+    navigate('/');
+  };
+
+  const handleStudentLogout = () => {
+    studentLogout();
     navigate('/');
   };
 
@@ -34,10 +41,26 @@ export function Header() {
                 Logout
               </Button>
             </>
+          ) : student ? (
+            <>
+              <Link to="/student/dashboard">
+                <Button variant="ghost" className="gap-2">
+                  <LayoutDashboard className="h-4 w-4" />
+                  Student Dashboard
+                </Button>
+              </Link>
+              <Button variant="ghost" onClick={handleStudentLogout} className="gap-2">
+                <LogOut className="h-4 w-4" />
+                Logout
+              </Button>
+            </>
           ) : (
             <>
               <Link to="/">
                 <Button variant="ghost">Find Hostels</Button>
+              </Link>
+              <Link to="/student/auth">
+                <Button variant="outline">Student Login</Button>
               </Link>
               <Link to="/landlord/auth">
                 <Button>Landlord Login</Button>

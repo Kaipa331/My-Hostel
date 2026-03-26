@@ -10,7 +10,11 @@ CREATE TABLE profiles (
   name TEXT NOT NULL,
   email TEXT NOT NULL,
   phone TEXT,
-  role TEXT NOT NULL DEFAULT 'student' CHECK (role IN ('student', 'landlord')),
+  role TEXT NOT NULL DEFAULT 'student' CHECK (role IN ('student', 'landlord', 'admin')),
+  status TEXT DEFAULT 'pending' CHECK (status IN ('pending', 'approved', 'rejected')),
+  university TEXT,
+  student_id TEXT,
+  saved_hostels UUID[] DEFAULT '{}',
   created_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL,
   updated_at TIMESTAMP WITH TIME ZONE DEFAULT TIMEZONE('utc'::text, NOW()) NOT NULL
 );
