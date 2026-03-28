@@ -182,14 +182,48 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
 
   // --- STUDENT ---
   const studentLogin = async (email: string, pass: string) => {
+    console.log('Login attempt started for:', email);
     const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
-    if (error || !data.user) return false;
+    
+    if (error) {
+      console.error('Login auth error:', error.message);
+      return false;
+    }
+    
+    if (!data.user) {
+      console.warn('Login successful but no user returned');
+      return false;
+    }
 
-    const { data: profile } = await (supabase.from('profiles') as any).select('role').eq('id', data.user.id).single();
-    if ((profile as any)?.role === 'student') {
-      return true;
-    } else {
-      await supabase.auth.signOut();
+    try {
+      console.log('Login successful, fetching profile role for:', data.user.id);
+      const { data: profile, error: profileError } = await (supabase.from('profiles') as any)
+        .select('role')
+        .eq('id', data.user.id)
+        .single();
+      
+      if (profileError) {
+        console.error('Profile fetch error during login:', profileError.message);
+        // Special case: if user exists in auth but has no profile row
+        // Our fetchProfile in the provider handles "self-healing," 
+        // so we can still return true if the user role should be student
+        if (profileError.code === 'PGRST116') {
+          console.warn('Profile not found for authenticated user, self-healing should activate.');
+          return true; // Let the auth listener fetch and heal
+        }
+        return false;
+      }
+
+      console.log('Profile verified, role:', (profile as any)?.role);
+      if ((profile as any)?.role === 'student') {
+        return true;
+      } else {
+        console.warn('Unauthorized role for student portal:', (profile as any)?.role);
+        await supabase.auth.signOut();
+        return false;
+      }
+    } catch (e) {
+      console.error('Unexpected error during profile verification:', e);
       return false;
     }
   };

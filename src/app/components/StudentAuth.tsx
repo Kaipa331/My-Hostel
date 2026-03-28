@@ -95,6 +95,7 @@ export function StudentAuth() {
               variant={isLogin ? 'default' : 'outline'}
               onClick={() => setIsLogin(true)}
               className="flex-1"
+              disabled={isLoading}
             >
               Login
             </Button>
@@ -102,6 +103,7 @@ export function StudentAuth() {
               variant={!isLogin ? 'default' : 'outline'}
               onClick={() => setIsLogin(false)}
               className="flex-1"
+              disabled={isLoading}
             >
               Sign Up
             </Button>
