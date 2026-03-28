@@ -8,7 +8,11 @@ export type Database = {
           name: string
           email: string
           phone: string | null
-          role: 'student' | 'landlord'
+          role: 'student' | 'landlord' | 'admin'
+          status: 'pending' | 'approved' | 'rejected'
+          university: string | null
+          student_id: string | null
+          saved_hostels: string[]
           created_at: string
           updated_at: string
         }
@@ -17,7 +21,11 @@ export type Database = {
           name: string
           email: string
           phone?: string | null
-          role?: 'student' | 'landlord'
+          role?: 'student' | 'landlord' | 'admin'
+          status?: 'pending' | 'approved' | 'rejected'
+          university?: string | null
+          student_id?: string | null
+          saved_hostels?: string[]
           created_at?: string
           updated_at?: string
         }
@@ -26,7 +34,11 @@ export type Database = {
           name?: string
           email?: string
           phone?: string | null
-          role?: 'student' | 'landlord'
+          role?: 'student' | 'landlord' | 'admin'
+          status?: 'pending' | 'approved' | 'rejected'
+          university?: string | null
+          student_id?: string | null
+          saved_hostels?: string[]
           created_at?: string
           updated_at?: string
         }
@@ -183,6 +195,53 @@ export type Database = {
           updated_at?: string
         }
       }
+      bookings: {
+        Row: {
+          id: string
+          student_id: string
+          hostel_id: string
+          room_id: string
+          total_rent: number
+          booking_fee: number
+          deposit_amount: number
+          status: 'pending' | 'deposit_paid' | 'confirmed' | 'cancelled' | 'refunded'
+          payment_method: 'bank' | 'airtel_money' | 'mpamba' | null
+          receipt_url: string | null
+          deposit_deadline: string | null
+          created_at: string
+          updated_at: string
+        }
+        Insert: {
+          id?: string
+          student_id: string
+          hostel_id: string
+          room_id: string
+          total_rent: number
+          booking_fee: number
+          deposit_amount: number
+          status?: 'pending' | 'deposit_paid' | 'confirmed' | 'cancelled' | 'refunded'
+          payment_method?: 'bank' | 'airtel_money' | 'mpamba' | null
+          receipt_url?: string | null
+          deposit_deadline?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+        Update: {
+          id?: string
+          student_id?: string
+          hostel_id?: string
+          room_id?: string
+          total_rent?: number
+          booking_fee?: number
+          deposit_amount?: number
+          status?: 'pending' | 'deposit_paid' | 'confirmed' | 'cancelled' | 'refunded'
+          payment_method?: 'bank' | 'airtel_money' | 'mpamba' | null
+          receipt_url?: string | null
+          deposit_deadline?: string | null
+          created_at?: string
+          updated_at?: string
+        }
+      }
     }
     Views: {
       [_ in never]: never
@@ -202,15 +261,18 @@ export type Hostel = Database['public']['Tables']['hostels']['Row']
 export type Room = Database['public']['Tables']['rooms']['Row']
 export type Review = Database['public']['Tables']['reviews']['Row']
 export type Inquiry = Database['public']['Tables']['inquiries']['Row']
+export type Booking = Database['public']['Tables']['bookings']['Row']
 
 export type ProfileInsert = Database['public']['Tables']['profiles']['Insert']
 export type HostelInsert = Database['public']['Tables']['hostels']['Insert']
 export type RoomInsert = Database['public']['Tables']['rooms']['Insert']
 export type ReviewInsert = Database['public']['Tables']['reviews']['Insert']
 export type InquiryInsert = Database['public']['Tables']['inquiries']['Insert']
+export type BookingInsert = Database['public']['Tables']['bookings']['Insert']
 
 export type ProfileUpdate = Database['public']['Tables']['profiles']['Update']
 export type HostelUpdate = Database['public']['Tables']['hostels']['Update']
 export type RoomUpdate = Database['public']['Tables']['rooms']['Update']
 export type ReviewUpdate = Database['public']['Tables']['reviews']['Update']
 export type InquiryUpdate = Database['public']['Tables']['inquiries']['Update']
+export type BookingUpdate = Database['public']['Tables']['bookings']['Update']

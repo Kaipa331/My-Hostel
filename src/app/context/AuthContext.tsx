@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '../../lib/supabase';
+import { Database } from '../../lib/database.types';
 
 export interface Admin {
   name: string;
@@ -40,7 +41,7 @@ interface AllAuthContextType {
     phone: string,
     university: string,
     studentId: string
-  ) => Promise<boolean>;
+  ) => Promise<boolean | { error: string }>;
   studentLogout: () => void;
   // Landlord Management (Admin usage)
   landlords: MockLandlord[];
@@ -85,14 +86,47 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const fetchProfile = async (userId: string) => {
-    const { data: profile, error } = await supabase
-      .from('profiles')
+    // Using any casting to avoid persistent TypeScript "never" errors on the profiles table
+    const { data: profile, error } = await (supabase
+      .from('profiles') as any)
       .select('*')
       .eq('id', userId)
       .single();
 
-    if (error || !profile) return;
+    if (error || !profile) {
+      // Self-healing: try to create the profile from auth metadata 
+      // if it was missed during signup (e.g. before trigger was fixed)
+      const { data: { user: authUser } } = await supabase.auth.getUser();
+      if (authUser && authUser.id === userId && authUser.user_metadata?.name) {
+        const metadata = authUser.user_metadata;
+        const { data: newProfile, error: insertError } = await (supabase
+          .from('profiles') as any)
+          .insert({
+            id: userId,
+            name: metadata.name,
+            email: authUser.email!,
+            phone: metadata.phone || '',
+            role: metadata.role || 'student',
+            university: metadata.university || '',
+            student_id: metadata.student_id || '',
+            status: 'approved',
+            saved_hostels: []
+          })
+          .select('*')
+          .single();
+        
+        if (!insertError && newProfile) {
+          // Retry setting the student/admin state with the newly created profile
+          setStudentFromProfile(newProfile);
+        }
+      }
+      return;
+    }
 
+    setStudentFromProfile(profile);
+  };
+
+  const setStudentFromProfile = (profile: any) => {
     if (profile.role === 'admin') {
       setAdmin({ name: profile.name, email: profile.email });
       fetchLandlords();
@@ -110,17 +144,17 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
   };
 
   const fetchLandlords = async () => {
-    const { data, error } = await supabase
-      .from('profiles')
+    const { data, error } = await (supabase
+      .from('profiles') as any)
       .select('*')
       .eq('role', 'landlord');
     
     if (data && !error) {
-      setLandlords(data.map(p => ({
+      setLandlords((data as any[]).map(p => ({
         id: p.id,
         name: p.name,
         email: p.email,
-        phone: p.phone,
+        phone: p.phone || '',
         status: p.status || 'pending',
         createdAt: p.created_at
       })));
@@ -133,8 +167,8 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
     if (error || !data.user) return false;
 
     // Check role
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', data.user.id).single();
-    if (profile?.role === 'admin') {
+    const { data: profile } = await (supabase.from('profiles') as any).select('role').eq('id', data.user.id).single();
+    if ((profile as any)?.role === 'admin') {
       return true;
     } else {
       await supabase.auth.signOut();
@@ -151,8 +185,8 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
     const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
     if (error || !data.user) return false;
 
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', data.user.id).single();
-    if (profile?.role === 'student') {
+    const { data: profile } = await (supabase.from('profiles') as any).select('role').eq('id', data.user.id).single();
+    if ((profile as any)?.role === 'student') {
       return true;
     } else {
       await supabase.auth.signOut();
@@ -167,7 +201,9 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
     phone: string,
     university: string,
     studentId: string
-  ) => {
+  ): Promise<boolean | { error: string }> => {
+    // We pass extra metadata (phone, university, student_id) so the DB trigger can 
+    // handle the profile creation automatically and atomically.
     const { data, error } = await supabase.auth.signUp({
       email,
       password: pass,
@@ -175,25 +211,25 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
         data: {
           name,
           phone,
+          university,
+          student_id: studentId,
           role: 'student'
         }
       }
     });
 
-    if (error) return false;
+    if (error) {
+      console.error('Signup auth error:', error);
+      return { error: error.message };
+    }
 
     if (data.user) {
-      // Small delay to ensure the database trigger has run
-      await new Promise(resolve => setTimeout(resolve, 800));
-      await supabase.from('profiles').update({
-        university,
-        student_id: studentId,
-        saved_hostels: []
-      }).eq('id', data.user.id);
-      
+      // The DB trigger handle_new_user() will create the profile.
+      // We return true immediately. If the user needs to confirm email,
+      // data.session will be null, but signUp was still successful.
       return true;
     }
-    return false;
+    return { error: 'Unknown signup error' };
   };
 
   const studentLogout = async () => {
@@ -202,14 +238,14 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
 
   // --- LANDLORD APPROVAL ---
   const approveLandlord = async (id: string) => {
-    const { error } = await supabase.from('profiles').update({ status: 'approved' }).eq('id', id);
+    const { error } = await (supabase.from('profiles') as any).update({ status: 'approved' }).eq('id', id);
     if (!error) {
       setLandlords(prev => prev.map(l => l.id === id ? { ...l, status: 'approved' } : l));
     }
   };
 
   const rejectLandlord = async (id: string) => {
-    const { error } = await supabase.from('profiles').update({ status: 'rejected' }).eq('id', id);
+    const { error } = await (supabase.from('profiles') as any).update({ status: 'rejected' }).eq('id', id);
     if (!error) {
       setLandlords(prev => prev.map(l => l.id === id ? { ...l, status: 'rejected' } : l));
     }
@@ -228,8 +264,8 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
     setStudent({ ...student, savedHostels: newSavedHostels });
 
     // DB update
-    const { error } = await supabase
-      .from('profiles')
+    const { error } = await (supabase
+      .from('profiles') as any)
       .update({ saved_hostels: newSavedHostels })
       .eq('id', student.id);
 

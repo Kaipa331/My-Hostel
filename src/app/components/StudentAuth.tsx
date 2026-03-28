@@ -49,7 +49,7 @@ export function StudentAuth() {
     setIsLoading(true);
 
     try {
-      const success = await studentSignup(
+      const result = await studentSignup(
         signupForm.name,
         signupForm.email,
         signupForm.password,
@@ -58,14 +58,18 @@ export function StudentAuth() {
         signupForm.studentId
       );
       
-      if (success) {
-        toast.success('Account created successfully!');
-        navigate('/student/dashboard');
-      } else {
-        toast.error('Signup failed. Please try again.');
+      if (typeof result === 'boolean') {
+        if (result) {
+          toast.success('Account created successfully!');
+          navigate('/student/dashboard');
+          return;
+        }
+        toast.error('Signup failed. Please check your details or try a different email.');
+      } else if (result.error) {
+        toast.error(`Signup failed: ${result.error}`);
       }
-    } catch (error) {
-      toast.error('Signup failed. Please try again.');
+    } catch (error: any) {
+      toast.error(`Signup failed: ${error.message || 'Please try again.'}`);
     } finally {
       setIsLoading(false);
     }

@@ -9,9 +9,11 @@ import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from './ui/dialog';
-import { MapPin, Star, Phone, Mail, Users, DollarSign, CheckCircle2, ArrowLeft } from 'lucide-react';
+import { MapPin, Star, Phone, Mail, Users, DollarSign, CheckCircle2, ArrowLeft, Receipt, Upload, CreditCard, Landmark, Wallet } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { toast } from 'sonner';
+import { useAuth, Room } from '../context/AppContext';
+import { calculateFees } from '../utils/fees';
 
 const hostelImages = [
   'https://images.unsplash.com/photo-1763924636780-4da2a7c3327c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwZG9ybWl0b3J5JTIwcm9vbXxlbnwxfHx8fDE3NzQ0NTAxMDJ8MA&ixlib=rb-4.1.0&q=80&w=1080',
@@ -22,8 +24,17 @@ const hostelImages = [
 
 export function HostelDetails() {
   const { id } = useParams();
-  const { getHostelById, addInquiry } = useData();
+  const { user } = useAuth();
+  const { getHostelById, addInquiry, addBooking, uploadReceipt } = useData();
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
+  const [isBookingOpen, setIsBookingOpen] = useState(false);
+  const [isPaymentOpen, setIsPaymentOpen] = useState(false);
+  const [selectedRoom, setSelectedRoom] = useState<Room | null>(null);
+  const [bookingId, setBookingId] = useState<string | null>(null);
+  const [paymentMethod, setPaymentMethod] = useState<'bank' | 'airtel_money' | 'mpamba' | null>(null);
+  const [receiptFile, setReceiptFile] = useState<File | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  
   const [inquiryForm, setInquiryForm] = useState({
     studentName: '',
     studentEmail: '',
@@ -65,6 +76,66 @@ export function HostelDetails() {
       roomType: '',
       message: '',
     });
+  };
+
+  const handleBookNow = (room: Room) => {
+    if (!user) {
+      toast.error('Please log in as a student to book a room.');
+      return;
+    }
+    if (user.role !== 'student') {
+      toast.error('Only students can book rooms.');
+      return;
+    }
+    setSelectedRoom(room);
+    setIsBookingOpen(true);
+  };
+
+  const confirmBooking = async () => {
+    if (!selectedRoom || !user) return;
+    
+    setIsSubmitting(true);
+    try {
+      const fees = calculateFees(selectedRoom.rent);
+      const id = await addBooking({
+        studentId: user.id,
+        hostelId: hostel.id,
+        roomId: selectedRoom.id,
+        totalRent: selectedRoom.rent,
+        bookingFee: fees.bookingFee,
+        depositAmount: fees.depositAmount,
+      });
+      setBookingId(id);
+      setIsBookingOpen(false);
+      setIsPaymentOpen(true);
+      toast.success('Booking initiated! Please complete the payment to secure your room.');
+    } catch (error) {
+      toast.error('Failed to initiate booking. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
+  };
+
+  const handleReceiptUpload = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!bookingId || !receiptFile || !paymentMethod) {
+      toast.error('Please select a payment method and upload a receipt.');
+      return;
+    }
+
+    setIsSubmitting(true);
+    try {
+      await uploadReceipt(bookingId, receiptFile);
+      toast.success('Receipt uploaded successfully! The landlord will verify your payment.');
+      setIsPaymentOpen(false);
+      setBookingId(null);
+      setReceiptFile(null);
+      setPaymentMethod(null);
+    } catch (error) {
+      toast.error('Failed to upload receipt. Please try again.');
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   const imageUrl = hostel.photos && hostel.photos.length > 0
@@ -179,10 +250,18 @@ export function HostelDetails() {
                         {room.available > 0 ? `${room.available} Available` : 'Full'}
                       </Badge>
                     </div>
-                    <div className="flex flex-wrap gap-2">
-                      {room.amenities.map(amenity => (
-                        <Badge key={amenity} variant="outline">{amenity}</Badge>
-                      ))}
+                    <div className="flex flex-wrap items-center justify-between gap-2">
+                      <div className="flex flex-wrap gap-2">
+                        {room.amenities.map(amenity => (
+                          <Badge key={amenity} variant="outline">{amenity}</Badge>
+                        ))}
+                      </div>
+                      <Button 
+                        disabled={room.available === 0} 
+                        onClick={() => handleBookNow(room)}
+                      >
+                        Book Now
+                      </Button>
                     </div>
                   </div>
                 ))}
@@ -311,6 +390,134 @@ export function HostelDetails() {
           </div>
         </div>
       </div>
+
+      {/* Booking Confirmation Dialog */}
+      <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirm Your Booking</DialogTitle>
+          </DialogHeader>
+          {selectedRoom && (
+            <div className="space-y-6">
+              <div className="bg-gray-50 p-4 rounded-lg space-y-3">
+                <div className="flex justify-between">
+                  <span className="text-gray-600">Monthly Rent</span>
+                  <span className="font-semibold">MK {selectedRoom.rent.toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Booking Fee (5% - Non-refundable)</span>
+                  <span>MK {(selectedRoom.rent * 0.05).toLocaleString()}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-gray-600">Initial Deposit (50%)</span>
+                  <span>MK {(selectedRoom.rent * 0.5).toLocaleString()}</span>
+                </div>
+                <div className="pt-2 border-t flex justify-between text-lg font-bold text-blue-600">
+                  <span>Total Due Within 48h</span>
+                  <span>MK {(selectedRoom.rent * 0.55).toLocaleString()}</span>
+                </div>
+              </div>
+              
+              <div className="text-sm text-gray-500 bg-amber-50 p-3 rounded border border-amber-100 italic">
+                Note: Your room will be reserved for 48 hours. You must pay the deposit and booking fee within this time to secure your spot.
+              </div>
+
+              <div className="flex gap-3">
+                <Button variant="outline" className="flex-1" onClick={() => setIsBookingOpen(false)}>Cancel</Button>
+                <Button className="flex-1" onClick={confirmBooking} disabled={isSubmitting}>
+                  {isSubmitting ? 'Processing...' : 'Proceed to Payment'}
+                </Button>
+              </div>
+            </div>
+          )}
+        </DialogContent>
+      </Dialog>
+
+      {/* Payment Instructions & Receipt Upload Dialog */}
+      <Dialog open={isPaymentOpen} onOpenChange={setIsPaymentOpen}>
+        <DialogContent className="max-w-md">
+          <DialogHeader>
+            <DialogTitle>Payment Instructions</DialogTitle>
+          </DialogHeader>
+          <div className="space-y-6">
+            <div className="grid grid-cols-3 gap-2">
+              <Button 
+                variant={paymentMethod === 'bank' ? 'default' : 'outline'} 
+                className="flex flex-col h-20 gap-1 p-2"
+                onClick={() => setPaymentMethod('bank')}
+              >
+                <Landmark className="h-5 w-5" />
+                <span className="text-xs">Bank</span>
+              </Button>
+              <Button 
+                variant={paymentMethod === 'airtel_money' ? 'default' : 'outline'} 
+                className="flex flex-col h-20 gap-1 p-2"
+                onClick={() => setPaymentMethod('airtel_money')}
+              >
+                <Wallet className="h-5 w-5" />
+                <span className="text-xs">Airtel Money</span>
+              </Button>
+              <Button 
+                variant={paymentMethod === 'mpamba' ? 'default' : 'outline'} 
+                className="flex flex-col h-20 gap-1 p-2"
+                onClick={() => setPaymentMethod('mpamba')}
+              >
+                <CreditCard className="h-5 w-5" />
+                <span className="text-xs">Mpamba</span>
+              </Button>
+            </div>
+
+            {paymentMethod === 'bank' && (
+              <div className="p-4 bg-gray-50 rounded-lg text-sm space-y-2">
+                <p className="font-semibold">Standard Bank</p>
+                <p>Account Name: Hostel Management Ltd</p>
+                <p>Account Number: 90876543210</p>
+                <p>Branch: Zomba</p>
+              </div>
+            )}
+
+            {paymentMethod === 'airtel_money' && (
+              <div className="p-4 bg-red-50 rounded-lg text-sm space-y-2">
+                <p className="font-semibold">Airtel Money</p>
+                <p>Name: John Landlord</p>
+                <p>Number: +265 991 234 567</p>
+                <p>Reference: Use your Name + Hostel Name</p>
+              </div>
+            )}
+
+            {paymentMethod === 'mpamba' && (
+              <div className="p-4 bg-green-50 rounded-lg text-sm space-y-2">
+                <p className="font-semibold">TNM Mpamba</p>
+                <p>Name: John Landlord</p>
+                <p>Number: +265 881 234 567</p>
+                <p>Reference: Use your Name + Hostel Name</p>
+              </div>
+            )}
+
+            <form onSubmit={handleReceiptUpload} className="space-y-4">
+              <div className="space-y-2">
+                <Label htmlFor="receipt">Upload Payment Receipt</Label>
+                <div className="flex items-center gap-2">
+                  <Input 
+                    id="receipt" 
+                    type="file" 
+                    accept="image/*,application/pdf"
+                    onChange={(e) => setReceiptFile(e.target.files?.[0] || null)}
+                    className="cursor-pointer"
+                    required
+                  />
+                  <Upload className="h-5 w-5 text-gray-400" />
+                </div>
+                <p className="text-xs text-gray-500">Supported formats: JPEG, PNG, PDF</p>
+              </div>
+
+              <Button type="submit" className="w-full" disabled={isSubmitting || !receiptFile || !paymentMethod}>
+                {isSubmitting ? 'Uploading...' : 'Submit Receipt for Verification'}
+              </Button>
+            </form>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

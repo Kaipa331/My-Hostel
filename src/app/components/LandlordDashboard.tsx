@@ -4,26 +4,47 @@ import { useAuth, useData } from '../context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { Building2, Plus, Edit, Trash2, Mail, Phone, Star, MapPin } from 'lucide-react';
+import { Building2, Plus, Edit, Trash2, Mail, Phone, Star, MapPin, Receipt, CheckCircle2, XCircle, Eye } from 'lucide-react';
 import { toast } from 'sonner';
 
 export function LandlordDashboard() {
-  const { landlord } = useAuth();
-  const { hostels, inquiries, deleteHostel, getInquiriesByLandlord } = useData();
+  const { user } = useAuth();
+  const { hostels, inquiries, deleteHostel, getInquiriesByLandlord, getBookingsByLandlord, updateBooking } = useData();
   const navigate = useNavigate();
 
   useEffect(() => {
-    if (!landlord) {
+    if (!user || user.role !== 'landlord') {
       navigate('/landlord/auth');
     }
-  }, [landlord, navigate]);
+  }, [user, navigate]);
 
-  if (!landlord) {
+  if (!user) {
     return null;
   }
 
-  const myHostels = hostels.filter(h => h.landlordId === landlord.id);
-  const myInquiries = getInquiriesByLandlord(landlord.id);
+  const myHostels = hostels.filter(h => h.landlordId === user.id);
+  const myInquiries = getInquiriesByLandlord(user.id);
+  const myBookings = getBookingsByLandlord(user.id);
+
+  const handleVerifyPayment = async (bookingId: string) => {
+    try {
+      await updateBooking(bookingId, { status: 'confirmed' });
+      toast.success('Payment verified! Booking confirmed.');
+    } catch (error) {
+      toast.error('Failed to verify payment.');
+    }
+  };
+
+  const handleRejectBooking = async (bookingId: string) => {
+    if (window.confirm('Are you sure you want to reject this booking?')) {
+      try {
+        await updateBooking(bookingId, { status: 'cancelled' });
+        toast.info('Booking rejected.');
+      } catch (error) {
+        toast.error('Failed to reject booking.');
+      }
+    }
+  };
 
   const handleDelete = (id: string, name: string) => {
     if (window.confirm(`Are you sure you want to delete "${name}"?`)) {
@@ -41,7 +62,7 @@ export function LandlordDashboard() {
     <div className="container mx-auto px-4 py-8">
       {/* Header */}
       <div className="mb-8">
-        <h1 className="text-3xl mb-2">Welcome back, {landlord.name}!</h1>
+        <h1 className="text-3xl mb-2">Welcome back, {user.name}!</h1>
         <p className="text-gray-600">Manage your hostels and view inquiries</p>
       </div>
 
@@ -84,18 +105,90 @@ export function LandlordDashboard() {
           <CardContent className="pt-6">
             <div className="flex items-center justify-between">
               <div>
-                <p className="text-sm text-gray-600 mb-1">New Inquiries</p>
-                <p className="text-3xl">{myInquiries.length}</p>
+                <p className="text-sm text-gray-600 mb-1">New Bookings</p>
+                <p className="text-3xl">{myBookings.filter(b => b.status === 'deposit_paid').length}</p>
               </div>
-              <Mail className="h-10 w-10 text-purple-600" />
+              <Receipt className="h-10 w-10 text-purple-600" />
             </div>
           </CardContent>
         </Card>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* My Hostels */}
         <div className="lg:col-span-2">
+          {/* Manage Bookings */}
+          <Card className="mb-8">
+            <CardHeader>
+              <CardTitle>Manage Bookings</CardTitle>
+            </CardHeader>
+            <CardContent>
+              {myBookings.length > 0 ? (
+                <div className="space-y-4">
+                  {myBookings.map(booking => {
+                    const hostel = hostels.find(h => h.id === booking.hostelId);
+                    return (
+                      <div key={booking.id} className="border rounded-lg p-4">
+                        <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
+                          <div>
+                            <div className="flex items-center gap-2 mb-1">
+                              <h3 className="font-medium">{hostel?.name}</h3>
+                              <Badge variant={
+                                booking.status === 'confirmed' ? 'default' : 
+                                booking.status === 'deposit_paid' ? 'secondary' : 
+                                booking.status === 'pending' ? 'outline' : 'destructive'
+                              }>
+                                {booking.status.replace('_', ' ').toUpperCase()}
+                              </Badge>
+                            </div>
+                            <p className="text-sm text-gray-600">Total Rent: MK {booking.totalRent.toLocaleString()}</p>
+                            <p className="text-xs text-gray-500">Deposit Paid: MK {booking.depositAmount.toLocaleString()}</p>
+                          </div>
+                          <div className="flex gap-2">
+                            {booking.receiptUrl && (
+                              <a href={booking.receiptUrl} target="_blank" rel="noopener noreferrer">
+                                <Button variant="outline" size="sm" className="gap-2">
+                                  <Eye className="h-4 w-4" />
+                                  View Receipt
+                                </Button>
+                              </a>
+                            )}
+                            {booking.status === 'deposit_paid' && (
+                              <>
+                                <Button 
+                                  size="sm" 
+                                  className="gap-2 bg-green-600 hover:bg-green-700"
+                                  onClick={() => handleVerifyPayment(booking.id)}
+                                >
+                                  <CheckCircle2 className="h-4 w-4" />
+                                  Confirm
+                                </Button>
+                                <Button 
+                                  variant="outline" 
+                                  size="sm" 
+                                  className="gap-2 text-red-600"
+                                  onClick={() => handleRejectBooking(booking.id)}
+                                >
+                                  <XCircle className="h-4 w-4" />
+                                  Reject
+                                </Button>
+                              </>
+                            )}
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </div>
+              ) : (
+                <div className="text-center py-12 text-gray-500">
+                  <Receipt className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                  <p>No bookings to manage yet</p>
+                </div>
+              )}
+            </CardContent>
+          </Card>
+
+          {/* My Hostels */}
           <Card>
             <CardHeader>
               <div className="flex items-center justify-between">

@@ -220,12 +220,15 @@ CREATE POLICY "Landlords can update inquiries for their hostels" ON inquiries
 CREATE OR REPLACE FUNCTION public.handle_new_user()
 RETURNS TRIGGER AS $$
 BEGIN
-  INSERT INTO public.profiles (id, name, email, role)
+  INSERT INTO public.profiles (id, name, email, phone, role, university, student_id)
   VALUES (
     NEW.id,
     NEW.raw_user_meta_data->>'name',
     NEW.email,
-    COALESCE(NEW.raw_user_meta_data->>'role', 'student')
+    NEW.raw_user_meta_data->>'phone',
+    COALESCE(NEW.raw_user_meta_data->>'role', 'student'),
+    NEW.raw_user_meta_data->>'university',
+    NEW.raw_user_meta_data->>'student_id'
   );
   RETURN NEW;
 END;

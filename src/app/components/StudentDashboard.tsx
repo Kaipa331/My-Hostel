@@ -5,13 +5,13 @@ import { useData } from '../context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { GraduationCap, LogOut, Heart, Mail, User, Phone, Building, Home, MapPin } from 'lucide-react';
+import { GraduationCap, LogOut, Heart, Mail, User, Phone, Building, Home, MapPin, Receipt, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 export function StudentDashboard() {
   const navigate = useNavigate();
   const { student, studentLogout, toggleSaveHostel } = useAllAuth();
-  const { hostels, inquiries } = useData();
+  const { hostels, inquiries, getBookingsByStudent } = useData();
 
   useEffect(() => {
     if (!student) {
@@ -29,6 +29,20 @@ export function StudentDashboard() {
 
   const savedHostels = hostels.filter(h => student.savedHostels.includes(h.id));
   const studentInquiries = inquiries.filter(i => i.studentEmail === student.email);
+  const studentBookings = getBookingsByStudent(student.id);
+
+  const getDeadlineStatus = (deadline: string) => {
+    const now = new Date();
+    const deadlineDate = new Date(deadline);
+    const diff = deadlineDate.getTime() - now.getTime();
+    
+    if (diff <= 0) return 'Expired';
+    
+    const hours = Math.floor(diff / (1000 * 60 * 60));
+    const mins = Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60));
+    
+    return `${hours}h ${mins}m remaining`;
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -108,9 +122,8 @@ export function StudentDashboard() {
             </div>
           </CardContent>
         </Card>
-
         {/* Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
           <Card>
             <CardContent className="pt-6">
               <div className="flex items-center justify-between">
@@ -133,7 +146,117 @@ export function StudentDashboard() {
               </div>
             </CardContent>
           </Card>
+          <Card>
+            <CardContent className="pt-6">
+              <div className="flex items-center justify-between">
+                <div>
+                  <p className="text-sm text-gray-600 mb-1">Active Bookings</p>
+                  <p className="text-3xl">{studentBookings.filter(b => b.status !== 'cancelled').length}</p>
+                </div>
+                <Receipt className="h-8 w-8 text-green-500" />
+              </div>
+            </CardContent>
+          </Card>
         </div>
+
+        {/* My Bookings */}
+        <Card className="mb-8">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Receipt className="h-5 w-5 text-green-500" />
+              My Bookings ({studentBookings.length})
+            </CardTitle>
+          </CardHeader>
+          <CardContent>
+            {studentBookings.length === 0 ? (
+              <div className="text-center py-8 text-gray-500">
+                <Receipt className="h-12 w-12 mx-auto mb-3 text-gray-300" />
+                <p>No bookings yet</p>
+                <Button 
+                  variant="link" 
+                  onClick={() => navigate('/')}
+                  className="mt-2"
+                >
+                  Find a hostel to book
+                </Button>
+              </div>
+            ) : (
+              <div className="space-y-4">
+                {studentBookings.map(booking => {
+                  const hostel = hostels.find(h => h.id === booking.hostelId);
+                  return (
+                    <div key={booking.id} className="border rounded-lg p-4">
+                      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
+                        <div>
+                          <h3 className="font-medium text-lg mb-1">{hostel?.name || 'Loading...'}</h3>
+                          <div className="flex items-center gap-2 text-sm text-gray-600">
+                            <MapPin className="h-4 w-4" />
+                            <span>{hostel?.address}</span>
+                          </div>
+                        </div>
+                        <div className="flex flex-col items-end gap-2">
+                          <Badge variant={
+                            booking.status === 'confirmed' ? 'default' : 
+                            booking.status === 'pending' ? 'outline' : 
+                            booking.status === 'deposit_paid' ? 'secondary' : 'destructive'
+                          }>
+                            {booking.status.replace('_', ' ').toUpperCase()}
+                          </Badge>
+                          {booking.status === 'pending' && (
+                            <div className="flex items-center gap-1 text-xs text-amber-600 font-medium">
+                              <Clock className="h-3 w-3" />
+                              <span>Deadline: {getDeadlineStatus(booking.depositDeadline)}</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-gray-50 p-4 rounded-lg text-sm mb-4">
+                        <div>
+                          <p className="text-gray-500">Monthly Rent</p>
+                          <p className="font-semibold">MK {booking.totalRent.toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500">Booking Fee (5%)</p>
+                          <p className="font-semibold">MK {booking.bookingFee.toLocaleString()}</p>
+                        </div>
+                        <div>
+                          <p className="text-gray-500">Deposit (50%)</p>
+                          <p className="font-semibold">MK {booking.depositAmount.toLocaleString()}</p>
+                        </div>
+                      </div>
+
+                      {booking.status === 'pending' && (
+                        <div className="flex gap-2">
+                          <Button 
+                            className="flex-1" 
+                            onClick={() => navigate(`/hostel/${booking.hostelId}`)}
+                          >
+                            Complete Payment
+                          </Button>
+                        </div>
+                      )}
+
+                      {booking.status === 'deposit_paid' && (
+                        <div className="flex items-center gap-2 text-sm text-blue-600 bg-blue-50 p-3 rounded border border-blue-100">
+                          <CheckCircle2 className="h-4 w-4" />
+                          <span>Deposit receipt submitted. Waiting for landlord to verify.</span>
+                        </div>
+                      )}
+                      
+                      {booking.status === 'confirmed' && (
+                        <div className="flex items-center gap-2 text-sm text-green-600 bg-green-50 p-3 rounded border border-green-100">
+                          <CheckCircle2 className="h-4 w-4" />
+                          <span>Your booking is confirmed! You can now move in.</span>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
 
         {/* Saved Hostels */}
         <Card className="mb-8">

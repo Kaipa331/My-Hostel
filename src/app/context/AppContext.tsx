@@ -1,22 +1,24 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '../../lib/supabase';
+import { Database } from '../../lib/database.types';
 
 // Types
-export interface Landlord {
+export interface UserProfile {
   id: string;
   name: string;
   email: string;
   phone: string;
+  role: 'student' | 'landlord' | 'admin';
 }
 
-export interface Room {
+export type Room = {
   id: string;
   type: 'single' | 'double' | 'shared';
   capacity: number;
   rent: number;
   available: number;
   amenities: string[];
-}
+};
 
 export interface Hostel {
   id: string;
@@ -54,150 +56,76 @@ export interface Inquiry {
   date: string;
 }
 
+export interface Booking {
+  id: string;
+  studentId: string;
+  hostelId: string;
+  roomId: string;
+  totalRent: number;
+  bookingFee: number;
+  depositAmount: number;
+  status: 'pending' | 'deposit_paid' | 'confirmed' | 'cancelled' | 'refunded';
+  paymentMethod?: 'bank' | 'airtel_money' | 'mpamba';
+  receiptUrl?: string;
+  depositDeadline: string;
+  createdAt: string;
+}
+
 interface AuthContextType {
-  landlord: Landlord | null;
+  user: UserProfile | null;
   login: (email: string, password: string) => Promise<{success: boolean, error?: string}>;
-  signup: (name: string, email: string, password: string, phone: string) => Promise<{success: boolean, requireConfirmation?: boolean, error?: string}>;
+  signup: (name: string, email: string, password: string, phone: string, role: 'student' | 'landlord') => Promise<{success: boolean, requireConfirmation?: boolean, error?: string}>;
   logout: () => void;
 }
 
 interface DataContextType {
   hostels: Hostel[];
   inquiries: Inquiry[];
+  bookings: Booking[];
   addHostel: (hostel: Omit<Hostel, 'id' | 'createdAt' | 'rating' | 'reviews'>) => Promise<void>;
   updateHostel: (id: string, hostel: Partial<Hostel>) => Promise<void>;
   deleteHostel: (id: string) => Promise<void>;
   getHostelById: (id: string) => Hostel | undefined;
   addInquiry: (inquiry: Omit<Inquiry, 'id' | 'date'>) => Promise<void>;
   getInquiriesByLandlord: (landlordId: string) => Inquiry[];
+  addBooking: (booking: Omit<Booking, 'id' | 'createdAt' | 'status' | 'depositDeadline'>) => Promise<string>;
+  updateBooking: (id: string, updates: Partial<Booking>) => Promise<void>;
+  getBookingsByStudent: (studentId: string) => Booking[];
+  getBookingsByLandlord: (landlordId: string) => Booking[];
+  uploadReceipt: (bookingId: string, file: File) => Promise<string>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const DataContext = createContext<DataContextType | undefined>(undefined);
 
-// Mock data
-const mockHostels: Hostel[] = [
-  {
-    id: '1',
-    landlordId: 'mock-landlord',
-    name: 'Chancellor College Heights',
-    description: 'Modern hostel with excellent facilities, just 10 minutes walk from Chancellor College. Perfect for UNIMA students seeking comfort and convenience with 24/7 security.',
-    address: 'Chirunga Road, Near Chancellor College, Zomba',
-    university: 'University of Malawi (UNIMA)',
-    distance: 0.8,
-    photos: ['https://images.unsplash.com/photo-1763924636780-4da2a7c3327c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx1bml2ZXJzaXR5JTIwZG9ybWl0b3J5JTIwcm9vbXxlbnwxfHx8fDE3NzQ0NTAxMDJ8MA&ixlib=rb-4.1.0&q=80&w=1080'],
-    rooms: [
-      { id: 'r1', type: 'single', capacity: 1, rent: 120000, available: 3, amenities: ['Fan', 'Study Table', 'Wardrobe'] },
-      { id: 'r2', type: 'double', capacity: 2, rent: 90000, available: 5, amenities: ['Fan', 'Study Table', 'Wardrobe'] },
-      { id: 'r3', type: 'shared', capacity: 4, rent: 60000, available: 8, amenities: ['Fan', 'Study Table'] },
-    ],
-    amenities: ['WiFi', 'Laundry', 'Common Room', 'Security', 'Kitchen', 'Water Supply'],
-    rating: 4.5,
-    reviews: [
-      { id: '1', studentName: 'Chisomo Banda', rating: 5, comment: 'Great place to stay! Clean and well maintained. Very close to campus.', date: '2026-03-20' },
-      { id: '2', studentName: 'Grace Phiri', rating: 4, comment: 'Good facilities and friendly landlord. Quiet environment for studying.', date: '2026-03-15' },
-    ],
-    createdAt: '2026-01-15',
-  },
-  {
-    id: '2',
-    landlordId: 'mock-landlord',
-    name: 'MUBAS Student Residence',
-    description: 'Affordable and comfortable hostel with reliable power backup. Close to MUBAS campus and Blantyre city center with easy access to public transport.',
-    address: 'Ginnery Corner, Near Polytechnic, Blantyre',
-    university: 'Malawi University of Business and Applied Sciences (MUBAS)',
-    distance: 1.5,
-    photos: ['https://images.unsplash.com/photo-1697494794128-0cdc5e4314c1?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzdHVkZW50JTIwYWNjb21tb2RhdGlvbiUyMGJ1aWxkaW5nfGVufDF8fHx8MTc3NDQ1MDEwMnww&ixlib=rb-4.1.0&q=80&w=1080'],
-    rooms: [
-      { id: 'r4', type: 'single', capacity: 1, rent: 100000, available: 2, amenities: ['Fan', 'Study Table', 'Wardrobe', 'Private Bathroom'] },
-      { id: 'r5', type: 'double', capacity: 2, rent: 80000, available: 4, amenities: ['Fan', 'Study Table', 'Wardrobe'] },
-    ],
-    amenities: ['WiFi', 'Parking', 'Security', 'Power Backup', 'Borehole Water'],
-    rating: 4.2,
-    reviews: [
-      { id: '3', studentName: 'Tawonga Mwale', rating: 4, comment: 'Value for money. Good location near shops and campus.', date: '2026-03-10' },
-    ],
-    createdAt: '2026-02-01',
-  },
-  {
-    id: '3',
-    landlordId: 'mock-landlord-2',
-    name: 'Mzuzu University Lodge',
-    description: 'Peaceful hostel in a secure neighborhood. Perfect study environment with modern facilities and beautiful mountain views. Ideal for Mzuzu University students.',
-    address: 'Luwinga Area 2, Near Mzuzu University, Mzuzu',
-    university: 'Mzuzu University',
-    distance: 2.0,
-    photos: ['https://images.unsplash.com/photo-1635151926449-b9e7e5246fa6?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxob3N0ZWwlMjBjb21tb24lMjBhcmVhJTIwbG91bmdlfGVufDF8fHx8MTc3NDQ1MDEwM3ww&ixlib=rb-4.1.0&q=80&w=1080'],
-    rooms: [
-      { id: 'r6', type: 'single', capacity: 1, rent: 130000, available: 1, amenities: ['Fan', 'Study Table', 'Wardrobe', 'Private Bathroom'] },
-      { id: 'r7', type: 'shared', capacity: 3, rent: 70000, available: 6, amenities: ['Fan', 'Study Table', 'Wardrobe'] },
-    ],
-    amenities: ['WiFi', 'Study Room', 'Garden', 'Security', 'Kitchen', 'Backup Generator'],
-    rating: 4.8,
-    reviews: [
-      { id: '4', studentName: 'Mphatso Chirwa', rating: 5, comment: 'Best hostel I have stayed in! Clean, peaceful, and very supportive landlord.', date: '2026-03-18' },
-      { id: '5', studentName: 'Yamikani Gondwe', rating: 5, comment: 'Excellent facilities and safe environment. Highly recommend!', date: '2026-03-12' },
-    ],
-    createdAt: '2026-01-20',
-  },
-  {
-    id: '4',
-    landlordId: 'mock-landlord',
-    name: 'LUANAR Bunda Campus Lodge',
-    description: 'Spacious hostel located near Bunda Campus. Great for agriculture students with easy access to campus facilities and Lilongwe city.',
-    address: 'Bunda Turn-off, Near LUANAR Campus, Lilongwe',
-    university: 'Lilongwe University of Agriculture and Natural Resources (LUANAR)',
-    distance: 1.0,
-    photos: ['https://images.unsplash.com/photo-1615431303449-9ad9207d05de?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBob3N0ZWwlMjBleHRlcmlvciUyMGJ1aWxkaW5nfGVufDF8fHx8MTc3NDQ1MDEwM3ww&ixlib=rb-4.1.0&q=80&w=1080'],
-    rooms: [
-      { id: 'r8', type: 'single', capacity: 1, rent: 110000, available: 4, amenities: ['Fan', 'Study Table', 'Wardrobe'] },
-      { id: 'r9', type: 'double', capacity: 2, rent: 85000, available: 3, amenities: ['Fan', 'Study Table', 'Wardrobe'] },
-    ],
-    amenities: ['WiFi', 'Security', 'Parking', 'Kitchen', 'Laundry', 'Water Supply'],
-    rating: 4.3,
-    reviews: [
-      { id: '6', studentName: 'Kondwani Nkhoma', rating: 4, comment: 'Good hostel with helpful landlord. Close to campus and affordable.', date: '2026-03-05' },
-    ],
-    createdAt: '2026-01-25',
-  },
-];
-
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [landlord, setLandlord] = useState<Landlord | null>(null);
+  const [user, setUser] = useState<UserProfile | null>(null);
 
   const fetchProfile = async (userId: string) => {
     if (!userId) return null;
 
-    // First try to get existing profile
-    const { data: existingProfile, error: fetchError } = await supabase
+    const { data: profile, error } = await supabase
       .from('profiles')
       .select('id, name, email, phone, role')
       .eq('id', userId)
       .single();
 
-    if (fetchError) {
-      console.error('Profile fetch error:', fetchError);
+    if (error) {
+      console.error('Profile fetch error:', error);
+      return null;
     }
 
-    if (existingProfile) {
-      // Profile exists
-      if (existingProfile.role !== 'landlord') {
-        console.error('User is not a landlord');
-        return null;
-      }
-      const landlordData: Landlord = {
-        id: existingProfile.id,
-        name: existingProfile.name,
-        email: existingProfile.email,
-        phone: existingProfile.phone || '',
+    if (profile) {
+      const userData: UserProfile = {
+        id: profile.id,
+        name: profile.name,
+        email: profile.email,
+        phone: profile.phone || '',
+        role: profile.role as 'student' | 'landlord' | 'admin',
       };
-      setLandlord(landlordData);
-      return landlordData;
+      setUser(userData);
+      return userData;
     }
-
-    // Profile doesn't exist, this might be a new user - but we shouldn't create it here
-    // The profile should be created during signup process
-    console.error('Profile not found for user:', userId);
     return null;
   };
 
@@ -215,35 +143,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
       const userId = session?.user.id;
       if (userId && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
-        // Check if profile exists, if not create it
-        const { data: existingProfile } = await supabase
-          .from('profiles')
-          .select('id')
-          .eq('id', userId)
-          .single();
-
-        if (!existingProfile) {
-          // Try to get user metadata from auth
-          const user = session.user;
-
-          if (user?.user_metadata && user.user_metadata.role === 'landlord') {
-            const { error: profileError } = await supabase.from('profiles').insert({
-              id: userId,
-              name: user.user_metadata.name || user.user_metadata.full_name || '',
-              email: user.email || '',
-              phone: user.user_metadata.phone || '',
-              role: user.user_metadata.role,
-            });
-
-            if (profileError) {
-              console.error('Creating profile on auth state change failed:', profileError);
-            }
-          }
-        }
-
         await fetchProfile(userId);
       } else if (event === 'SIGNED_OUT') {
-        setLandlord(null);
+        setUser(null);
       }
     });
 
@@ -264,12 +166,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
     const profile = await fetchProfile(data.user.id);
     if (!profile) {
-      return { success: false, error: 'Account is not configured as a Landlord, or profile is missing.' };
+      return { success: false, error: 'Profile not found.' };
     }
     return { success: true };
   };
 
-  const signup = async (name: string, email: string, password: string, phone: string): Promise<{success: boolean, requireConfirmation?: boolean, error?: string}> => {
+  const signup = async (name: string, email: string, password: string, phone: string, role: 'student' | 'landlord'): Promise<{success: boolean, requireConfirmation?: boolean, error?: string}> => {
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
@@ -277,7 +179,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         data: {
           name,
           phone,
-          role: 'landlord'
+          role
         }
       }
     });
@@ -287,23 +189,20 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return { success: false, error: error.message };
     }
 
-    // If user is immediately authenticated (no email confirmation)
     if (data.user && data.session) {
-      // User is authenticated, profile will be created in auth state change listener
       return { success: true };
     }
 
-    // Email confirmation required or user not immediately authenticated
     return { success: true, requireConfirmation: true };
   };
 
   const logout = async () => {
     await supabase.auth.signOut();
-    setLandlord(null);
+    setUser(null);
   };
 
   return (
-    <AuthContext.Provider value={{ landlord, login, signup, logout }}>
+    <AuthContext.Provider value={{ user, login, signup, logout }}>
       {children}
     </AuthContext.Provider>
   );
@@ -312,6 +211,22 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 export function DataProvider({ children }: { children: ReactNode }) {
   const [hostels, setHostels] = useState<Hostel[]>([]);
   const [inquiries, setInquiries] = useState<Inquiry[]>([]);
+  const [bookings, setBookings] = useState<Booking[]>([]);
+
+  const normalizeBooking = (raw: any): Booking => ({
+    id: raw.id,
+    studentId: raw.student_id,
+    hostelId: raw.hostel_id,
+    roomId: raw.room_id,
+    totalRent: Number(raw.total_rent),
+    bookingFee: Number(raw.booking_fee),
+    depositAmount: Number(raw.deposit_amount),
+    status: raw.status,
+    paymentMethod: raw.payment_method || undefined,
+    receiptUrl: raw.receipt_url || undefined,
+    depositDeadline: raw.deposit_deadline,
+    createdAt: raw.created_at,
+  });
 
   const normalizeHostel = (raw: any): Hostel => ({
     id: raw.id,
@@ -326,7 +241,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       id: room.id,
       type: room.type,
       capacity: room.capacity,
-      rent: room.rent,
+      rent: Number(room.rent),
       available: room.available,
       amenities: room.amenities || [],
     })),
@@ -350,7 +265,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
       if (error) {
         console.error('Failed to fetch hostels:', error);
-        setHostels(mockHostels);
       } else {
         setHostels((data || []).map(normalizeHostel));
       }
@@ -361,7 +275,6 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
       if (inquiriesError) {
         console.error('Failed to fetch inquiries:', inquiriesError);
-        setInquiries([]);
       } else {
         setInquiries((inquiriesData || []).map((item: any) => ({
           id: item.id,
@@ -375,13 +288,23 @@ export function DataProvider({ children }: { children: ReactNode }) {
           date: item.created_at,
         })));
       }
+
+      const { data: bookingsData, error: bookingsError } = await supabase
+        .from('bookings')
+        .select('*');
+
+      if (bookingsError) {
+        console.error('Failed to fetch bookings:', bookingsError);
+      } else {
+        setBookings((bookingsData || []).map(normalizeBooking));
+      }
     };
 
     fetchData();
   }, []);
 
   const addHostel = async (hostel: Omit<Hostel, 'id' | 'createdAt' | 'rating' | 'reviews'>) => {
-    const { data, error } = await supabase
+    const { data: newHostel, error } = await supabase
       .from('hostels')
       .insert({
         landlord_id: hostel.landlordId,
@@ -396,12 +319,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
       .select('*')
       .single();
 
-    if (error || !data) {
+    if (error || !newHostel) {
       console.error('Add hostel failed:', error);
       throw new Error(error?.message ?? 'Add hostel failed');
     }
 
-    const hostelId = data.id;
+    const hostelId = newHostel.id;
 
     if (hostel.rooms?.length) {
       const roomsToInsert = hostel.rooms.map(room => ({
@@ -419,11 +342,11 @@ export function DataProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    setHostels(prev => [...prev, { ...hostel, id: hostelId, createdAt: data.created_at, rating: data.rating || 0, reviews: [] }]);
+    setHostels(prev => [...prev, { ...hostel, id: hostelId, createdAt: newHostel.created_at, rating: newHostel.rating || 0, reviews: [] }]);
   };
 
   const updateHostel = async (id: string, updates: Partial<Hostel>) => {
-    const { data, error } = await supabase
+    const { data: updatedHostel, error } = await supabase
       .from('hostels')
       .update({
         name: updates.name,
@@ -460,7 +383,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
       }
     }
 
-    setHostels(prev => prev.map(h => h.id === id ? { ...h, ...updates, rating: data.rating ?? h.rating } : h));
+    setHostels(prev => prev.map(h => h.id === id ? { ...h, ...updates, rating: updatedHostel.rating ?? h.rating } : h));
   };
 
   const deleteHostel = async (id: string) => {
@@ -477,35 +400,35 @@ export function DataProvider({ children }: { children: ReactNode }) {
   };
 
   const addInquiry = async (inquiry: Omit<Inquiry, 'id' | 'date'>) => {
-    const { data, error } = await supabase
+    const { data: newInquiry, error } = await supabase
       .from('inquiries')
       .insert({
         hostel_id: inquiry.hostelId,
-        student_id: '00000000-0000-0000-0000-000000000000', // placeholder until auth is integrated
+        student_id: '00000000-0000-0000-0000-000000000000', 
         student_name: inquiry.studentName,
         student_email: inquiry.studentEmail,
         student_phone: inquiry.studentPhone,
-        room_type: inquiry.roomType || null,
+        room_type: inquiry.roomType as any,
         message: inquiry.message || null,
       })
       .select('*')
       .single();
 
-    if (error || !data) {
+    if (error || !newInquiry) {
       console.error('Add inquiry failed:', error);
       throw new Error(error?.message ?? 'Unable to add inquiry');
     }
 
     setInquiries(prev => [...prev, {
-      id: data.id,
-      hostelId: data.hostel_id,
+      id: newInquiry.id,
+      hostelId: newInquiry.hostel_id,
       hostelName: '',
-      studentName: data.student_name,
-      studentEmail: data.student_email,
-      studentPhone: data.student_phone ?? '',
-      roomType: data.room_type ?? '',
-      message: data.message ?? '',
-      date: data.created_at,
+      studentName: newInquiry.student_name,
+      studentEmail: newInquiry.student_email,
+      studentPhone: newInquiry.student_phone ?? '',
+      roomType: newInquiry.room_type ?? '',
+      message: newInquiry.message ?? '',
+      date: newInquiry.created_at,
     }]);
   };
 
@@ -514,16 +437,99 @@ export function DataProvider({ children }: { children: ReactNode }) {
     return inquiries.filter(i => landlordHostelIds.includes(i.hostelId));
   };
 
+  const addBooking = async (booking: Omit<Booking, 'id' | 'createdAt' | 'status' | 'depositDeadline'>) => {
+    const { data: newBooking, error } = await supabase
+      .from('bookings')
+      .insert({
+        student_id: booking.studentId,
+        hostel_id: booking.hostelId,
+        room_id: booking.roomId,
+        total_rent: booking.totalRent,
+        booking_fee: booking.bookingFee,
+        deposit_amount: booking.depositAmount,
+        payment_method: booking.paymentMethod,
+        receipt_url: booking.receiptUrl,
+      })
+      .select('*')
+      .single();
+
+    if (error || !newBooking) {
+      console.error('Add booking failed:', error);
+      throw new Error(error?.message ?? 'Add booking failed');
+    }
+
+    const bookingData = normalizeBooking(newBooking);
+    setBookings(prev => [...prev, bookingData]);
+    return bookingData.id;
+  };
+
+  const updateBooking = async (id: string, updates: Partial<Booking>) => {
+    const { data: updatedBooking, error } = await supabase
+      .from('bookings')
+      .update({
+        status: updates.status,
+        payment_method: updates.paymentMethod,
+        receipt_url: updates.receiptUrl,
+      })
+      .eq('id', id)
+      .select('*')
+      .single();
+
+    if (error) {
+      console.error('Update booking failed:', error);
+      throw new Error(error.message);
+    }
+
+    setBookings(prev => prev.map(b => b.id === id ? normalizeBooking(updatedBooking) : b));
+  };
+
+  const getBookingsByStudent = (studentId: string) => {
+    return bookings.filter(b => b.studentId === studentId);
+  };
+
+  const getBookingsByLandlord = (landlordId: string) => {
+    const landlordHostelIds = hostels.filter(h => h.landlordId === landlordId).map(h => h.id);
+    return bookings.filter(b => landlordHostelIds.includes(b.hostelId));
+  };
+
+  const uploadReceipt = async (bookingId: string, file: File) => {
+    const fileExt = file.name.split('.').pop();
+    const fileName = `${bookingId}-${Date.now()}.${fileExt}`;
+    const filePath = `receipts/${fileName}`;
+
+    const { error: uploadError } = await supabase.storage
+      .from('booking-receipts')
+      .upload(filePath, file);
+
+    if (uploadError) {
+      console.error('Receipt upload failed:', uploadError);
+      throw new Error(uploadError.message);
+    }
+
+    const { data: { publicUrl } } = supabase.storage
+      .from('booking-receipts')
+      .getPublicUrl(filePath);
+
+    await updateBooking(bookingId, { receiptUrl: publicUrl, status: 'deposit_paid' });
+    return publicUrl;
+  };
+
   return (
     <DataContext.Provider value={{
       hostels,
       inquiries,
+      bookings,
       addHostel,
       updateHostel,
       deleteHostel,
       getHostelById,
       addInquiry,
       getInquiriesByLandlord,
+      addBooking,
+      updateBooking,
+      getBookingsByStudent,
+      getBookingsByLandlord,
+      uploadReceipt,
     }}>
       {children}
     </DataContext.Provider>
