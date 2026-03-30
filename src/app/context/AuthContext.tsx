@@ -143,8 +143,16 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
           await fetchProfile(userId);
         }
       } catch (error: any) {
-        console.error('Initialization error:', error.message);
-        setConnectionError(error.message);
+        // Suppress 'stolen lock' errors as they are internal Supabase race conditions
+        // and don't represent a true connection failure.
+        const msg = error.message || '';
+        if (msg.includes('released because another request stole it')) {
+          console.warn('Supabase auth lock contention handled safely.');
+          return;
+        }
+        
+        console.error('Initialization error:', msg);
+        setConnectionError(msg);
       } finally {
         setIsLoading(false);
       }
