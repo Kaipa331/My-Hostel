@@ -19,12 +19,13 @@ export function AdminAuth() {
     setIsLoading(true);
 
     try {
-      const success = await adminLogin(form.email, form.password);
-      if (success) {
+      const result = await adminLogin(form.email, form.password);
+      if (result === true) {
         toast.success('Welcome back, Administrator!');
         navigate('/admin/dashboard');
       } else {
-        toast.error('Invalid admin credentials');
+        const errorMsg = typeof result === 'object' ? result.error : 'Invalid admin credentials';
+        toast.error(errorMsg);
       }
     } catch (error) {
       toast.error('Login failed. Please try again.');

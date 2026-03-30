@@ -198,16 +198,21 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
         
         if (authUser?.id === userId && authUser.user_metadata?.name) {
           const metadata = authUser.user_metadata;
+          const role = (metadata.role === 'admin' || metadata.role === 'landlord' || metadata.role === 'student')
+            ? metadata.role
+            : 'student';
+          const status = role === 'landlord' ? 'pending' : 'approved';
+
           const insertResult: any = await withTimeout(
             supabase.from('profiles').insert({
               id: userId,
               name: metadata.name,
               email: authUser.email!,
               phone: metadata.phone || '',
-              role: metadata.role || 'student',
-              university: metadata.university || '',
-              student_id: metadata.student_id || '',
-              status: 'approved',
+              role,
+              university: role === 'student' ? (metadata.university || '') : '',
+              student_id: role === 'student' ? (metadata.student_id || '') : '',
+              status,
               saved_hostels: []
             } as any).select('*').single(),
             AUTH_TIMEOUT,
@@ -275,8 +280,37 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
   };
 
   const login = async (email: string, pass: string) => studentLogin(email, pass);
-  const signup = async (name: string, email: string, pass: string, phone: string, role: string) => 
-    studentSignup(name, email, pass, phone, '', '');
+  const signup = async (
+    name: string,
+    email: string,
+    pass: string,
+    phone: string,
+    role: 'student' | 'landlord'
+  ): Promise<boolean | { error: string }> => {
+    if (role === 'student') {
+      return studentSignup(name, email, pass, phone, '', '');
+    }
+
+    try {
+      const result: any = await withTimeout(
+        supabase.auth.signUp({
+          email,
+          password: pass,
+          options: {
+            data: { name, phone, role: 'landlord' }
+          }
+        }),
+        AUTH_TIMEOUT,
+        'landlord signup'
+      );
+
+      if (result.error) return { error: result.error.message };
+      if (result.data.user) return true;
+      return { error: 'Signup failed' };
+    } catch (e: any) {
+      return { error: e.message };
+    }
+  };
   const logout = async () => {
     await supabase.auth.signOut();
     setAdmin(null);
