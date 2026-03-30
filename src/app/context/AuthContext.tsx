@@ -1,6 +1,19 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Database } from '../../lib/database.types';
+
+// Constants
+const AUTH_TIMEOUT = 15000; // 15 seconds
+const MAX_RETRIES = 3;
+const RETRY_DELAY = 1000;
+
+// Types
+export interface UserProfile {
+  id: string;
+  name: string;
+  email: string;
+  phone: string;
+  role: 'student' | 'landlord' | 'admin';
+}
 
 export interface Admin {
   name: string;
@@ -8,7 +21,7 @@ export interface Admin {
 }
 
 export interface Student {
-  id: string; // added to sync with db
+  id: string;
   name: string;
   email: string;
   phone: string;
@@ -26,14 +39,60 @@ export interface MockLandlord {
   createdAt: string;
 }
 
+// Utilities
+const withTimeout = async <T,>(
+  promise: any, 
+  timeoutMs: number = AUTH_TIMEOUT,
+  operation: string = 'operation'
+): Promise<T> => {
+  const timeoutPromise = new Promise<T>((_, reject) => {
+    setTimeout(() => {
+      reject(new Error(`${operation} timed out after ${timeoutMs}ms.`));
+    }, timeoutMs);
+  });
+  
+  return Promise.race([promise, timeoutPromise]);
+};
+
+const withRetry = async <T,>(
+  fn: () => Promise<any>,
+  maxRetries: number = MAX_RETRIES,
+  operation: string = 'operation'
+): Promise<T> => {
+  let lastError: any;
+  
+  for (let attempt = 1; attempt <= maxRetries; attempt++) {
+    try {
+      return await fn();
+    } catch (error: any) {
+      lastError = error;
+      
+      if (error?.status && error.status >= 400 && error.status < 500) {
+        throw error;
+      }
+      
+      console.error(`${operation} attempt ${attempt} failed:`, error.message);
+      
+      if (attempt < maxRetries) {
+        const delay = RETRY_DELAY * Math.pow(2, attempt - 1);
+        await new Promise(resolve => setTimeout(resolve, delay));
+      }
+    }
+  }
+  
+  throw lastError;
+};
+
 interface AllAuthContextType {
-  // Admin
+  user: UserProfile | null;
+  login: (email: string, pass: string) => Promise<boolean | { error: string }>;
+  signup: (name: string, email: string, pass: string, phone: string, role: 'student' | 'landlord') => Promise<boolean | { error: string }>;
+  logout: () => void;
   admin: Admin | null;
-  adminLogin: (email: string, pass: string) => Promise<boolean>;
+  adminLogin: (email: string, pass: string) => Promise<boolean | { error: string }>;
   adminLogout: () => void;
-  // Student
   student: Student | null;
-  studentLogin: (email: string, pass: string) => Promise<boolean>;
+  studentLogin: (email: string, pass: string) => Promise<boolean | { error: string }>;
   studentSignup: (
     name: string,
     email: string,
@@ -43,12 +102,12 @@ interface AllAuthContextType {
     studentId: string
   ) => Promise<boolean | { error: string }>;
   studentLogout: () => void;
-  // Landlord Management (Admin usage)
   landlords: MockLandlord[];
-  approveLandlord: (id: string) => void;
-  rejectLandlord: (id: string) => void;
-  // Student Actions
-  toggleSaveHostel: (hostelId: string) => void;
+  approveLandlord: (id: string) => Promise<void>;
+  rejectLandlord: (id: string) => Promise<void>;
+  toggleSaveHostel: (hostelId: string) => Promise<void>;
+  isLoading: boolean;
+  connectionError: string | null;
 }
 
 export const AuthContext = createContext<AllAuthContextType | undefined>(undefined);
@@ -56,14 +115,38 @@ export const AuthContext = createContext<AllAuthContextType | undefined>(undefin
 export function AllAuthProvider({ children }: { children: ReactNode }) {
   const [admin, setAdmin] = useState<Admin | null>(null);
   const [student, setStudent] = useState<Student | null>(null);
+  const [user, setUser] = useState<UserProfile | null>(null);
   const [landlords, setLandlords] = useState<MockLandlord[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const [connectionError, setConnectionError] = useState<string | null>(null);
 
   useEffect(() => {
     const initAuth = async () => {
-      const { data } = await supabase.auth.getSession();
-      const userId = data?.session?.user.id;
-      if (userId) {
-        await fetchProfile(userId);
+      setIsLoading(true);
+      try {
+        await withTimeout(
+          supabase.from('profiles').select('count', { count: 'exact', head: true }),
+          10000,
+          'connection test'
+        );
+        
+        const sessionResult: any = await withTimeout(
+          supabase.auth.getSession(),
+          10000,
+          'session check'
+        );
+        
+        if (sessionResult.error) throw sessionResult.error;
+        
+        const userId = sessionResult.data?.session?.user.id;
+        if (userId) {
+          await fetchProfile(userId);
+        }
+      } catch (error: any) {
+        console.error('Initialization error:', error.message);
+        setConnectionError(error.message);
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -76,6 +159,7 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
       } else if (event === 'SIGNED_OUT') {
         setAdmin(null);
         setStudent(null);
+        setUser(null);
         setLandlords([]);
       }
     });
@@ -86,47 +170,64 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const fetchProfile = async (userId: string) => {
-    // Using any casting to avoid persistent TypeScript "never" errors on the profiles table
-    const { data: profile, error } = await (supabase
-      .from('profiles') as any)
-      .select('*')
-      .eq('id', userId)
-      .single();
+    try {
+      const result: any = await withRetry(
+        () => withTimeout(
+          supabase.from('profiles').select('*').eq('id', userId).single(),
+          AUTH_TIMEOUT,
+          'fetch profile'
+        ),
+        MAX_RETRIES,
+        'profile fetch'
+      );
 
-    if (error || !profile) {
-      // Self-healing: try to create the profile from auth metadata 
-      // if it was missed during signup (e.g. before trigger was fixed)
-      const { data: { user: authUser } } = await supabase.auth.getUser();
-      if (authUser && authUser.id === userId && authUser.user_metadata?.name) {
-        const metadata = authUser.user_metadata;
-        const { data: newProfile, error: insertError } = await (supabase
-          .from('profiles') as any)
-          .insert({
-            id: userId,
-            name: metadata.name,
-            email: authUser.email!,
-            phone: metadata.phone || '',
-            role: metadata.role || 'student',
-            university: metadata.university || '',
-            student_id: metadata.student_id || '',
-            status: 'approved',
-            saved_hostels: []
-          })
-          .select('*')
-          .single();
+      const profile = result.data;
+      const error = result.error;
+
+      if (error || !profile) {
+        const { data: userData } = await supabase.auth.getUser();
+        const authUser = userData?.user;
         
-        if (!insertError && newProfile) {
-          // Retry setting the student/admin state with the newly created profile
-          setStudentFromProfile(newProfile);
+        if (authUser?.id === userId && authUser.user_metadata?.name) {
+          const metadata = authUser.user_metadata;
+          const insertResult: any = await withTimeout(
+            supabase.from('profiles').insert({
+              id: userId,
+              name: metadata.name,
+              email: authUser.email!,
+              phone: metadata.phone || '',
+              role: metadata.role || 'student',
+              university: metadata.university || '',
+              student_id: metadata.student_id || '',
+              status: 'approved',
+              saved_hostels: []
+            } as any).select('*').single(),
+            AUTH_TIMEOUT,
+            'self-healing insert'
+          );
+          
+          if (!insertResult.error && insertResult.data) {
+            updateStatesFromProfile(insertResult.data);
+          }
         }
+        return;
       }
-      return;
-    }
 
-    setStudentFromProfile(profile);
+      updateStatesFromProfile(profile);
+    } catch (e: any) {
+      console.error('fetchProfile error:', e.message);
+    }
   };
 
-  const setStudentFromProfile = (profile: any) => {
+  const updateStatesFromProfile = (profile: any) => {
+    setUser({
+      id: profile.id,
+      name: profile.name,
+      email: profile.email,
+      phone: profile.phone || '',
+      role: profile.role as 'student' | 'landlord' | 'admin'
+    });
+
     if (profile.role === 'admin') {
       setAdmin({ name: profile.name, email: profile.email });
       fetchLandlords();
@@ -144,87 +245,88 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
   };
 
   const fetchLandlords = async () => {
-    const { data, error } = await (supabase
-      .from('profiles') as any)
-      .select('*')
-      .eq('role', 'landlord');
-    
-    if (data && !error) {
-      setLandlords((data as any[]).map(p => ({
-        id: p.id,
-        name: p.name,
-        email: p.email,
-        phone: p.phone || '',
-        status: p.status || 'pending',
-        createdAt: p.created_at
-      })));
-    }
-  };
-
-  // --- ADMIN ---
-  const adminLogin = async (email: string, pass: string) => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
-    if (error || !data.user) return false;
-
-    // Check role
-    const { data: profile } = await (supabase.from('profiles') as any).select('role').eq('id', data.user.id).single();
-    if ((profile as any)?.role === 'admin') {
-      return true;
-    } else {
-      await supabase.auth.signOut();
-      return false;
-    }
-  };
-
-  const adminLogout = async () => {
-    await supabase.auth.signOut();
-  };
-
-  // --- STUDENT ---
-  const studentLogin = async (email: string, pass: string) => {
-    console.log('Login attempt started for:', email);
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
-    
-    if (error) {
-      console.error('Login auth error:', error.message);
-      return false;
-    }
-    
-    if (!data.user) {
-      console.warn('Login successful but no user returned');
-      return false;
-    }
-
     try {
-      console.log('Login successful, fetching profile role for:', data.user.id);
-      const { data: profile, error: profileError } = await (supabase.from('profiles') as any)
-        .select('role')
-        .eq('id', data.user.id)
-        .single();
-      
-      if (profileError) {
-        console.error('Profile fetch error during login:', profileError.message);
-        // Special case: if user exists in auth but has no profile row
-        // Our fetchProfile in the provider handles "self-healing," 
-        // so we can still return true if the user role should be student
-        if (profileError.code === 'PGRST116') {
-          console.warn('Profile not found for authenticated user, self-healing should activate.');
-          return true; // Let the auth listener fetch and heal
-        }
-        return false;
-      }
-
-      console.log('Profile verified, role:', (profile as any)?.role);
-      if ((profile as any)?.role === 'student') {
-        return true;
-      } else {
-        console.warn('Unauthorized role for student portal:', (profile as any)?.role);
-        await supabase.auth.signOut();
-        return false;
+      const result: any = await withTimeout(
+        supabase.from('profiles').select('*').eq('role', 'landlord'),
+        AUTH_TIMEOUT,
+        'fetch landlords'
+      );
+      if (result.data && !result.error) {
+        setLandlords((result.data as any[]).map(p => ({
+          id: p.id,
+          name: p.name,
+          email: p.email,
+          phone: p.phone || '',
+          status: p.status || 'pending',
+          createdAt: p.created_at
+        })));
       }
     } catch (e) {
-      console.error('Unexpected error during profile verification:', e);
-      return false;
+      console.error('fetchLandlords failed', e);
+    }
+  };
+
+  const login = async (email: string, pass: string) => studentLogin(email, pass);
+  const signup = async (name: string, email: string, pass: string, phone: string, role: string) => 
+    studentSignup(name, email, pass, phone, '', '');
+  const logout = async () => {
+    await supabase.auth.signOut();
+    setAdmin(null);
+    setStudent(null);
+    setUser(null);
+    setLandlords([]);
+  };
+
+  const adminLogin = async (email: string, pass: string): Promise<boolean | { error: string }> => {
+    try {
+      const result: any = await withTimeout(
+        supabase.auth.signInWithPassword({ email, password: pass }),
+        AUTH_TIMEOUT,
+        'admin auth'
+      );
+      if (result.error || !result.data.user) return { error: result.error?.message || 'Login failed' };
+
+      const profileResult: any = await supabase.from('profiles').select('role').eq('id', result.data.user.id).single();
+      if (profileResult.data?.role === 'admin') {
+        return true;
+      } else {
+        await supabase.auth.signOut();
+        return { error: 'Access denied: Admin role required.' };
+      }
+    } catch (e: any) {
+      return { error: e.message };
+    }
+  };
+
+  const adminLogout = logout;
+
+  const studentLogin = async (email: string, pass: string): Promise<boolean | { error: string }> => {
+    try {
+      const result: any = await withRetry(
+        () => withTimeout(
+          supabase.auth.signInWithPassword({ email, password: pass }),
+          AUTH_TIMEOUT,
+          'student auth'
+        ),
+        MAX_RETRIES,
+        'login'
+      );
+      
+      if (result.error) return { error: result.error.message };
+      if (!result.data.user) return { error: 'Login failed' };
+
+      const profileResult: any = await supabase.from('profiles').select('role').eq('id', result.data.user.id).single();
+      if (profileResult.data?.role === 'student' || profileResult.data?.role === 'landlord' || profileResult.data?.role === 'admin') {
+        return true;
+      }
+      
+      await supabase.auth.signOut();
+      return { error: 'Access denied: Invalid role.' };
+    } catch (e: any) {
+      if (e.message.includes('Email not confirmed')) {
+        return { error: 'Please confirm your email address before logging in.' };
+      }
+      return { error: e.message || 'Invalid credentials' };
     }
   };
 
@@ -236,94 +338,82 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
     university: string,
     studentId: string
   ): Promise<boolean | { error: string }> => {
-    // We pass extra metadata (phone, university, student_id) so the DB trigger can 
-    // handle the profile creation automatically and atomically.
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password: pass,
-      options: {
-        data: {
-          name,
-          phone,
-          university,
-          student_id: studentId,
-          role: 'student'
-        }
-      }
-    });
+    try {
+      const result: any = await withTimeout(
+        supabase.auth.signUp({
+          email,
+          password: pass,
+          options: {
+            data: { name, phone, university, student_id: studentId, role: 'student' }
+          }
+        }),
+        AUTH_TIMEOUT,
+        'student signup'
+      );
 
-    if (error) {
-      console.error('Signup auth error:', error);
-      return { error: error.message };
+      if (result.error) return { error: result.error.message };
+      if (result.data.user) return true;
+      return { error: 'Signup failed' };
+    } catch (e: any) {
+      return { error: e.message };
     }
-
-    if (data.user) {
-      // The DB trigger handle_new_user() will create the profile.
-      // We return true immediately. If the user needs to confirm email,
-      // data.session will be null, but signUp was still successful.
-      return true;
-    }
-    return { error: 'Unknown signup error' };
   };
 
-  const studentLogout = async () => {
-    await supabase.auth.signOut();
-  };
+  const studentLogout = logout;
 
-  // --- LANDLORD APPROVAL ---
   const approveLandlord = async (id: string) => {
-    const { error } = await (supabase.from('profiles') as any).update({ status: 'approved' }).eq('id', id);
-    if (!error) {
-      setLandlords(prev => prev.map(l => l.id === id ? { ...l, status: 'approved' } : l));
+    try {
+      const result: any = await supabase.from('profiles').update({ status: 'approved' } as any).eq('id', id);
+      if (!result.error) {
+        setLandlords(prev => prev.map(l => l.id === id ? { ...l, status: 'approved' } : l));
+      }
+    } catch (e) {
+      console.error('Approve failed', e);
     }
   };
 
   const rejectLandlord = async (id: string) => {
-    const { error } = await (supabase.from('profiles') as any).update({ status: 'rejected' }).eq('id', id);
-    if (!error) {
-      setLandlords(prev => prev.map(l => l.id === id ? { ...l, status: 'rejected' } : l));
+    try {
+      const result: any = await supabase.from('profiles').update({ status: 'rejected' } as any).eq('id', id);
+      if (!result.error) {
+        setLandlords(prev => prev.map(l => l.id === id ? { ...l, status: 'rejected' } : l));
+      }
+    } catch (e) {
+      console.error('Reject failed', e);
     }
   };
 
-  // --- STUDENT ACTIONS ---
   const toggleSaveHostel = async (hostelId: string) => {
     if (!student) return;
-
     const isSaved = student.savedHostels.includes(hostelId);
     const newSavedHostels = isSaved
-      ? student.savedHostels.filter(id => id !== hostelId)
+      ? student.savedHostels.filter(sid => sid !== hostelId)
       : [...student.savedHostels, hostelId];
 
-    // Optimistic UI update
-    setStudent({ ...student, savedHostels: newSavedHostels });
+    const currentStudent = student;
+    setStudent({ ...currentStudent, savedHostels: newSavedHostels });
 
-    // DB update
-    const { error } = await (supabase
-      .from('profiles') as any)
-      .update({ saved_hostels: newSavedHostels })
-      .eq('id', student.id);
-
-    // Rollback if failed
-    if (error) {
-      setStudent({ ...student, savedHostels: student.savedHostels });
-      console.error("Failed to save hostel", error);
+    try {
+      const result: any = await supabase.from('profiles')
+        .update({ saved_hostels: newSavedHostels } as any)
+        .eq('id', student.id);
+      if (result.error) throw result.error;
+    } catch (e) {
+      setStudent(currentStudent);
+      console.error("Failed to save hostel", e);
     }
   };
 
   return (
     <AuthContext.Provider
       value={{
-        admin,
-        adminLogin,
-        adminLogout,
-        student,
-        studentLogin,
-        studentSignup,
-        studentLogout,
-        landlords,
-        approveLandlord,
-        rejectLandlord,
-        toggleSaveHostel
+        user, login, signup, logout,
+        admin, adminLogin, adminLogout,
+        student, studentLogin, studentSignup, studentLogout,
+        landlords, approveLandlord, rejectLandlord,
+        toggleSaveHostel,
+        isLoading,
+        connectionError
       }}
     >
       {children}
@@ -333,8 +423,6 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
 
 export function useAllAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) {
-    throw new Error('useAllAuth must be used within an AllAuthProvider');
-  }
+  if (context === undefined) throw new Error('useAllAuth must be used within an AllAuthProvider');
   return context;
 }

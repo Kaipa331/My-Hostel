@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router';
-import { useAuth } from '../context/AppContext';
+import { useAllAuth } from '../context/AuthContext';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from './ui/card';
 import { Input } from './ui/input';
 import { Button } from './ui/button';
@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 
 export function LandlordAuth() {
   const navigate = useNavigate();
-  const { login, signup } = useAuth();
+  const { login, signup } = useAllAuth();
   const [isLoginLoading, setIsLoginLoading] = useState(false);
   const [isSignupLoading, setIsSignupLoading] = useState(false);
 
@@ -36,11 +36,12 @@ export function LandlordAuth() {
 
     try {
       const result = await login(loginForm.email, loginForm.password);
-      if (result.success) {
+      if (result === true) {
         toast.success('Login successful!');
         navigate('/landlord/dashboard');
       } else {
-        toast.error(result.error || 'Invalid credentials');
+        const errorMsg = typeof result === 'object' ? result.error : 'Invalid credentials';
+        toast.error(errorMsg);
       }
     } catch (error) {
       toast.error('Login failed. Please try again.');
@@ -64,17 +65,15 @@ export function LandlordAuth() {
         signupForm.name,
         signupForm.email,
         signupForm.password,
-        signupForm.phone
+        signupForm.phone,
+        'landlord'
       );
-      if (result.success) {
-        if (result.requireConfirmation) {
-          toast.success('Account created! Please check your email to confirm your account before signing in.');
-        } else {
-          toast.success('Account created successfully!');
-          navigate('/landlord/dashboard');
-        }
+      if (result === true) {
+        toast.success('Account created successfully!');
+        navigate('/landlord/dashboard');
       } else {
-        toast.error(result.error || 'Signup failed.');
+        const errorMsg = typeof result === 'object' ? result.error : 'Signup failed.';
+        toast.error(errorMsg);
       }
     } catch (error) {
       toast.error('Signup failed. Please try again.');

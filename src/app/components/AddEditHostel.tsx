@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useParams, useNavigate, Link } from 'react-router';
-import { useAuth, useData, Room } from '../context/AppContext';
+import { useAllAuth } from '../context/AuthContext';
+import { useData, Room } from '../context/AppContext';
 import { supabase } from '../../lib/supabase';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
@@ -26,7 +27,7 @@ const ROOM_AMENITIES_OPTIONS = [
 export function AddEditHostel() {
   const { id } = useParams();
   const navigate = useNavigate();
-  const { landlord } = useAuth();
+  const { user } = useAllAuth();
   const { addHostel, updateHostel, getHostelById } = useData();
   const [isLoading, setIsLoading] = useState(false);
 
@@ -48,7 +49,7 @@ export function AddEditHostel() {
   ]);
 
   useEffect(() => {
-    if (!landlord) {
+    if (!user || user.role !== 'landlord') {
       navigate('/landlord/auth');
       return;
     }
@@ -71,7 +72,7 @@ export function AddEditHostel() {
         amenities: r.amenities,
       })));
     }
-  }, [landlord, navigate, isEditing, existingHostel]);
+  }, [user, navigate, isEditing, existingHostel]);
 
   const handleAmenityToggle = (amenity: string) => {
     setFormData(prev => ({
@@ -169,7 +170,7 @@ export function AddEditHostel() {
       }));
 
       const hostelData = {
-        landlordId: landlord!.id,
+        landlordId: user!.id,
         name: formData.name,
         description: formData.description,
         address: formData.address,
@@ -197,7 +198,7 @@ export function AddEditHostel() {
     }
   };
 
-  if (!landlord) {
+  if (!user || user.role !== 'landlord') {
     return null;
   }
 

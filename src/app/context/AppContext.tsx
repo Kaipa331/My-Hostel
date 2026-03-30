@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode } from 'react';
 import { supabase } from '../../lib/supabase';
-import { Database } from '../../lib/database.types';
 
 // Types
 export interface UserProfile {
@@ -71,13 +70,6 @@ export interface Booking {
   createdAt: string;
 }
 
-interface AuthContextType {
-  user: UserProfile | null;
-  login: (email: string, password: string) => Promise<{success: boolean, error?: string}>;
-  signup: (name: string, email: string, password: string, phone: string, role: 'student' | 'landlord') => Promise<{success: boolean, requireConfirmation?: boolean, error?: string}>;
-  logout: () => void;
-}
-
 interface DataContextType {
   hostels: Hostel[];
   inquiries: Inquiry[];
@@ -95,118 +87,7 @@ interface DataContextType {
   uploadReceipt: (bookingId: string, file: File) => Promise<string>;
 }
 
-const AuthContext = createContext<AuthContextType | undefined>(undefined);
 const DataContext = createContext<DataContextType | undefined>(undefined);
-
-export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<UserProfile | null>(null);
-
-  const fetchProfile = async (userId: string) => {
-    if (!userId) return null;
-
-    const { data: profile, error } = await supabase
-      .from('profiles')
-      .select('id, name, email, phone, role')
-      .eq('id', userId)
-      .single();
-
-    if (error) {
-      console.error('Profile fetch error:', error);
-      return null;
-    }
-
-    if (profile) {
-      const userData: UserProfile = {
-        id: profile.id,
-        name: profile.name,
-        email: profile.email,
-        phone: profile.phone || '',
-        role: profile.role as 'student' | 'landlord' | 'admin',
-      };
-      setUser(userData);
-      return userData;
-    }
-    return null;
-  };
-
-  useEffect(() => {
-    const initAuth = async () => {
-      const { data } = await supabase.auth.getSession();
-      const userId = data?.session?.user.id;
-      if (userId) {
-        await fetchProfile(userId);
-      }
-    };
-
-    initAuth();
-
-    const { data: authListener } = supabase.auth.onAuthStateChange(async (event, session) => {
-      const userId = session?.user.id;
-      if (userId && (event === 'SIGNED_IN' || event === 'TOKEN_REFRESHED')) {
-        await fetchProfile(userId);
-      } else if (event === 'SIGNED_OUT') {
-        setUser(null);
-      }
-    });
-
-    return () => {
-      authListener.subscription.unsubscribe();
-    };
-  }, []);
-
-  const login = async (email: string, password: string): Promise<{success: boolean, error?: string}> => {
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) {
-      console.error('Supabase login failed:', error);
-      return { success: false, error: error.message };
-    }
-    if (!data.user) {
-      return { success: false, error: 'Login failed' };
-    }
-
-    const profile = await fetchProfile(data.user.id);
-    if (!profile) {
-      return { success: false, error: 'Profile not found.' };
-    }
-    return { success: true };
-  };
-
-  const signup = async (name: string, email: string, password: string, phone: string, role: 'student' | 'landlord'): Promise<{success: boolean, requireConfirmation?: boolean, error?: string}> => {
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        data: {
-          name,
-          phone,
-          role
-        }
-      }
-    });
-
-    if (error) {
-      console.error('Supabase signup failed:', error);
-      return { success: false, error: error.message };
-    }
-
-    if (data.user && data.session) {
-      return { success: true };
-    }
-
-    return { success: true, requireConfirmation: true };
-  };
-
-  const logout = async () => {
-    await supabase.auth.signOut();
-    setUser(null);
-  };
-
-  return (
-    <AuthContext.Provider value={{ user, login, signup, logout }}>
-      {children}
-    </AuthContext.Provider>
-  );
-}
 
 export function DataProvider({ children }: { children: ReactNode }) {
   const [hostels, setHostels] = useState<Hostel[]>([]);
@@ -259,44 +140,42 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     const fetchData = async () => {
-      const { data, error } = await supabase
-        .from('hostels')
-        .select('*, rooms(*), reviews(*)');
+      try {
+        const hostelsResult: any = await supabase
+          .from('hostels')
+          .select('*, rooms(*), reviews(*)');
 
-      if (error) {
-        console.error('Failed to fetch hostels:', error);
-      } else {
-        setHostels((data || []).map(normalizeHostel));
-      }
+        if (hostelsResult.data) {
+          setHostels(hostelsResult.data.map(normalizeHostel));
+        }
 
-      const { data: inquiriesData, error: inquiriesError } = await supabase
-        .from('inquiries')
-        .select('*');
+        const inquiriesResult: any = await supabase
+          .from('inquiries')
+          .select('*');
 
-      if (inquiriesError) {
-        console.error('Failed to fetch inquiries:', inquiriesError);
-      } else {
-        setInquiries((inquiriesData || []).map((item: any) => ({
-          id: item.id,
-          hostelId: item.hostel_id,
-          hostelName: '',
-          studentName: item.student_name,
-          studentEmail: item.student_email,
-          studentPhone: item.student_phone || '',
-          roomType: item.room_type || '',
-          message: item.message || '',
-          date: item.created_at,
-        })));
-      }
+        if (inquiriesResult.data) {
+          setInquiries(inquiriesResult.data.map((raw: any) => ({
+            id: raw.id,
+            hostelId: raw.hostel_id,
+            hostelName: '',
+            studentName: raw.student_name,
+            studentEmail: raw.student_email,
+            studentPhone: raw.student_phone || '',
+            roomType: raw.room_type || '',
+            message: raw.message || '',
+            date: raw.created_at,
+          })));
+        }
 
-      const { data: bookingsData, error: bookingsError } = await supabase
-        .from('bookings')
-        .select('*');
+        const bookingsResult: any = await supabase
+          .from('bookings')
+          .select('*');
 
-      if (bookingsError) {
-        console.error('Failed to fetch bookings:', bookingsError);
-      } else {
-        setBookings((bookingsData || []).map(normalizeBooking));
+        if (bookingsResult.data) {
+          setBookings(bookingsResult.data.map(normalizeBooking));
+        }
+      } catch (error) {
+        console.error('Failed to fetch data:', error);
       }
     };
 
@@ -304,7 +183,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   }, []);
 
   const addHostel = async (hostel: Omit<Hostel, 'id' | 'createdAt' | 'rating' | 'reviews'>) => {
-    const { data: newHostel, error } = await supabase
+    const hostelResult: any = await supabase
       .from('hostels')
       .insert({
         landlord_id: hostel.landlordId,
@@ -315,38 +194,34 @@ export function DataProvider({ children }: { children: ReactNode }) {
         distance: hostel.distance,
         photos: hostel.photos,
         amenities: hostel.amenities,
-      })
+      } as any)
       .select('*')
       .single();
 
-    if (error || !newHostel) {
-      console.error('Add hostel failed:', error);
-      throw new Error(error?.message ?? 'Add hostel failed');
+    if (hostelResult.error || !hostelResult.data) {
+      throw new Error(hostelResult.error?.message || 'Failed to add hostel');
     }
 
-    const hostelId = newHostel.id;
+    const roomsToInsert = hostel.rooms.map(room => ({
+      hostel_id: hostelResult.data.id,
+      type: room.type,
+      capacity: room.capacity,
+      rent: room.rent,
+      available: room.available,
+      amenities: room.amenities,
+    }));
 
-    if (hostel.rooms?.length) {
-      const roomsToInsert = hostel.rooms.map(room => ({
-        hostel_id: hostelId,
-        type: room.type,
-        capacity: room.capacity,
-        rent: room.rent,
-        available: room.available,
-        amenities: room.amenities || [],
-      }));
-      const { error: roomsError } = await supabase.from('rooms').insert(roomsToInsert);
-      if (roomsError) {
-        console.error('Insert rooms failed:', roomsError);
-        throw new Error(roomsError.message);
-      }
-    }
+    const roomsResult: any = await supabase
+      .from('rooms')
+      .insert(roomsToInsert as any)
+      .select('*');
 
-    setHostels(prev => [...prev, { ...hostel, id: hostelId, createdAt: newHostel.created_at, rating: newHostel.rating || 0, reviews: [] }]);
+    const completeHostel = normalizeHostel({ ...hostelResult.data, rooms: roomsResult.data || [], reviews: [] });
+    setHostels(prev => [...prev, completeHostel]);
   };
 
   const updateHostel = async (id: string, updates: Partial<Hostel>) => {
-    const { data: updatedHostel, error } = await supabase
+    const result: any = await supabase
       .from('hostels')
       .update({
         name: updates.name,
@@ -356,79 +231,55 @@ export function DataProvider({ children }: { children: ReactNode }) {
         distance: updates.distance,
         photos: updates.photos,
         amenities: updates.amenities,
-      })
+      } as any)
       .eq('id', id)
-      .select('*')
+      .select('*, rooms(*), reviews(*)')
       .single();
 
-    if (error) {
-      console.error('Update hostel failed:', error);
-      throw new Error(error.message);
+    if (result.error) {
+      throw new Error(result.error.message);
     }
 
-    if (updates.rooms) {
-      await supabase.from('rooms').delete().eq('hostel_id', id);
-      const roomsToInsert = updates.rooms.map(room => ({
-        hostel_id: id,
-        type: room.type,
-        capacity: room.capacity,
-        rent: room.rent,
-        available: room.available,
-        amenities: room.amenities,
-      }));
-      const { error: roomsError } = await supabase.from('rooms').insert(roomsToInsert);
-      if (roomsError) {
-        console.error('Update rooms failed:', roomsError);
-        throw new Error(roomsError.message);
-      }
-    }
-
-    setHostels(prev => prev.map(h => h.id === id ? { ...h, ...updates, rating: updatedHostel.rating ?? h.rating } : h));
+    setHostels(prev => prev.map(h => h.id === id ? normalizeHostel(result.data) : h));
   };
 
   const deleteHostel = async (id: string) => {
-    const { error } = await supabase.from('hostels').delete().eq('id', id);
-    if (error) {
-      console.error('Delete hostel failed:', error);
-      throw new Error(error.message);
-    }
+    const result: any = await supabase.from('hostels').delete().eq('id', id);
+    if (result.error) throw new Error(result.error.message);
     setHostels(prev => prev.filter(h => h.id !== id));
   };
 
-  const getHostelById = (id: string) => {
-    return hostels.find(h => h.id === id);
-  };
+  const getHostelById = (id: string) => hostels.find(h => h.id === id);
 
   const addInquiry = async (inquiry: Omit<Inquiry, 'id' | 'date'>) => {
-    const { data: newInquiry, error } = await supabase
+    const result: any = await supabase
       .from('inquiries')
       .insert({
         hostel_id: inquiry.hostelId,
-        student_id: '00000000-0000-0000-0000-000000000000', 
         student_name: inquiry.studentName,
         student_email: inquiry.studentEmail,
         student_phone: inquiry.studentPhone,
-        room_type: inquiry.roomType as any,
-        message: inquiry.message || null,
-      })
+        room_type: inquiry.roomType,
+        message: inquiry.message,
+      } as any)
       .select('*')
       .single();
 
-    if (error || !newInquiry) {
-      console.error('Add inquiry failed:', error);
-      throw new Error(error?.message ?? 'Unable to add inquiry');
+    if (result.error || !result.data) {
+      console.error('Add inquiry failed:', result.error);
+      throw new Error(result.error?.message ?? 'Unable to add inquiry');
     }
 
     setInquiries(prev => [...prev, {
-      id: newInquiry.id,
-      hostelId: newInquiry.hostel_id,
-      hostelName: '',
-      studentName: newInquiry.student_name,
-      studentEmail: newInquiry.student_email,
-      studentPhone: newInquiry.student_phone ?? '',
-      roomType: newInquiry.room_type ?? '',
-      message: newInquiry.message ?? '',
-      date: newInquiry.created_at,
+      id: result.data.id,
+      hostelId: result.data.hostel_id,
+      hostelName: inquiry.hostelName,
+      studentName: result.data.student_name,
+      studentEmail: result.data.student_email,
+      studentPhone: result.data.student_phone ?? '',
+      roomType: result.data.room_type ?? '',
+      message: result.data.message ?? '',
+      date: result.data.created_at,
     }]);
   };
 
@@ -438,7 +289,7 @@ export function DataProvider({ children }: { children: ReactNode }) {
   };
 
   const addBooking = async (booking: Omit<Booking, 'id' | 'createdAt' | 'status' | 'depositDeadline'>) => {
-    const { data: newBooking, error } = await supabase
+    const result: any = await supabase
       .from('bookings')
       .insert({
         student_id: booking.studentId,
@@ -449,38 +300,38 @@ export function DataProvider({ children }: { children: ReactNode }) {
         deposit_amount: booking.depositAmount,
         payment_method: booking.paymentMethod,
         receipt_url: booking.receiptUrl,
-      })
+      } as any)
       .select('*')
       .single();
 
-    if (error || !newBooking) {
-      console.error('Add booking failed:', error);
-      throw new Error(error?.message ?? 'Add booking failed');
+    if (result.error || !result.data) {
+      console.error('Add booking failed:', result.error);
+      throw new Error(result.error?.message ?? 'Add booking failed');
     }
 
-    const bookingData = normalizeBooking(newBooking);
+    const bookingData = normalizeBooking(result.data);
     setBookings(prev => [...prev, bookingData]);
     return bookingData.id;
   };
 
   const updateBooking = async (id: string, updates: Partial<Booking>) => {
-    const { data: updatedBooking, error } = await supabase
+    const result: any = await supabase
       .from('bookings')
       .update({
         status: updates.status,
         payment_method: updates.paymentMethod,
         receipt_url: updates.receiptUrl,
-      })
+      } as any)
       .eq('id', id)
       .select('*')
       .single();
 
-    if (error) {
-      console.error('Update booking failed:', error);
-      throw new Error(error.message);
+    if (result.error) {
+      console.error('Update booking failed:', result.error);
+      throw new Error(result.error.message);
     }
 
-    setBookings(prev => prev.map(b => b.id === id ? normalizeBooking(updatedBooking) : b));
+    setBookings(prev => prev.map(b => b.id === id ? normalizeBooking(result.data) : b));
   };
 
   const getBookingsByStudent = (studentId: string) => {
@@ -516,34 +367,19 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   return (
     <DataContext.Provider value={{
-      hostels,
-      inquiries,
-      bookings,
-      addHostel,
-      updateHostel,
-      deleteHostel,
-      getHostelById,
-      addInquiry,
-      getInquiriesByLandlord,
-      addBooking,
-      updateBooking,
-      getBookingsByStudent,
-      getBookingsByLandlord,
-      uploadReceipt,
+      hostels, inquiries, bookings,
+      addHostel, updateHostel, deleteHostel, getHostelById,
+      addInquiry, getInquiriesByLandlord,
+      addBooking, updateBooking, getBookingsByStudent, getBookingsByLandlord,
+      uploadReceipt
     }}>
       {children}
     </DataContext.Provider>
   );
 }
 
-export function useAuth() {
-  const context = useContext(AuthContext);
-  if (!context) throw new Error('useAuth must be used within AuthProvider');
-  return context;
-}
-
 export function useData() {
   const context = useContext(DataContext);
-  if (!context) throw new Error('useData must be used within DataProvider');
+  if (context === undefined) throw new Error('useData must be used within a DataProvider');
   return context;
 }

@@ -1,6 +1,7 @@
 import { useEffect } from 'react';
 import { useNavigate, Link } from 'react-router';
-import { useAuth, useData } from '../context/AppContext';
+import { useAllAuth } from '../context/AuthContext';
+import { useData } from '../context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -8,7 +9,7 @@ import { Building2, Plus, Edit, Trash2, Mail, Phone, Star, MapPin, Receipt, Chec
 import { toast } from 'sonner';
 
 export function LandlordDashboard() {
-  const { user } = useAuth();
+  const { user } = useAllAuth();
   const { hostels, inquiries, deleteHostel, getInquiriesByLandlord, getBookingsByLandlord, updateBooking } = useData();
   const navigate = useNavigate();
 

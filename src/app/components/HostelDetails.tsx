@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useParams, Link } from 'react-router';
-import { useData } from '../context/AppContext';
+import { useData, Room } from '../context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -12,7 +12,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { MapPin, Star, Phone, Mail, Users, DollarSign, CheckCircle2, ArrowLeft, Receipt, Upload, CreditCard, Landmark, Wallet } from 'lucide-react';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { toast } from 'sonner';
-import { useAuth, Room } from '../context/AppContext';
+import { useAllAuth } from '../context/AuthContext';
 import { calculateFees } from '../utils/fees';
 
 const hostelImages = [
@@ -24,7 +24,7 @@ const hostelImages = [
 
 export function HostelDetails() {
   const { id } = useParams();
-  const { user } = useAuth();
+  const { user } = useAllAuth();
   const { getHostelById, addInquiry, addBooking, uploadReceipt } = useData();
   const [isInquiryOpen, setIsInquiryOpen] = useState(false);
   const [isBookingOpen, setIsBookingOpen] = useState(false);
