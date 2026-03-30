@@ -131,12 +131,12 @@ export function StudentAuth() {
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
       <Card className="w-full max-w-md shadow-xl border-t-4 border-t-blue-600">
         <CardHeader className="space-y-4 text-center">
-          <div className="mx-auto w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center">
-            <GraduationCap className={`h-8 w-8 text-blue-600 ${isInAction ? 'animate-bounce' : ''}`} />
+          <div className="mx-auto w-24 h-24 bg-slate-900 rounded-2xl flex items-center justify-center shadow-lg border border-slate-800">
+            <img src="/logo.png" alt="MyHostel.com Logo" className={`h-20 w-20 object-contain ${isInAction ? 'animate-pulse scale-95' : ''}`} />
           </div>
           <div>
-            <CardTitle className="text-2xl font-bold">Student Portal</CardTitle>
-            <CardDescription className="text-gray-500 font-medium">
+            <CardTitle className="text-2xl font-bold text-slate-900">Student Portal</CardTitle>
+            <CardDescription className="text-slate-500 font-medium">
               {isLogin ? 'Sign in to access your dashboard' : 'Create your student account to start booking'}
             </CardDescription>
           </div>
