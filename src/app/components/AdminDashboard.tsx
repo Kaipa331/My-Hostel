@@ -5,12 +5,12 @@ import { useData } from '../context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { Shield, LogOut, Users, Building, CheckCircle, XCircle, Clock, Home } from 'lucide-react';
+import { Shield, Users, Building, CheckCircle, XCircle, Clock, Home } from 'lucide-react';
 import { toast } from 'sonner';
 
 export function AdminDashboard() {
   const navigate = useNavigate();
-  const { admin, adminLogout, landlords, approveLandlord, rejectLandlord } = useAllAuth();
+  const { admin, landlords, approveLandlord, rejectLandlord } = useAllAuth();
   const { hostels, inquiries } = useData();
 
   useEffect(() => {
@@ -18,12 +18,6 @@ export function AdminDashboard() {
       navigate('/admin/auth');
     }
   }, [admin, navigate]);
-
-  const handleLogout = () => {
-    adminLogout();
-    toast.success('Logged out successfully');
-    navigate('/');
-  };
 
   const handleApproveLandlord = (landlordId: string, name: string) => {
     approveLandlord(landlordId);
@@ -49,7 +43,7 @@ export function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <div className="bg-white border-b">
         <div className="container mx-auto px-4 py-4">
@@ -68,10 +62,7 @@ export function AdminDashboard() {
                 <Home className="h-4 w-4 mr-2" />
                 Home
               </Button>
-              <Button variant="outline" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
+
             </div>
           </div>
         </div>

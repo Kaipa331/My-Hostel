@@ -5,12 +5,12 @@ import { useData } from '../context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { GraduationCap, LogOut, Heart, Mail, User, Phone, Building, Home, MapPin, Receipt, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
+import { GraduationCap, Heart, Mail, User, Phone, Building, Home, MapPin, Receipt, Clock, CheckCircle2, AlertCircle } from 'lucide-react';
 import { toast } from 'sonner';
 
 export function StudentDashboard() {
   const navigate = useNavigate();
-  const { student, studentLogout, toggleSaveHostel } = useAllAuth();
+  const { student, toggleSaveHostel } = useAllAuth();
   const { hostels, inquiries, getBookingsByStudent } = useData();
 
   useEffect(() => {
@@ -18,12 +18,6 @@ export function StudentDashboard() {
       navigate('/student/auth');
     }
   }, [student, navigate]);
-
-  const handleLogout = () => {
-    studentLogout();
-    toast.success('Logged out successfully');
-    navigate('/');
-  };
 
   if (!student) return null;
 
@@ -45,7 +39,7 @@ export function StudentDashboard() {
   };
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-background text-foreground">
       {/* Header */}
       <div className="bg-white border-b">
         <div className="container mx-auto px-4 py-4">
@@ -64,10 +58,7 @@ export function StudentDashboard() {
                 <Home className="h-4 w-4 mr-2" />
                 Browse Hostels
               </Button>
-              <Button variant="outline" onClick={handleLogout}>
-                <LogOut className="h-4 w-4 mr-2" />
-                Logout
-              </Button>
+
             </div>
           </div>
         </div>
