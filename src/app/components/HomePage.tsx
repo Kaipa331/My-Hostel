@@ -50,23 +50,23 @@ export function HomePage() {
 
           {/* Main Title */}
           <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white dark:text-white mb-6 tracking-tight leading-tight">
-            Find Your Perfect <span className="bg-gradient-to-r from-blue-300 to-cyan-300 dark:from-blue-200 dark:to-cyan-200 bg-clip-text text-transparent">Student Hostel</span>
+            Find Your Perfect <span className="text-white">Student Hostel</span>
           </h1>
 
           {/* Subtitle */}
-          <p className="text-lg md:text-xl lg:text-2xl text-white/80 dark:text-white/70 mb-8 max-w-2xl mx-auto font-light">
+          <p className="text-lg md:text-xl lg:text-2xl text-blue-50 dark:text-blue-100 mb-8 max-w-2xl mx-auto font-light">
             Affordable, comfortable, and verified accommodation near your university. Find, book, and move in hassle-free.
           </p>
 
           {/* CTA Badges */}
           <div className="flex flex-wrap gap-3 justify-center mb-10">
-            <Badge variant="secondary" className="bg-white/20 text-white hover:bg-white/30 border-white/30 px-4 py-2">
+            <Badge variant="secondary" className="bg-white/30 text-white hover:bg-white/40 border-white/50 px-4 py-2 font-medium">
               ✓ Instant Booking
             </Badge>
-            <Badge variant="secondary" className="bg-white/20 text-white hover:bg-white/30 border-white/30 px-4 py-2">
+            <Badge variant="secondary" className="bg-white/30 text-white hover:bg-white/40 border-white/50 px-4 py-2 font-medium">
               ✓ Verified Hostels
             </Badge>
-            <Badge variant="secondary" className="bg-white/20 text-white hover:bg-white/30 border-white/30 px-4 py-2">
+            <Badge variant="secondary" className="bg-white/30 text-white hover:bg-white/40 border-white/50 px-4 py-2 font-medium">
               ✓ Best Prices
             </Badge>
           </div>
