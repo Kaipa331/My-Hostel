@@ -33,7 +33,7 @@ export function HomePage() {
   return (
     <div className="min-h-screen">
       {/* Hero Section */}
-      <div className="relative overflow-hidden bg-gradient-to-br from-blue-900 via-cyan-500 to-purple-600 py-12 md:py-24 lg:py-32">
+      <div className="relative overflow-hidden bg-gradient-to-br from-blue-950 via-cyan-600 to-purple-700 py-12 md:py-24 lg:py-32">
         {/* Animated Background Elements */}
         <div className="absolute inset-0 overflow-hidden">
           <div className="absolute -top-40 -right-40 w-80 h-80 bg-cyan-300/20 rounded-full blur-3xl animate-pulse"></div>
