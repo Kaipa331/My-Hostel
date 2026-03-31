@@ -44,13 +44,13 @@ export function HomePage() {
         <div className="relative container mx-auto px-4 text-center">
           {/* Badge */}
           <div className="inline-flex items-center gap-2 mb-6 px-4 py-2 rounded-full bg-white/10 dark:bg-white/5 backdrop-blur-sm border border-white/20 dark:border-white/10">
-            <Sparkles className="h-4 w-4 text-yellow-400" />
+            <Sparkles className="h-4 w-4 text-blue-300" />
             <span className="text-sm font-medium text-white/90 dark:text-white/80">Discover Your Home Away From Home</span>
           </div>
 
           {/* Main Title */}
           <h1 className="text-4xl md:text-5xl lg:text-7xl font-bold text-white dark:text-white mb-6 tracking-tight leading-tight">
-            Find Your Perfect <span className="bg-gradient-to-r from-yellow-300 to-orange-300 dark:from-yellow-200 dark:to-orange-200 bg-clip-text text-transparent">Student Hostel</span>
+            Find Your Perfect <span className="bg-gradient-to-r from-blue-300 to-cyan-300 dark:from-blue-200 dark:to-cyan-200 bg-clip-text text-transparent">Student Hostel</span>
           </h1>
 
           {/* Subtitle */}
@@ -74,7 +74,7 @@ export function HomePage() {
           {/* Search Bar */}
           <div className="max-w-3xl mx-auto mb-12">
             <div className="relative group">
-              <div className="absolute inset-0 bg-gradient-to-r from-yellow-400 to-orange-400 dark:from-yellow-300 dark:to-orange-300 rounded-full opacity-0 group-hover:opacity-100 blur transition duration-300"></div>
+              <div className="absolute inset-0 bg-gradient-to-r from-blue-400 to-cyan-400 dark:from-blue-300 dark:to-cyan-300 rounded-full opacity-0 group-hover:opacity-100 blur transition duration-300"></div>
               <div className="relative bg-white dark:bg-slate-900 rounded-full p-1 shadow-2xl">
                 <div className="flex items-center bg-white dark:bg-slate-900 rounded-full px-4 py-4 md:py-5">
                   <Search className="h-5 w-5 text-foreground/40 mr-3 flex-shrink-0" />
@@ -97,21 +97,21 @@ export function HomePage() {
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 md:gap-6">
             <div className="backdrop-blur-sm bg-white/10 dark:bg-white/5 border border-white/20 dark:border-white/10 rounded-2xl p-6 hover:bg-white/15 dark:hover:bg-white/10 transition">
               <div className="flex items-center justify-center gap-3 mb-2">
-                <Home className="h-6 w-6 text-yellow-300" />
+                <Home className="h-6 w-6 text-blue-300" />
                 <span className="text-3xl font-bold text-white">{hostels.length}</span>
               </div>
               <p className="text-white/70 text-sm">Quality Hostels</p>
             </div>
             <div className="backdrop-blur-sm bg-white/10 dark:bg-white/5 border border-white/20 dark:border-white/10 rounded-2xl p-6 hover:bg-white/15 dark:hover:bg-white/10 transition">
               <div className="flex items-center justify-center gap-3 mb-2">
-                <MapPin className="h-6 w-6 text-yellow-300" />
+                <MapPin className="h-6 w-6 text-blue-300" />
                 <span className="text-3xl font-bold text-white">{universities.length}</span>
               </div>
               <p className="text-white/70 text-sm">Universities</p>
             </div>
             <div className="backdrop-blur-sm bg-white/10 dark:bg-white/5 border border-white/20 dark:border-white/10 rounded-2xl p-6 hover:bg-white/15 dark:hover:bg-white/10 transition">
               <div className="flex items-center justify-center gap-3 mb-2">
-                <DollarSign className="h-6 w-6 text-yellow-300" />
+                <DollarSign className="h-6 w-6 text-blue-300" />
                 <span className="text-3xl font-bold text-white">60K+</span>
               </div>
               <p className="text-white/70 text-sm">Starting Price</p>
