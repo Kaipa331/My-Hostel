@@ -114,8 +114,8 @@ export function StudentAuth() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5 px-4 py-10 sm:py-14">
-      <div className="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5 px-4 py-8 sm:py-12 lg:py-14">
+      <div className="mx-auto grid w-full max-w-5xl gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-8">
         <div className="hidden lg:block">
           <div className="rounded-[2rem] border border-border/60 bg-card/85 p-8 shadow-rich">
             <p className="text-sm font-black uppercase tracking-[0.28em] text-primary">Student Access</p>
@@ -140,7 +140,7 @@ export function StudentAuth() {
         </div>
 
         <div className="w-full max-w-md justify-self-center">
-          <div className="mb-9 text-center">
+          <div className="mb-7 text-center sm:mb-9">
             <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border border-primary/20 bg-background shadow-xl shadow-primary/10">
               <img src="/logo.png" alt="MyHostel.com Logo" className={`h-16 w-16 object-contain ${isInAction ? 'animate-pulse' : ''}`} />
             </div>
@@ -150,7 +150,7 @@ export function StudentAuth() {
             </p>
           </div>
 
-          <Card className="overflow-hidden rounded-3xl border border-border/60 shadow-2xl shadow-primary/5">
+          <Card className="overflow-hidden rounded-[1.75rem] border border-border/60 shadow-2xl shadow-primary/5 sm:rounded-3xl">
             <div className={`h-1 w-full transition-colors duration-500 ${isLogin ? 'bg-primary' : 'bg-secondary'}`} />
 
             <CardHeader className="pb-2 pt-6 text-center">
@@ -162,7 +162,7 @@ export function StudentAuth() {
               </CardDescription>
             </CardHeader>
 
-            <CardContent className="px-6 pb-7 pt-3">
+            <CardContent className="px-4 pb-6 pt-3 sm:px-6 sm:pb-7">
               {connectionError && (
                 <div className="mb-4 flex items-start gap-3 rounded-xl border border-warning/20 bg-warning/10 p-3 text-sm text-warning">
                   <WifiOff className="mt-0.5 h-4 w-4 flex-shrink-0" />
@@ -173,7 +173,7 @@ export function StudentAuth() {
                 </div>
               )}
 
-              <div className="mb-6 flex gap-1.5 rounded-xl bg-muted p-1">
+              <div className="mb-5 flex gap-1.5 rounded-xl bg-muted p-1 sm:mb-6">
                 <Button
                   variant={isLogin ? 'default' : 'ghost'}
                   onClick={() => setIsLogin(true)}
@@ -317,6 +317,35 @@ export function StudentAuth() {
                         <SelectItem value="Other">Other</SelectItem>
                       </SelectContent>
                     </Select>
+                  </div>
+                  <div className="grid gap-4 sm:grid-cols-2">
+                    <div className="space-y-1.5">
+                      <Label htmlFor="signup-phone" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        Phone <span className="text-muted-foreground/50">(optional)</span>
+                      </Label>
+                      <Input
+                        id="signup-phone"
+                        type="tel"
+                        placeholder="+265 99X XXX XXX"
+                        value={signupForm.phone}
+                        onChange={(e) => setSignupForm({ ...signupForm, phone: e.target.value })}
+                        disabled={isInAction}
+                        className="h-11 rounded-xl border-border/60 bg-muted/40"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <Label htmlFor="signup-student-id" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                        Student ID <span className="text-muted-foreground/50">(optional)</span>
+                      </Label>
+                      <Input
+                        id="signup-student-id"
+                        placeholder="Registration number"
+                        value={signupForm.studentId}
+                        onChange={(e) => setSignupForm({ ...signupForm, studentId: e.target.value })}
+                        disabled={isInAction}
+                        className="h-11 rounded-xl border-border/60 bg-muted/40"
+                      />
+                    </div>
                   </div>
                   <Button type="submit" className="mt-2 h-11 w-full rounded-xl text-sm font-bold bg-gradient-premium shadow-lg shadow-primary/20" disabled={isInAction}>
                     {isInAction ? (

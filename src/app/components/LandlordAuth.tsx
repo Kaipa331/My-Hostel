@@ -74,8 +74,8 @@ export function LandlordAuth() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5 px-4 py-10 sm:py-14">
-      <div className="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5 px-4 py-8 sm:py-12 lg:py-14">
+      <div className="mx-auto grid w-full max-w-5xl gap-6 lg:grid-cols-[0.95fr_1.05fr] lg:items-center lg:gap-8">
         <div className="hidden lg:block">
           <div className="rounded-[2rem] border border-border/60 bg-card/85 p-8 shadow-rich">
             <p className="text-sm font-black uppercase tracking-[0.28em] text-primary">Landlord Access</p>
@@ -100,7 +100,7 @@ export function LandlordAuth() {
         </div>
 
         <div className="w-full max-w-md justify-self-center">
-          <div className="mb-9 text-center">
+          <div className="mb-7 text-center sm:mb-9">
             <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border border-primary/20 bg-background shadow-xl shadow-primary/10">
               <img src="/logo.png" alt="MyHostel.com Logo" className="h-16 w-16 object-contain" />
             </div>
@@ -117,13 +117,13 @@ export function LandlordAuth() {
             </TabsList>
 
             <TabsContent value="login" className="animate-slide-up">
-              <Card className="overflow-hidden rounded-3xl border border-border/60 shadow-2xl shadow-primary/5">
+              <Card className="overflow-hidden rounded-[1.75rem] border border-border/60 shadow-2xl shadow-primary/5 sm:rounded-3xl">
                 <div className="h-1 w-full bg-primary" />
                 <CardHeader className="pb-2 pt-6">
                   <CardTitle className="text-xl font-display font-bold">Landlord Login</CardTitle>
                   <CardDescription>Sign in to manage your hostel listings</CardDescription>
                 </CardHeader>
-                <CardContent className="px-6 pb-7 pt-3">
+                <CardContent className="px-4 pb-6 pt-3 sm:px-6 sm:pb-7">
                   <form onSubmit={handleLogin} className="space-y-4">
                     <div className="space-y-1.5">
                       <Label htmlFor="login-email" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Email</Label>
@@ -163,13 +163,13 @@ export function LandlordAuth() {
             </TabsContent>
 
             <TabsContent value="signup" className="animate-slide-up">
-              <Card className="overflow-hidden rounded-3xl border border-border/60 shadow-2xl shadow-primary/5">
+              <Card className="overflow-hidden rounded-[1.75rem] border border-border/60 shadow-2xl shadow-primary/5 sm:rounded-3xl">
                 <div className="h-1 w-full bg-accent" />
                 <CardHeader className="pb-2 pt-6">
                   <CardTitle className="text-xl font-display font-bold">Create Landlord Account</CardTitle>
                   <CardDescription>Start listing your hostels today</CardDescription>
                 </CardHeader>
-                <CardContent className="px-6 pb-7 pt-3">
+                <CardContent className="px-4 pb-6 pt-3 sm:px-6 sm:pb-7">
                   <form onSubmit={handleSignup} className="space-y-4">
                     <div className="space-y-1.5">
                       <Label htmlFor="s-name" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Full Name</Label>
@@ -206,7 +206,7 @@ export function LandlordAuth() {
                         required
                       />
                     </div>
-                    <div className="grid grid-cols-2 gap-3">
+                    <div className="grid gap-4 sm:grid-cols-2">
                       <div className="space-y-1.5">
                         <Label htmlFor="s-pass" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Password</Label>
                         <Input

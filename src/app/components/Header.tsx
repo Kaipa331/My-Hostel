@@ -47,12 +47,12 @@ export function Header() {
       {/* Subtle top gold line */}
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
       
-      <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-4 px-4 py-3 sm:px-6 lg:px-8 lg:py-4">
+      <div className="mx-auto flex w-full max-w-7xl flex-wrap items-center justify-between gap-3 px-4 py-3 sm:gap-4 sm:px-6 lg:px-8 lg:py-4">
 
         {/* Branding with New Logo */}
         <Link
           to="/"
-          className="flex items-center gap-3 group transition-all duration-500"
+          className="group flex min-w-0 items-center gap-3 transition-all duration-500"
           aria-label="Go to homepage"
         >
           <div className="relative h-11 w-11 overflow-hidden rounded-2xl shadow-rich transition-transform group-hover:scale-105">
@@ -63,15 +63,15 @@ export function Header() {
             />
             <div className="absolute inset-0 bg-gradient-to-tr from-accent/20 to-transparent mix-blend-overlay" />
           </div>
-          <div className="flex flex-col">
-            <span className="text-xl font-display font-black leading-none tracking-tight text-foreground transition-colors group-hover:text-accent sm:text-2xl">
+          <div className="flex min-w-0 flex-col">
+            <span className="truncate text-lg font-display font-black leading-none tracking-tight text-foreground transition-colors group-hover:text-accent sm:text-2xl">
               MyHostel
             </span>
           </div>
         </Link>
 
         {/* Nav Actions */}
-        <nav className="flex items-center gap-2 sm:gap-3">
+        <nav className="flex w-full flex-wrap items-center justify-end gap-2 sm:w-auto sm:gap-3">
           
           {/* Main Nav Links (Desktop) */}
           <div className="mr-4 hidden items-center gap-6 lg:flex">
@@ -101,7 +101,7 @@ export function Header() {
             </Link>
           </div>
 
-          <div className="flex items-center gap-2 rounded-2xl border border-border/60 bg-card/80 p-1.5 shadow-sm">
+          <div className="flex w-full items-center justify-between gap-2 rounded-2xl border border-border/60 bg-card/80 p-1.5 shadow-sm sm:w-auto sm:justify-start">
             {/* Theme Toggle */}
             <Button
               variant="ghost"
@@ -126,7 +126,7 @@ export function Header() {
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="flex items-center gap-2 rounded-xl px-4 text-xs font-bold hover:bg-background"
+                    className="flex items-center gap-2 rounded-xl px-3 text-[11px] font-bold hover:bg-background sm:px-4 sm:text-xs"
                   >
                     <LayoutDashboard className="h-3.5 w-3.5" />
                     <span className="hidden sm:inline">Dashboard</span>
@@ -143,23 +143,25 @@ export function Header() {
                 </Button>
               </div>
             ) : (
-              <div className="flex items-center gap-2">
+              <div className="flex flex-1 items-center justify-end gap-1.5 sm:flex-none sm:gap-2">
                 <Link to="/student/auth">
                   <Button
                     variant="ghost"
                     size="sm"
-                    className="rounded-xl px-4 text-[10px] font-black uppercase tracking-[0.18em] hover:bg-background sm:px-5"
+                    className="rounded-xl px-3 text-[10px] font-black uppercase tracking-[0.14em] hover:bg-background sm:px-5 sm:tracking-[0.18em]"
                   >
-                    Student Login
+                    <span className="sm:hidden">Student</span>
+                    <span className="hidden sm:inline">Student Login</span>
                   </Button>
                 </Link>
 
                 <Link to="/landlord/auth">
                   <Button 
                     size="sm"
-                    className="rounded-xl bg-accent px-4 text-[10px] font-black uppercase tracking-[0.18em] text-accent-foreground shadow-lg shadow-accent/20 transition-all hover:scale-105 hover:bg-accent/90 active:scale-95 sm:px-5"
+                    className="rounded-xl bg-accent px-3 text-[10px] font-black uppercase tracking-[0.14em] text-accent-foreground shadow-lg shadow-accent/20 transition-all hover:scale-105 hover:bg-accent/90 active:scale-95 sm:px-5 sm:tracking-[0.18em]"
                   >
-                    Landlord Login
+                    <span className="sm:hidden">Landlord</span>
+                    <span className="hidden sm:inline">Landlord Login</span>
                   </Button>
                 </Link>
               </div>

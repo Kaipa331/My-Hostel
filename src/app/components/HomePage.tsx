@@ -97,22 +97,22 @@ export function HomePage() {
           <div className="absolute inset-x-0 bottom-0 h-40 bg-gradient-to-b from-transparent to-background" />
         </div>
 
-        <div className="relative mx-auto flex min-h-[72vh] w-full max-w-6xl items-center px-4 py-14 sm:px-6 lg:px-8 lg:py-20">
-          <div className="grid w-full gap-10 lg:grid-cols-[1.15fr_0.85fr] lg:items-center">
+        <div className="relative mx-auto flex min-h-[68vh] w-full max-w-6xl items-center px-4 py-12 sm:px-6 sm:py-14 lg:px-8 lg:py-20">
+          <div className="grid w-full gap-8 lg:grid-cols-[1.15fr_0.85fr] lg:items-center lg:gap-10">
             <div className="max-w-2xl">
-              <div className="mb-7 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-4 py-2 text-xs font-semibold uppercase tracking-[0.28em] text-white/90 backdrop-blur-md">
+              <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-white/20 bg-white/10 px-3 py-2 text-[11px] font-semibold uppercase tracking-[0.22em] text-white/90 backdrop-blur-md sm:mb-7 sm:px-4 sm:text-xs sm:tracking-[0.28em]">
                 <ShieldCheck className="h-4 w-4 text-amber-300" />
                 Verified student accommodation
               </div>
 
-              <h1 className="font-display text-4xl font-black leading-[0.98] tracking-tight text-white sm:text-5xl lg:text-6xl">
+              <h1 className="font-display text-4xl font-black leading-[1] tracking-tight text-white sm:text-5xl lg:text-6xl">
                 Your next hostel should feel safe, close, and worth every kwacha.
               </h1>
-              <p className="mt-5 max-w-xl text-base leading-7 text-white/78 sm:text-lg">
+              <p className="mt-4 max-w-xl text-base leading-7 text-white/78 sm:mt-5 sm:text-lg">
                 Browse trusted stays near campus, compare prices quickly, and move into a place that actually fits student life.
               </p>
 
-              <div className="mt-7 flex flex-wrap gap-3 text-sm text-white/85">
+              <div className="mt-6 flex flex-wrap gap-2.5 text-sm text-white/85 sm:mt-7 sm:gap-3">
                 <div className="rounded-full border border-white/15 bg-white/10 px-4 py-2 backdrop-blur-md">
                   {hostels.length}+ verified listings
                 </div>
@@ -124,7 +124,7 @@ export function HomePage() {
                 </div>
               </div>
 
-              <div className="mt-9 max-w-3xl rounded-[2rem] border border-white/15 bg-white/12 p-3 shadow-2xl backdrop-blur-xl">
+              <div className="mt-8 max-w-3xl rounded-[2rem] border border-white/15 bg-white/12 p-3 shadow-2xl backdrop-blur-xl sm:mt-9">
                 <div className="flex flex-col gap-3 lg:flex-row lg:items-center">
                   <div className="flex h-14 flex-1 items-center gap-3 rounded-2xl bg-white/92 px-4 text-foreground shadow-sm">
                     <MapPin className="h-5 w-5 shrink-0 text-primary" />
@@ -137,7 +137,7 @@ export function HomePage() {
                   </div>
                   <Button
                     size="lg"
-                    className="h-14 rounded-2xl bg-amber-400 px-8 font-bold text-slate-950 hover:bg-amber-300"
+                    className="h-14 w-full rounded-2xl bg-amber-400 px-6 font-bold text-slate-950 hover:bg-amber-300 sm:w-auto sm:px-8"
                     onClick={scrollToListings}
                   >
                     <Search className="mr-2 h-4 w-4" />
@@ -147,7 +147,7 @@ export function HomePage() {
               </div>
             </div>
 
-            <div className="grid gap-5 sm:grid-cols-3 lg:grid-cols-1">
+            <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-1 lg:gap-5">
               {[
                 {
                   icon: ShieldCheck,
@@ -167,7 +167,7 @@ export function HomePage() {
               ].map(({ icon: Icon, title, description }) => (
                 <div
                   key={title}
-                  className="rounded-[1.75rem] border border-white/15 bg-white/10 p-6 text-white shadow-xl backdrop-blur-md"
+                  className="rounded-[1.75rem] border border-white/15 bg-white/10 p-5 text-white shadow-xl backdrop-blur-md sm:p-6"
                 >
                   <div className="mb-4 flex h-12 w-12 items-center justify-center rounded-2xl bg-white/14">
                     <Icon className="h-6 w-6 text-amber-300" />
@@ -180,7 +180,7 @@ export function HomePage() {
           </div>
         </div>
 
-        <div className="relative mx-auto -mt-4 grid max-w-6xl gap-5 px-4 pb-10 sm:px-6 lg:grid-cols-3 lg:px-8">
+        <div className="relative mx-auto -mt-3 grid max-w-6xl gap-4 px-4 pb-10 sm:-mt-4 sm:gap-5 sm:px-6 lg:grid-cols-3 lg:px-8">
           {[
             { icon: Building2, label: 'Verified Hostels', value: hostels.length.toString() },
             { icon: MapPin, label: 'Universities Covered', value: universities.length.toString() },
@@ -205,7 +205,7 @@ export function HomePage() {
       </section>
 
       <section className="mx-auto max-w-6xl px-4 pb-24 sm:px-6 lg:px-8">
-        <div className="mb-14 grid gap-6 lg:grid-cols-3">
+        <div className="mb-12 grid gap-5 lg:mb-14 lg:grid-cols-3 lg:gap-6">
           {[
             {
               title: 'Smart search',
@@ -220,14 +220,14 @@ export function HomePage() {
               copy: 'Review location, amenities, and availability before you reach out or reserve a room.',
             },
           ].map(({ title, copy }) => (
-            <div key={title} className="rounded-[1.75rem] border border-border/60 bg-card p-7 shadow-sm">
+            <div key={title} className="rounded-[1.75rem] border border-border/60 bg-card p-6 shadow-sm sm:p-7">
               <h2 className="font-display text-xl font-bold tracking-tight">{title}</h2>
               <p className="mt-2 text-sm leading-6 text-muted-foreground">{copy}</p>
             </div>
           ))}
         </div>
 
-        <div id="home-listings" className="grid gap-10 lg:grid-cols-[296px_minmax(0,1fr)]">
+        <div id="home-listings" className="grid gap-8 lg:grid-cols-[296px_minmax(0,1fr)] lg:gap-10">
           <aside className="lg:col-span-1">
             <div className="sticky top-24 space-y-6">
               <div>
@@ -235,7 +235,7 @@ export function HomePage() {
                 <h2 className="mt-2 font-display text-3xl font-black tracking-tight">Find the right fit</h2>
               </div>
 
-              <div className="space-y-8 rounded-[2rem] border border-border/60 bg-card p-6 shadow-lg">
+              <div className="space-y-7 rounded-[2rem] border border-border/60 bg-card p-5 shadow-lg sm:p-6">
                 <FilterSelect
                   label="University"
                   value={selectedUniversity}
@@ -284,7 +284,7 @@ export function HomePage() {
           </aside>
 
           <div className="lg:col-span-3">
-            <div className="mb-10 flex flex-col gap-5 rounded-[2rem] border border-border/60 bg-gradient-to-br from-primary/[0.08] via-background to-amber-100/40 p-7 shadow-sm sm:flex-row sm:items-end sm:justify-between">
+            <div className="mb-8 flex flex-col gap-4 rounded-[2rem] border border-border/60 bg-gradient-to-br from-primary/[0.08] via-background to-amber-100/40 p-5 shadow-sm sm:mb-10 sm:gap-5 sm:p-7 sm:flex-row sm:items-end sm:justify-between">
               <div>
                 <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Available now</p>
                 <h2 className="mt-2 max-w-2xl font-display text-3xl font-black tracking-tight text-foreground">
@@ -294,7 +294,7 @@ export function HomePage() {
                   Showing {filteredHostels.length} listing{filteredHostels.length === 1 ? '' : 's'} that match your search.
                 </p>
               </div>
-              <div className="rounded-2xl border border-primary/10 bg-background/80 px-5 py-4 text-sm text-muted-foreground shadow-sm">
+              <div className="rounded-2xl border border-primary/10 bg-background/80 px-4 py-4 text-sm leading-6 text-muted-foreground shadow-sm sm:px-5">
                 Focus on what matters: distance, room style, and price.
               </div>
             </div>
