@@ -5,6 +5,7 @@ import { supabase } from '../../lib/supabase';
 const AUTH_TIMEOUT = 15000; // 15 seconds
 const MAX_RETRIES = 3;
 const RETRY_DELAY = 1000;
+const OAUTH_ROLE_KEY = 'pending-oauth-role';
 
 // Types
 export interface UserProfile {
@@ -86,6 +87,7 @@ const withRetry = async <T,>(
 interface AllAuthContextType {
   user: UserProfile | null;
   login: (email: string, pass: string) => Promise<boolean | { error: string }>;
+  signInWithGoogle: (role: 'student' | 'landlord') => Promise<boolean | { error: string }>;
   signup: (name: string, email: string, pass: string, phone: string, role: 'student' | 'landlord') => Promise<boolean | { error: string }>;
   logout: () => void;
   admin: Admin | null;
@@ -110,7 +112,28 @@ interface AllAuthContextType {
   connectionError: string | null;
 }
 
-export const AuthContext = createContext<AllAuthContextType | undefined>(undefined);
+const defaultAuthContext: AllAuthContextType = {
+  user: null,
+  login: async () => ({ error: 'Auth provider unavailable.' }),
+  signInWithGoogle: async () => ({ error: 'Auth provider unavailable.' }),
+  signup: async () => ({ error: 'Auth provider unavailable.' }),
+  logout: async () => {},
+  admin: null,
+  adminLogin: async () => ({ error: 'Auth provider unavailable.' }),
+  adminLogout: async () => {},
+  student: null,
+  studentLogin: async () => ({ error: 'Auth provider unavailable.' }),
+  studentSignup: async () => ({ error: 'Auth provider unavailable.' }),
+  studentLogout: async () => {},
+  landlords: [],
+  approveLandlord: async () => {},
+  rejectLandlord: async () => {},
+  toggleSaveHostel: async () => {},
+  isLoading: true,
+  connectionError: 'Authentication is still initializing.',
+};
+
+export const AuthContext = createContext<AllAuthContextType>(defaultAuthContext);
 
 export function AllAuthProvider({ children }: { children: ReactNode }) {
   const [admin, setAdmin] = useState<Admin | null>(null);
@@ -196,17 +219,27 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
         const { data: userData } = await supabase.auth.getUser();
         const authUser = userData?.user;
         
-        if (authUser?.id === userId && authUser.user_metadata?.name) {
-          const metadata = authUser.user_metadata;
-          const role = (metadata.role === 'admin' || metadata.role === 'landlord' || metadata.role === 'student')
-            ? metadata.role
-            : 'student';
+        const intendedRole = localStorage.getItem(OAUTH_ROLE_KEY);
+        const metadata = authUser?.user_metadata ?? {};
+        const resolvedName =
+          metadata.name ||
+          metadata.full_name ||
+          metadata.user_name ||
+          authUser?.email?.split('@')[0] ||
+          'MyHostel User';
+
+        if (authUser?.id === userId) {
+          const role = intendedRole === 'landlord'
+            ? 'landlord'
+            : (metadata.role === 'admin' || metadata.role === 'landlord' || metadata.role === 'student')
+              ? metadata.role
+              : 'student';
           const status = role === 'landlord' ? 'pending' : 'approved';
 
           const insertResult: any = await withTimeout(
             supabase.from('profiles').insert({
               id: userId,
-              name: metadata.name,
+              name: resolvedName,
               email: authUser.email!,
               phone: metadata.phone || '',
               role,
@@ -220,12 +253,14 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
           );
           
           if (!insertResult.error && insertResult.data) {
+            localStorage.removeItem(OAUTH_ROLE_KEY);
             updateStatesFromProfile(insertResult.data);
           }
         }
         return;
       }
 
+      localStorage.removeItem(OAUTH_ROLE_KEY);
       updateStatesFromProfile(profile);
     } catch (e: any) {
       console.error('fetchProfile error:', e.message);
@@ -323,6 +358,40 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
       return { error: e.message || 'Invalid credentials' };
     }
   };
+
+  const signInWithGoogle = async (
+    role: 'student' | 'landlord'
+  ): Promise<boolean | { error: string }> => {
+    try {
+      localStorage.setItem(OAUTH_ROLE_KEY, role);
+
+      const result: any = await withTimeout(
+        supabase.auth.signInWithOAuth({
+          provider: 'google',
+          options: {
+            redirectTo: window.location.origin,
+            queryParams: {
+              access_type: 'offline',
+              prompt: 'select_account',
+            },
+          },
+        }),
+        AUTH_TIMEOUT,
+        'google auth'
+      );
+
+      if (result.error) {
+        localStorage.removeItem(OAUTH_ROLE_KEY);
+        return { error: result.error.message };
+      }
+
+      return true;
+    } catch (e: any) {
+      localStorage.removeItem(OAUTH_ROLE_KEY);
+      return { error: e.message || 'Google sign-in failed.' };
+    }
+  };
+
   const signup = async (
     name: string,
     email: string,
@@ -496,7 +565,7 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
   return (
     <AuthContext.Provider
       value={{
-        user, login, signup, logout,
+        user, login, signInWithGoogle, signup, logout,
         admin, adminLogin, adminLogout,
         student, studentLogin, studentSignup, studentLogout,
         landlords, approveLandlord, rejectLandlord,
@@ -512,6 +581,5 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
 
 export function useAllAuth() {
   const context = useContext(AuthContext);
-  if (context === undefined) throw new Error('useAllAuth must be used within an AllAuthProvider');
   return context;
 }

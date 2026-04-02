@@ -11,7 +11,7 @@ import { toast } from 'sonner';
 
 export function LandlordAuth() {
   const navigate = useNavigate();
-  const { login, signup, user, isLoading: isAuthLoading } = useAllAuth();
+  const { login, signup, signInWithGoogle, user, isLoading: isAuthLoading } = useAllAuth();
   const [isLoginLoading, setIsLoginLoading] = useState(false);
   const [isSignupLoading, setIsSignupLoading] = useState(false);
 
@@ -61,6 +61,13 @@ export function LandlordAuth() {
       toast.error('Signup failed. Please try again.');
     } finally {
       setIsSignupLoading(false);
+    }
+  };
+
+  const handleGoogleAuth = async () => {
+    const result = await signInWithGoogle('landlord');
+    if (result !== true) {
+      toast.error(typeof result === 'object' ? result.error : 'Google sign-in failed.');
     }
   };
 
@@ -157,6 +164,25 @@ export function LandlordAuth() {
                         </span>
                       ) : 'Sign In'}
                     </Button>
+                    <div className="relative py-1">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-border/60" />
+                      </div>
+                      <div className="relative flex justify-center">
+                        <span className="bg-card px-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                          Or continue with
+                        </span>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleGoogleAuth}
+                      className="h-11 w-full rounded-xl border-border/60 bg-background/80 text-sm font-semibold"
+                    >
+                      <GoogleIcon />
+                      Google
+                    </Button>
                   </form>
                 </CardContent>
               </Card>
@@ -240,6 +266,25 @@ export function LandlordAuth() {
                         </span>
                       ) : 'Create Account'}
                     </Button>
+                    <div className="relative py-1">
+                      <div className="absolute inset-0 flex items-center">
+                        <div className="w-full border-t border-border/60" />
+                      </div>
+                      <div className="relative flex justify-center">
+                        <span className="bg-card px-3 text-xs font-semibold uppercase tracking-[0.18em] text-muted-foreground">
+                          Or continue with
+                        </span>
+                      </div>
+                    </div>
+                    <Button
+                      type="button"
+                      variant="outline"
+                      onClick={handleGoogleAuth}
+                      className="h-11 w-full rounded-xl border-border/60 bg-background/80 text-sm font-semibold"
+                    >
+                      <GoogleIcon />
+                      Google
+                    </Button>
                   </form>
                 </CardContent>
               </Card>
@@ -267,5 +312,16 @@ export function LandlordAuth() {
         </div>
       </div>
     </div>
+  );
+}
+
+function GoogleIcon() {
+  return (
+    <svg aria-hidden="true" viewBox="0 0 24 24" className="mr-2 h-4 w-4">
+      <path fill="#EA4335" d="M12 10.2v3.9h5.4c-.2 1.3-1.6 3.9-5.4 3.9-3.2 0-5.9-2.7-5.9-6s2.7-6 5.9-6c1.8 0 3.1.8 3.8 1.4l2.6-2.5C16.8 3.4 14.6 2.5 12 2.5A9.5 9.5 0 0 0 2.5 12 9.5 9.5 0 0 0 12 21.5c5.5 0 9.1-3.8 9.1-9.2 0-.6-.1-1.1-.2-1.6H12Z" />
+      <path fill="#34A853" d="M2.5 12c0 3.8 2.2 7.1 5.4 8.6l3-2.3c-1.5-.5-2.8-1.6-3.6-3.1L2.5 12Z" />
+      <path fill="#4A90E2" d="M21.1 10.8H12v3.9h5.4c-.3 1.3-1.4 2.5-2.9 3.2l3 2.3c1.8-1.7 3.6-4.9 3.6-8.2 0-.4 0-.8-.1-1.2Z" />
+      <path fill="#FBBC05" d="M7.3 14.9A6 6 0 0 1 6.1 12c0-1 .2-2 .6-2.9l-3-2.3A9.4 9.4 0 0 0 2.5 12c0 1.7.5 3.3 1.2 4.7l3.6-1.8Z" />
+    </svg>
   );
 }
