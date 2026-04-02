@@ -65,7 +65,7 @@ CREATE TABLE reviews (
 CREATE TABLE inquiries (
   id UUID DEFAULT uuid_generate_v4() PRIMARY KEY,
   hostel_id UUID REFERENCES hostels(id) ON DELETE CASCADE NOT NULL,
-  student_id UUID REFERENCES profiles(id) ON DELETE CASCADE NOT NULL,
+  student_id UUID REFERENCES profiles(id) ON DELETE CASCADE, -- Made nullable to allow guest inquiries
   student_name TEXT NOT NULL,
   student_email TEXT NOT NULL,
   student_phone TEXT,
@@ -154,6 +154,9 @@ CREATE POLICY "Users can update their own profile" ON profiles
 
 CREATE POLICY "Users can insert their own profile" ON profiles
   FOR INSERT WITH CHECK (auth.uid() = id);
+
+CREATE POLICY "Anyone can view public profile info" ON profiles
+  FOR SELECT USING (true); -- Allows students to see landlords and vice versa. Sensitive data should be filtered in select.
 
 -- Hostels
 CREATE POLICY "Anyone can view hostels" ON hostels FOR SELECT USING (true);

@@ -5,7 +5,11 @@ import { useData } from '../context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { Building2, Plus, Edit, Trash2, Mail, Phone, Star, MapPin, Receipt, CheckCircle2, XCircle, Eye } from 'lucide-react';
+import { 
+  Building2, Plus, Edit, Trash2, Mail, 
+  Phone, Star, MapPin, Receipt, CheckCircle2, 
+  XCircle, Eye, ArrowRight, Home
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 export function LandlordDashboard() {
@@ -60,258 +64,317 @@ export function LandlordDashboard() {
   );
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl mb-2">Welcome back, {user.name}!</h1>
-        <p className="text-gray-600">Manage your hostels and view inquiries</p>
+    <div className="min-h-screen bg-background text-foreground pb-20">
+      
+      {/* ================= HEADER ================= */}
+      <div className="sticky top-0 z-40 glass border-b border-border/50 bg-card/50 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-gradient-premium rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20">
+                <Building2 className="h-6 w-6 text-white" />
+              </div>
+              <div>
+                <h1 className="text-xl font-display font-bold tracking-tight">Landlord Dashboard</h1>
+                <p className="text-sm text-muted-foreground font-medium">Welcome back, {user.name}</p>
+              </div>
+            </div>
+            <div className="flex gap-3">
+               <Button variant="outline" onClick={() => navigate('/')} className="rounded-xl border-border/50 hover:bg-muted/50 transition-all hidden sm:flex">
+                <Home className="h-4 w-4 mr-2" />
+                Home
+              </Button>
+              <Link to="/landlord/hostel/add">
+                <Button className="bg-gradient-premium shadow-lg shadow-primary/20 hover:scale-105 transition-all rounded-xl">
+                  <Plus className="h-4 w-4 mr-2" />
+                  Add Hostel
+                </Button>
+              </Link>
+            </div>
+          </div>
+        </div>
       </div>
 
-      {/* Stats */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-8">
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Total Hostels</p>
-                <p className="text-3xl">{myHostels.length}</p>
-              </div>
-              <Building2 className="h-10 w-10 text-blue-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Total Rooms</p>
-                <p className="text-3xl">{totalRooms}</p>
-              </div>
-              <Building2 className="h-10 w-10 text-green-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">Available Rooms</p>
-                <p className="text-3xl">{totalAvailableRooms}</p>
-              </div>
-              <Building2 className="h-10 w-10 text-orange-600" />
-            </div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="pt-6">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600 mb-1">New Bookings</p>
-                <p className="text-3xl">{myBookings.filter(b => b.status === 'deposit_paid').length}</p>
-              </div>
-              <Receipt className="h-10 w-10 text-purple-600" />
-            </div>
-          </CardContent>
-        </Card>
-      </div>
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 animate-slide-up">
+        
+        {/* ================= STATS ================= */}
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+          <StatCard 
+            label="Total Hostels" 
+            value={myHostels.length} 
+            icon={<Building2 className="text-primary" />} 
+          />
+          <StatCard 
+            label="Total Rooms" 
+            value={totalRooms} 
+            icon={<Building2 className="text-secondary" />} 
+          />
+          <StatCard 
+            label="Available" 
+            value={totalAvailableRooms} 
+            icon={<Building2 className="text-success" />} 
+          />
+          <StatCard 
+            label="New Bookings" 
+            value={myBookings.filter(b => b.status === 'deposit_paid').length} 
+            icon={<Receipt className="text-warning" />} 
+          />
+        </div>
 
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2">
-          {/* Manage Bookings */}
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle>Manage Bookings</CardTitle>
-            </CardHeader>
-            <CardContent>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          <div className="lg:col-span-2 space-y-12">
+            
+            {/* ================= MANAGE BOOKINGS ================= */}
+            <section>
+              <SectionHeader title="Manage Bookings" count={myBookings.filter(b => b.status === 'deposit_paid').length} icon={<Receipt className="h-5 w-5 text-warning" />} />
+              
               {myBookings.length > 0 ? (
-                <div className="space-y-4">
+                <div className="grid gap-6">
                   {myBookings.map(booking => {
                     const hostel = hostels.find(h => h.id === booking.hostelId);
                     return (
-                      <div key={booking.id} className="border rounded-lg p-4">
-                        <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-4">
-                          <div>
-                            <div className="flex items-center gap-2 mb-1">
-                              <h3 className="font-medium">{hostel?.name}</h3>
-                              <Badge variant={
-                                booking.status === 'confirmed' ? 'default' : 
-                                booking.status === 'deposit_paid' ? 'secondary' : 
-                                booking.status === 'pending' ? 'outline' : 'destructive'
-                              }>
-                                {booking.status.replace('_', ' ').toUpperCase()}
-                              </Badge>
+                      <Card key={booking.id} className="glass border-border/50 shadow-rich overflow-hidden hover:scale-[1.01] transition-transform">
+                        <div className="p-6">
+                          <div className="flex flex-col sm:flex-row items-start justify-between gap-6 mb-6">
+                            <div className="space-y-2">
+                              <div className="flex items-center gap-3">
+                                <h3 className="text-xl font-display font-bold">{hostel?.name || 'Unknown Hostel'}</h3>
+                                <Badge variant={
+                                  booking.status === 'confirmed' ? 'outline' : 
+                                  booking.status === 'deposit_paid' ? 'secondary' : 
+                                  booking.status === 'pending' ? 'outline' : 'destructive'
+                                } className={`rounded-full px-2.5 py-0.5 text-[10px] uppercase font-bold tracking-widest ${
+                                  booking.status === 'confirmed' ? 'bg-success/10 text-success border-success/20' : 
+                                  booking.status === 'pending' ? 'bg-warning/10 text-warning border-warning/20' : ''
+                                }`}>
+                                  {booking.status.replace('_', ' ')}
+                                </Badge>
+                              </div>
+                              <div className="flex items-center gap-6">
+                                <div>
+                                  <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Total Rent</p>
+                                  <p className="font-semibold text-primary">MK {booking.totalRent.toLocaleString()}</p>
+                                </div>
+                                <div className="w-px h-8 bg-border/50" />
+                                <div>
+                                  <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Deposit Paid</p>
+                                  <p className="font-semibold text-success">MK {booking.depositAmount.toLocaleString()}</p>
+                                </div>
+                              </div>
                             </div>
-                            <p className="text-sm text-gray-600">Total Rent: MK {booking.totalRent.toLocaleString()}</p>
-                            <p className="text-xs text-gray-500">Deposit Paid: MK {booking.depositAmount.toLocaleString()}</p>
-                          </div>
-                          <div className="flex gap-2">
-                            {booking.receiptUrl && (
-                              <a href={booking.receiptUrl} target="_blank" rel="noopener noreferrer">
-                                <Button variant="outline" size="sm" className="gap-2">
-                                  <Eye className="h-4 w-4" />
-                                  View Receipt
-                                </Button>
-                              </a>
-                            )}
-                            {booking.status === 'deposit_paid' && (
-                              <>
-                                <Button 
-                                  size="sm" 
-                                  className="gap-2 bg-green-600 hover:bg-green-700"
-                                  onClick={() => handleVerifyPayment(booking.id)}
-                                >
-                                  <CheckCircle2 className="h-4 w-4" />
-                                  Confirm
-                                </Button>
-                                <Button 
-                                  variant="outline" 
-                                  size="sm" 
-                                  className="gap-2 text-red-600"
-                                  onClick={() => handleRejectBooking(booking.id)}
-                                >
-                                  <XCircle className="h-4 w-4" />
-                                  Reject
-                                </Button>
-                              </>
-                            )}
+                            
+                            <div className="flex flex-wrap gap-2 w-full sm:w-auto justify-end">
+                              {booking.receiptUrl && (
+                                <a href={booking.receiptUrl} target="_blank" rel="noopener noreferrer">
+                                  <Button variant="outline" size="sm" className="rounded-xl text-xs gap-2 border-border/50 shadow-sm">
+                                    <Eye className="h-3.5 w-3.5" />
+                                    View Receipt
+                                  </Button>
+                                </a>
+                              )}
+                              {booking.status === 'deposit_paid' && (
+                                <div className="flex gap-2">
+                                  <Button 
+                                    size="sm" 
+                                    className="rounded-xl px-4 text-xs gap-2 bg-success hover:bg-success/90 shadow-lg shadow-success/10"
+                                    onClick={() => handleVerifyPayment(booking.id)}
+                                  >
+                                    <CheckCircle2 className="h-3.5 w-3.5" />
+                                    Verify
+                                  </Button>
+                                  <Button 
+                                    variant="outline" 
+                                    size="sm" 
+                                    className="rounded-xl px-4 text-xs gap-2 text-destructive border-destructive/20 hover:bg-destructive/5"
+                                    onClick={() => handleRejectBooking(booking.id)}
+                                  >
+                                    <XCircle className="h-3.5 w-3.5" />
+                                    Reject
+                                  </Button>
+                                </div>
+                              )}
+                            </div>
                           </div>
                         </div>
-                      </div>
+                      </Card>
                     );
                   })}
                 </div>
               ) : (
-                <div className="text-center py-12 text-gray-500">
-                  <Receipt className="h-12 w-12 mx-auto mb-3 text-gray-300" />
-                  <p>No bookings to manage yet</p>
-                </div>
+                <EmptyState icon={<Receipt className="h-12 w-12" />} message="No bookings to manage yet" />
               )}
-            </CardContent>
-          </Card>
+            </section>
 
-          {/* My Hostels */}
-          <Card>
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <CardTitle>My Hostels</CardTitle>
-                <Link to="/landlord/hostel/add">
-                  <Button className="gap-2">
-                    <Plus className="h-4 w-4" />
-                    Add Hostel
-                  </Button>
-                </Link>
-              </div>
-            </CardHeader>
-            <CardContent>
+            {/* ================= MY HOSTELS ================= */}
+            <section>
+              <SectionHeader title="My Hostels" count={myHostels.length} icon={<Building2 className="h-5 w-5 text-primary" />} />
+              
               {myHostels.length > 0 ? (
-                <div className="space-y-4">
+                <div className="grid gap-6">
                   {myHostels.map(hostel => (
-                    <div key={hostel.id} className="border rounded-lg p-4">
-                      <div className="flex flex-col sm:flex-row items-start justify-between gap-4 mb-3">
-                        <div className="flex-1">
-                          <h3 className="text-lg mb-1">{hostel.name}</h3>
-                          <div className="flex items-center gap-2 text-sm text-gray-600 mb-2">
-                            <MapPin className="h-4 w-4" />
-                            <span>{hostel.address}</span>
-                          </div>
-                          <div className="flex items-center gap-4 text-sm">
-                            <div className="flex items-center gap-1">
-                              <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                              <span>{hostel.rating.toFixed(1)}</span>
+                    <Card key={hostel.id} className="glass border-border/50 shadow-rich overflow-hidden group">
+                      <div className="p-6">
+                        <div className="flex flex-col sm:flex-row items-start justify-between gap-6 mb-6">
+                          <div className="space-y-3 flex-1">
+                            <h3 className="text-2xl font-display font-bold group-hover:text-primary transition-colors">{hostel.name}</h3>
+                            <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+                              <MapPin className="h-4 w-4" />
+                              <span>{hostel.address}</span>
                             </div>
-                            <span>{hostel.rooms.length} room types</span>
-                            <span>{hostel.reviews.length} reviews</span>
+                            <div className="flex flex-wrap items-center gap-4 text-sm font-bold">
+                              <div className="flex items-center gap-1 text-warning bg-warning/10 px-2 py-0.5 rounded-full">
+                                <Star className="h-4 w-4 fill-current" />
+                                <span>{hostel.rating.toFixed(1)}</span>
+                              </div>
+                              <span className="text-muted-foreground">{hostel.rooms.length} room types</span>
+                              <span className="text-muted-foreground">{hostel.reviews.length} reviews</span>
+                            </div>
+                          </div>
+                          
+                          <div className="flex gap-2">
+                            <Link to={`/landlord/hostel/edit/${hostel.id}`}>
+                              <Button variant="outline" size="sm" className="rounded-xl gap-2 border-border/50 shadow-sm hover:bg-muted/50">
+                                <Edit className="h-4 w-4" />
+                                Edit
+                              </Button>
+                            </Link>
+                            <Button 
+                              variant="outline" 
+                              size="sm"
+                              onClick={() => handleDelete(hostel.id, hostel.name)}
+                              className="rounded-xl gap-2 text-destructive border-destructive/20 hover:bg-destructive/5"
+                            >
+                              <Trash2 className="h-4 w-4" />
+                              Delete
+                            </Button>
                           </div>
                         </div>
-                        <div className="flex gap-2">
-                          <Link to={`/landlord/hostel/edit/${hostel.id}`}>
-                            <Button variant="outline" size="sm" className="gap-2">
-                              <Edit className="h-4 w-4" />
-                              Edit
-                            </Button>
-                          </Link>
-                          <Button 
-                            variant="outline" 
-                            size="sm"
-                            onClick={() => handleDelete(hostel.id, hostel.name)}
-                            className="gap-2 text-red-600 hover:text-red-700"
-                          >
-                            <Trash2 className="h-4 w-4" />
-                            Delete
-                          </Button>
+                        
+                        <div className="flex flex-wrap gap-2 pt-6 border-t border-border/50">
+                          {hostel.rooms.map(room => (
+                            <Badge key={room.id} variant="secondary" className="px-3 rounded-lg bg-muted text-muted-foreground font-medium text-[10px] uppercase tracking-wide">
+                              {room.type}: MK {room.rent.toLocaleString()} ({room.available} left)
+                            </Badge>
+                          ))}
                         </div>
                       </div>
-                      <div className="flex flex-wrap gap-2">
-                        {hostel.rooms.map(room => (
-                          <Badge key={room.id} variant="secondary">
-                            {room.type}: MK {room.rent.toLocaleString()} ({room.available} available)
-                          </Badge>
-                        ))}
-                      </div>
-                    </div>
+                    </Card>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-12">
-                  <Building2 className="h-16 w-16 text-gray-300 mx-auto mb-4" />
-                  <p className="text-gray-600 mb-4">You haven't added any hostels yet</p>
-                  <Link to="/landlord/hostel/add">
-                    <Button className="gap-2">
-                      <Plus className="h-4 w-4" />
-                      Add Your First Hostel
-                    </Button>
-                  </Link>
-                </div>
+                <EmptyState 
+                  icon={<Building2 className="h-16 w-16" />} 
+                  message="You haven't added any hostels yet" 
+                  actionLabel="Add Your First Hostel"
+                  onAction={() => navigate('/landlord/hostel/add')}
+                />
               )}
-            </CardContent>
-          </Card>
-        </div>
+            </section>
+          </div>
 
-        {/* Recent Inquiries */}
-        <div className="lg:col-span-1">
-          <Card>
-            <CardHeader>
-              <CardTitle>Recent Inquiries</CardTitle>
-            </CardHeader>
-            <CardContent>
+          {/* ================= SIDEBAR ================= */}
+          <aside className="space-y-10">
+            <section>
+              <SectionHeader title="Recent Inquiries" count={myInquiries.length} icon={<Mail className="h-5 w-5 text-primary" />} />
+              
               {myInquiries.length > 0 ? (
                 <div className="space-y-4">
                   {myInquiries.slice(0, 10).map(inquiry => (
-                    <div key={inquiry.id} className="border rounded-lg p-3">
-                      <div className="mb-2">
-                        <p className="text-sm mb-1">{inquiry.studentName}</p>
-                        <p className="text-xs text-gray-600 mb-1">{inquiry.hostelName}</p>
-                        <Badge variant="outline" className="text-xs">{inquiry.roomType}</Badge>
-                      </div>
-                      <div className="space-y-1 text-xs text-gray-600">
-                        <div className="flex items-center gap-2">
-                          <Mail className="h-3 w-3" />
-                          <span className="truncate">{inquiry.studentEmail}</span>
+                    <Card key={inquiry.id} className="glass border-border/30 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group/inq">
+                      <div className="p-4 space-y-4">
+                        <div>
+                          <p className="font-display font-bold text-sm mb-1">{inquiry.studentName}</p>
+                          <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter mb-2">{inquiry.hostelName}</p>
+                          <Badge variant="outline" className="bg-primary/5 text-primary border-primary/10 rounded-md text-[10px] py-0">{inquiry.roomType}</Badge>
                         </div>
-                        <div className="flex items-center gap-2">
-                          <Phone className="h-3 w-3" />
-                          <span>{inquiry.studentPhone}</span>
+                        
+                        <div className="space-y-1.5 text-xs text-muted-foreground font-medium border-t border-border/30 pt-3">
+                          <div className="flex items-center gap-2 group-hover/inq:text-primary transition-colors">
+                            <Mail className="h-3.5 w-3.5" />
+                            <span className="truncate">{inquiry.studentEmail}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Phone className="h-3.5 w-3.5" />
+                            <span>{inquiry.studentPhone}</span>
+                          </div>
+                        </div>
+                        
+                        {inquiry.message && (
+                          <p className="text-xs text-muted-foreground italic bg-muted/30 p-2 rounded-lg line-clamp-2">"{inquiry.message}"</p>
+                        )}
+                        
+                        <div className="flex justify-end">
+                          <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tight">
+                            {new Date(inquiry.date).toLocaleDateString()}
+                          </span>
                         </div>
                       </div>
-                      {inquiry.message && (
-                        <p className="text-xs text-gray-600 mt-2 line-clamp-2">{inquiry.message}</p>
-                      )}
-                      <p className="text-xs text-gray-400 mt-2">
-                        {new Date(inquiry.date).toLocaleDateString()}
-                      </p>
-                    </div>
+                    </Card>
                   ))}
                 </div>
               ) : (
-                <div className="text-center py-8">
-                  <Mail className="h-12 w-12 text-gray-300 mx-auto mb-3" />
-                  <p className="text-sm text-gray-600">No inquiries yet</p>
-                </div>
+                <EmptyState icon={<Mail className="h-10 w-10" />} message="No inquiries yet" />
               )}
-            </CardContent>
-          </Card>
+            </section>
+          </aside>
         </div>
       </div>
     </div>
+  );
+}
+
+/* ================= HELPER COMPONENTS ================= */
+
+function StatCard({ label, value, icon }: any) {
+  return (
+    <Card className="glass border-border/50 shadow-rich rounded-3xl overflow-hidden hover:scale-105 transition-all group">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">{label}</p>
+            <p className="text-3xl font-display font-black text-gradient leading-none group-hover:scale-110 transition-transform origin-left">{value}</p>
+          </div>
+          <div className="w-14 h-14 bg-muted/50 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-card transition-colors duration-500 text-2xl">
+            {icon}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SectionHeader({ title, count, icon }: any) {
+  return (
+    <div className="flex items-center justify-between mb-6 group">
+      <div className="flex items-center gap-3">
+        <div className="p-2.5 bg-muted rounded-xl shadow-sm group-hover:scale-110 transition-transform duration-500">
+          {icon}
+        </div>
+        <h2 className="text-2xl font-display font-bold tracking-tight">{title}</h2>
+      </div>
+      <Badge variant="secondary" className="px-3 rounded-full font-bold text-muted-foreground">
+        {count}
+      </Badge>
+    </div>
+  );
+}
+
+function EmptyState({ icon, message, actionLabel, onAction }: any) {
+  return (
+    <Card className="border-2 border-dashed border-border/50 bg-muted/20 rounded-3xl">
+      <CardContent className="py-16 text-center space-y-4">
+        <div className="mx-auto w-20 h-20 bg-muted rounded-full flex items-center justify-center text-muted-foreground/30 shadow-inner">
+          {icon}
+        </div>
+        <div>
+          <p className="text-muted-foreground font-medium">{message}</p>
+          {actionLabel && (
+            <Button variant="link" onClick={onAction} className="text-primary font-bold hover:scale-105 transition-transform">
+              {actionLabel}
+            </Button>
+          )}
+        </div>
+      </CardContent>
+    </Card>
   );
 }

@@ -5,7 +5,10 @@ import { useData } from '../context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
-import { Shield, Users, Building, CheckCircle, XCircle, Clock, Home } from 'lucide-react';
+import { 
+  Shield, Users, Building, CheckCircle, 
+  XCircle, Clock, Home, ArrowRight, UserPlus
+} from 'lucide-react';
 import { toast } from 'sonner';
 
 export function AdminDashboard() {
@@ -36,224 +39,249 @@ export function AdminDashboard() {
   const rejectedLandlords = landlords.filter(l => l.status === 'rejected');
 
   const stats = [
-    { label: 'Total Landlords', value: landlords.length, icon: Users, color: 'text-blue-600' },
-    { label: 'Pending Approval', value: pendingLandlords.length, icon: Clock, color: 'text-yellow-600' },
-    { label: 'Total Hostels', value: hostels.length, icon: Building, color: 'text-green-600' },
-    { label: 'Total Inquiries', value: inquiries.length, icon: Home, color: 'text-purple-600' },
+    { label: 'Total Landlords', value: landlords.length, icon: <Users />, color: 'text-primary' },
+    { label: 'Pending Approval', value: pendingLandlords.length, icon: <Clock />, color: 'text-warning' },
+    { label: 'Total Hostels', value: hostels.length, icon: <Building />, color: 'text-success' },
+    { label: 'Total Inquiries', value: inquiries.length, icon: <Home />, color: 'text-secondary' },
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
-      {/* Header */}
-      <div className="bg-white border-b">
-        <div className="container mx-auto px-4 py-4">
+    <div className="min-h-screen bg-background text-foreground pb-20">
+      
+      {/* ================= HEADER ================= */}
+      <div className="sticky top-0 z-40 glass border-b border-border/50 bg-card/50 backdrop-blur-md">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-10 h-10 bg-red-100 rounded-full flex items-center justify-center">
-                <Shield className="h-5 w-5 text-red-600" />
+            <div className="flex items-center gap-4">
+              <div className="w-12 h-12 bg-destructive rounded-2xl flex items-center justify-center shadow-lg shadow-destructive/20 border border-destructive/20">
+                <Shield className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl">Admin Dashboard</h1>
-                <p className="text-sm text-gray-600">{admin.name}</p>
+                <h1 className="text-xl font-display font-bold tracking-tight uppercase tracking-widest">Admin Control Center</h1>
+                <p className="text-sm text-muted-foreground font-medium">Administrator: {admin.name}</p>
               </div>
             </div>
-            <div className="flex gap-2">
-              <Button variant="outline" onClick={() => navigate('/')}>
-                <Home className="h-4 w-4 mr-2" />
-                Home
-              </Button>
-
-            </div>
+            <Button variant="outline" onClick={() => navigate('/')} className="rounded-xl border-border/50 hover:bg-muted/50 transition-all">
+              <Home className="h-4 w-4 mr-2" />
+              <span className="hidden sm:inline">Portal Home</span>
+            </Button>
           </div>
         </div>
       </div>
 
-      <div className="container mx-auto px-4 py-8">
-        {/* Statistics */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12 animate-slide-up">
+        
+        {/* ================= STATS ================= */}
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
           {stats.map((stat, index) => (
-            <Card key={index}>
-              <CardContent className="pt-6">
-                <div className="flex items-center justify-between">
-                  <div>
-                    <p className="text-sm text-gray-600 mb-1">{stat.label}</p>
-                    <p className="text-3xl">{stat.value}</p>
-                  </div>
-                  <stat.icon className={`h-8 w-8 ${stat.color}`} />
-                </div>
-              </CardContent>
-            </Card>
+            <StatCard key={index} {...stat} />
           ))}
         </div>
 
-        {/* Pending Landlords */}
-        {pendingLandlords.length > 0 && (
-          <Card className="mb-8">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Clock className="h-5 w-5 text-yellow-600" />
-                Pending Landlord Approvals ({pendingLandlords.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-4">
-                {pendingLandlords.map(landlord => (
-                  <div key={landlord.id} className="flex items-center justify-between p-4 border rounded-lg bg-yellow-50">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-medium">{landlord.name}</h3>
-                        <Badge variant="secondary" className="bg-yellow-100 text-yellow-800">
-                          Pending
-                        </Badge>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          <div className="lg:col-span-2 space-y-12">
+            
+            {/* ================= PENDING LANDLORDS ================= */}
+            <section>
+              <SectionHeader title="Pending Approvals" count={pendingLandlords.length} icon={<UserPlus className="h-5 w-5 text-warning" />} />
+              
+              {pendingLandlords.length > 0 ? (
+                <div className="space-y-6">
+                  {pendingLandlords.map(landlord => (
+                    <Card key={landlord.id} className="glass border-warning/10 bg-warning/5 shadow-rich overflow-hidden group">
+                      <div className="p-6">
+                        <div className="flex items-center justify-between flex-wrap gap-6 mb-6">
+                          <div className="space-y-1.5 flex-1">
+                            <div className="flex items-center gap-3">
+                              <h3 className="text-xl font-display font-bold">{landlord.name}</h3>
+                              <Badge className="bg-warning/10 text-warning border-warning/20 rounded-full px-2.5 py-0.5 text-[10px] uppercase font-bold tracking-widest">
+                                Pending
+                              </Badge>
+                            </div>
+                            <div className="flex items-center gap-4 text-sm text-muted-foreground font-medium">
+                               <div className="flex items-center gap-2">
+                                <Shield className="h-3.5 w-3.5" />
+                                <span>{landlord.email}</span>
+                              </div>
+                              <div className="flex items-center gap-2">
+                                <Clock className="h-3.5 w-3.5" />
+                                <span>{new Date(landlord.createdAt).toLocaleDateString()}</span>
+                              </div>
+                            </div>
+                          </div>
+                          
+                          <div className="flex gap-2">
+                            <Button 
+                              onClick={() => handleApproveLandlord(landlord.id, landlord.name)}
+                              className="rounded-xl px-6 bg-success hover:bg-success/90 shadow-lg shadow-success/10 gap-2"
+                            >
+                              <CheckCircle className="h-4 w-4" />
+                              Approve
+                            </Button>
+                            <Button 
+                              onClick={() => handleRejectLandlord(landlord.id, landlord.name)}
+                              variant="destructive"
+                              className="rounded-xl px-6 shadow-lg shadow-destructive/10 gap-2"
+                            >
+                              <XCircle className="h-4 w-4" />
+                              Reject
+                            </Button>
+                          </div>
+                        </div>
                       </div>
-                      <div className="text-sm text-gray-600 space-y-1">
-                        <p>Email: {landlord.email}</p>
-                        <p>Phone: {landlord.phone}</p>
-                        <p className="text-xs">Registered: {new Date(landlord.createdAt).toLocaleDateString()}</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button 
-                        onClick={() => handleApproveLandlord(landlord.id, landlord.name)}
-                        className="bg-green-600 hover:bg-green-700"
-                      >
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        Approve
-                      </Button>
-                      <Button 
-                        onClick={() => handleRejectLandlord(landlord.id, landlord.name)}
-                        variant="destructive"
-                      >
-                        <XCircle className="h-4 w-4 mr-2" />
-                        Reject
-                      </Button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        )}
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <EmptyState icon={<Clock className="h-12 w-12" />} message="No pending approvals" />
+              )}
+            </section>
 
-        {/* Approved Landlords */}
-        <Card className="mb-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <CheckCircle className="h-5 w-5 text-green-600" />
-              Approved Landlords ({approvedLandlords.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {approvedLandlords.map(landlord => {
-                const landlordHostels = hostels.filter(h => h.landlordId === landlord.id);
-                return (
-                  <div key={landlord.id} className="flex items-center justify-between p-4 border rounded-lg">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-medium">{landlord.name}</h3>
-                        <Badge variant="secondary" className="bg-green-100 text-green-800">
-                          Approved
-                        </Badge>
+            {/* ================= ALL HOSTELS OVERVIEW ================= */}
+            <section>
+              <SectionHeader title="Platform Hostels" count={hostels.length} icon={<Building className="h-5 w-5 text-primary" />} />
+              
+              <div className="grid sm:grid-cols-2 gap-6">
+                {hostels.map(hostel => {
+                  const landlord = landlords.find(l => l.id === hostel.landlordId);
+                  return (
+                    <Card key={hostel.id} className="glass border-border/50 shadow-rich rounded-3xl overflow-hidden hover:scale-[1.02] transition-all group">
+                      <div className="p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="space-y-1">
+                            <h3 className="font-display font-bold text-lg leading-tight group-hover:text-primary transition-colors">{hostel.name}</h3>
+                            <p className="text-xs text-muted-foreground font-medium uppercase tracking-tight">{hostel.university}</p>
+                          </div>
+                          <Badge variant="outline" className="bg-primary/5 text-primary border-primary/20 rounded-lg font-bold">
+                            {hostel.rating.toFixed(1)} ⭐
+                          </Badge>
+                        </div>
+                        
+                        <div className="space-y-2 mb-6 text-sm text-muted-foreground font-medium border-t border-border/30 pt-4">
+                          <p className="flex items-center gap-2"><Shield className="h-3.5 w-3.5 inline text-[10px] uppercase font-bold text-muted-foreground" /> Landlord: {landlord?.name}</p>
+                          <p className="flex items-center gap-2">Rooms: {hostel.rooms.length} types • {hostel.reviews.length} reviews</p>
+                        </div>
+
+                        <Button 
+                          variant="secondary" 
+                          size="sm" 
+                          onClick={() => navigate(`/hostel/${hostel.id}`)}
+                          className="w-full rounded-xl bg-muted/50 border hover:bg-primary hover:text-white transition-all flex items-center justify-between px-4"
+                        >
+                          View as Public <ArrowRight className="h-4 w-4" />
+                        </Button>
                       </div>
-                      <div className="text-sm text-gray-600 space-y-1">
-                        <p>Email: {landlord.email}</p>
-                        <p>Phone: {landlord.phone}</p>
-                        <p>Hostels Listed: {landlordHostels.length}</p>
+                    </Card>
+                  );
+                })}
+              </div>
+            </section>
+          </div>
+
+          <aside className="space-y-12">
+            {/* ================= LANDLORD DIRECTORY ================= */}
+            <section>
+              <SectionHeader title="Landlords" count={approvedLandlords.length} icon={<Users className="h-5 w-5 text-primary" />} />
+              
+              <div className="space-y-4">
+                {approvedLandlords.map(landlord => (
+                  <Card key={landlord.id} className="glass border-border/30 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group">
+                    <div className="p-4 space-y-4">
+                      <div>
+                        <div className="flex items-center justify-between mb-1">
+                          <h4 className="font-display font-bold text-sm leading-tight text-foreground group-hover:text-primary transition-colors">{landlord.name}</h4>
+                          <Badge className="bg-success/10 text-success border-success/20 rounded-md text-[8px] py-0 font-black uppercase tracking-widest">Verified</Badge>
+                        </div>
+                        <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter">{landlord.email}</p>
                       </div>
-                    </div>
-                    <div className="flex gap-2">
+                      
                       <Button 
+                        variant="outline" 
+                        size="sm" 
+                        className="w-full h-8 text-[10px] font-bold uppercase tracking-widest rounded-lg border-destructive/20 text-destructive hover:bg-destructive/5"
                         onClick={() => handleRejectLandlord(landlord.id, landlord.name)}
-                        variant="outline"
-                        size="sm"
                       >
-                        <XCircle className="h-4 w-4 mr-2" />
                         Revoke Access
                       </Button>
                     </div>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Rejected Landlords */}
-        {rejectedLandlords.length > 0 && (
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <XCircle className="h-5 w-5 text-red-600" />
-                Rejected Landlords ({rejectedLandlords.length})
-              </CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="space-y-3">
-                {rejectedLandlords.map(landlord => (
-                  <div key={landlord.id} className="flex items-center justify-between p-4 border rounded-lg bg-red-50">
-                    <div className="flex-1">
-                      <div className="flex items-center gap-3 mb-2">
-                        <h3 className="font-medium">{landlord.name}</h3>
-                        <Badge variant="secondary" className="bg-red-100 text-red-800">
-                          Rejected
-                        </Badge>
-                      </div>
-                      <div className="text-sm text-gray-600 space-y-1">
-                        <p>Email: {landlord.email}</p>
-                        <p>Phone: {landlord.phone}</p>
-                      </div>
-                    </div>
-                    <div className="flex gap-2">
-                      <Button 
-                        onClick={() => handleApproveLandlord(landlord.id, landlord.name)}
-                        variant="outline"
-                        size="sm"
-                      >
-                        <CheckCircle className="h-4 w-4 mr-2" />
-                        Reconsider
-                      </Button>
-                    </div>
-                  </div>
+                  </Card>
                 ))}
               </div>
-            </CardContent>
-          </Card>
-        )}
+            </section>
 
-        {/* All Hostels Overview */}
-        <Card className="mt-8">
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Building className="h-5 w-5 text-blue-600" />
-              All Hostels ({hostels.length})
-            </CardTitle>
-          </CardHeader>
-          <CardContent>
-            <div className="space-y-3">
-              {hostels.map(hostel => {
-                const landlord = landlords.find(l => l.id === hostel.landlordId);
-                return (
-                  <div key={hostel.id} className="p-4 border rounded-lg">
-                    <div className="flex items-start justify-between mb-2">
-                      <div>
-                        <h3 className="font-medium">{hostel.name}</h3>
-                        <p className="text-sm text-gray-600">{hostel.university}</p>
-                      </div>
-                      <Badge>{hostel.rating} ⭐</Badge>
-                    </div>
-                    <div className="text-sm text-gray-600 space-y-1">
-                      <p>Landlord: {landlord?.name}</p>
-                      <p>Address: {hostel.address}</p>
-                      <p>Rooms: {hostel.rooms.length} types • {hostel.reviews.length} reviews</p>
-                    </div>
-                  </div>
-                );
-              })}
-            </div>
-          </CardContent>
-        </Card>
+             {/* ================= REJECTED LANDLORDS ================= */}
+             {rejectedLandlords.length > 0 && (
+               <section>
+                 <SectionHeader title="Suspended" count={rejectedLandlords.length} icon={<Shield className="h-5 w-5 text-destructive" />} />
+                 <div className="space-y-2 opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all">
+                    {rejectedLandlords.map(landlord => (
+                        <Card key={landlord.id} className="glass border-destructive/10 bg-destructive/5 rounded-2xl p-3 flex items-center justify-between">
+                            <span className="text-xs font-bold text-destructive truncate">{landlord.name}</span>
+                            <Button 
+                              variant="ghost" 
+                              size="sm" 
+                              className="h-6 text-[8px] font-black uppercase px-2 hover:bg-success/10 hover:text-success"
+                              onClick={() => handleApproveLandlord(landlord.id, landlord.name)}
+                            >
+                              Restore
+                            </Button>
+                        </Card>
+                    ))}
+                 </div>
+               </section>
+             )}
+          </aside>
+        </div>
       </div>
     </div>
+  );
+}
+
+/* ================= HELPER COMPONENTS ================= */
+
+function StatCard({ label, value, icon, color }: any) {
+  return (
+    <Card className="glass border-border/50 shadow-rich rounded-3xl overflow-hidden hover:scale-105 transition-all group">
+      <CardContent className="p-6">
+        <div className="flex items-center justify-between">
+          <div className="space-y-1">
+            <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none">{label}</p>
+            <p className="text-3xl font-display font-black text-gradient leading-none group-hover:scale-110 transition-transform origin-left">{value}</p>
+          </div>
+          <div className={`w-14 h-14 bg-muted/50 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-card transition-colors duration-500 text-2xl ${color}`}>
+            {icon}
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+}
+
+function SectionHeader({ title, count, icon }: any) {
+  return (
+    <div className="flex items-center justify-between mb-6 group">
+      <div className="flex items-center gap-3">
+        <div className="p-2.5 bg-muted rounded-xl shadow-sm group-hover:scale-110 transition-transform duration-500">
+          {icon}
+        </div>
+        <h2 className="text-2xl font-display font-bold tracking-tight uppercase tracking-tight">{title}</h2>
+      </div>
+      <Badge variant="secondary" className="px-3 rounded-full font-bold text-muted-foreground bg-muted shadow-inner">
+        {count}
+      </Badge>
+    </div>
+  );
+}
+
+function EmptyState({ icon, message }: any) {
+  return (
+    <Card className="border-2 border-dashed border-border/50 bg-muted/20 rounded-3xl">
+      <CardContent className="py-16 text-center space-y-4">
+        <div className="mx-auto w-20 h-20 bg-muted rounded-full flex items-center justify-center text-muted-foreground/30 shadow-inner">
+          {icon}
+        </div>
+        <p className="text-muted-foreground font-bold uppercase tracking-widest text-xs">{message}</p>
+      </CardContent>
+    </Card>
   );
 }

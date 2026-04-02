@@ -279,7 +279,50 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
     }
   };
 
-  const login = async (email: string, pass: string) => studentLogin(email, pass);
+  const login = async (email: string, pass: string): Promise<boolean | { error: string }> => {
+    try {
+      const result: any = await withRetry(
+        () => withTimeout(
+          supabase.auth.signInWithPassword({ email, password: pass }),
+          AUTH_TIMEOUT,
+          'landlord auth'
+        ),
+        MAX_RETRIES,
+        'landlord login'
+      );
+
+      if (result.error) return { error: result.error.message };
+      if (!result.data.user) return { error: 'Login failed' };
+
+      const profileResult: any = await supabase
+        .from('profiles')
+        .select('role, status')
+        .eq('id', result.data.user.id)
+        .single();
+
+      if (profileResult.data?.role !== 'landlord') {
+        await supabase.auth.signOut();
+        return { error: 'Access denied: landlord account required.' };
+      }
+
+      if (profileResult.data?.status === 'pending') {
+        await supabase.auth.signOut();
+        return { error: 'Your landlord account is pending approval.' };
+      }
+
+      if (profileResult.data?.status === 'rejected') {
+        await supabase.auth.signOut();
+        return { error: 'Your landlord account was rejected. Please contact support.' };
+      }
+
+      return true;
+    } catch (e: any) {
+      if (e.message?.includes('Email not confirmed')) {
+        return { error: 'Please confirm your email address before logging in.' };
+      }
+      return { error: e.message || 'Invalid credentials' };
+    }
+  };
   const signup = async (
     name: string,
     email: string,
@@ -357,13 +400,17 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
       if (result.error) return { error: result.error.message };
       if (!result.data.user) return { error: 'Login failed' };
 
-      const profileResult: any = await supabase.from('profiles').select('role').eq('id', result.data.user.id).single();
-      if (profileResult.data?.role === 'student' || profileResult.data?.role === 'landlord' || profileResult.data?.role === 'admin') {
+      const profileResult: any = await supabase
+        .from('profiles')
+        .select('role')
+        .eq('id', result.data.user.id)
+        .single();
+      if (profileResult.data?.role === 'student') {
         return true;
       }
       
       await supabase.auth.signOut();
-      return { error: 'Access denied: Invalid role.' };
+      return { error: 'Access denied: student account required.' };
     } catch (e: any) {
       if (e.message.includes('Email not confirmed')) {
         return { error: 'Please confirm your email address before logging in.' };

@@ -6,7 +6,7 @@ import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
-import { GraduationCap, AlertCircle, RefreshCw, WifiOff } from 'lucide-react';
+import { AlertCircle, RefreshCw, WifiOff, ArrowLeft, Home } from 'lucide-react';
 import { toast } from 'sonner';
 
 type AuthStatus = 'idle' | 'authenticating' | 'verifying' | 'success' | 'failed';
@@ -28,14 +28,10 @@ export function StudentAuth() {
     studentId: '',
   });
 
-  // Redirect if already logged in
   useEffect(() => {
-    if (student) {
-      navigate('/student/dashboard');
-    }
+    if (student) navigate('/student/dashboard');
   }, [student, navigate]);
 
-  // Safety: reset status if we switch tabs
   useEffect(() => {
     setStatus('idle');
     setErrorMessage(null);
@@ -44,30 +40,25 @@ export function StudentAuth() {
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
     if (connectionError) {
-      toast.error("Cannot login: " + connectionError);
+      toast.error('Cannot login: ' + connectionError);
       return;
     }
 
     setStatus('authenticating');
     setErrorMessage(null);
-
     try {
-      console.log('Attempting student login...');
       const result = await studentLogin(loginForm.email, loginForm.password);
-      
       if (result === true) {
         setStatus('success');
         toast.success('Welcome back!');
-        // Allow state to settle before navigating
         setTimeout(() => navigate('/student/dashboard'), 500);
       } else {
         setStatus('failed');
-        const errorText = typeof result === 'object' ? result.error : 'Invalid credentials. Please check your email and password.';
+        const errorText = typeof result === 'object' ? result.error : 'Invalid credentials';
         setErrorMessage(errorText);
         toast.error(errorText);
       }
     } catch (error: any) {
-      console.error('Login component error:', error);
       setStatus('failed');
       const msg = error.message || 'Login failed. Please try again.';
       setErrorMessage(msg);
@@ -78,13 +69,12 @@ export function StudentAuth() {
   const handleSignup = async (e: React.FormEvent) => {
     e.preventDefault();
     if (connectionError) {
-      toast.error("Cannot sign up: " + connectionError);
+      toast.error('Cannot sign up: ' + connectionError);
       return;
     }
 
     setStatus('authenticating');
     setErrorMessage(null);
-
     try {
       const result = await studentSignup(
         signupForm.name,
@@ -94,20 +84,17 @@ export function StudentAuth() {
         signupForm.university,
         signupForm.studentId
       );
-      
       if (result === true) {
         setStatus('success');
         toast.success('Account created successfully!');
-        setErrorMessage("Please check your email to confirm your account before logging in.");
-        // We don't navigate immediately as they might need to confirm email
+        setErrorMessage('Please check your email to confirm your account.');
       } else {
         setStatus('failed');
-        const errorText = typeof result === 'object' ? result.error : 'Signup failed. Please check your details.';
+        const errorText = typeof result === 'object' ? result.error : 'Signup failed.';
         setErrorMessage(errorText);
         toast.error(errorText);
       }
     } catch (error: any) {
-      console.error('Signup component error:', error);
       setStatus('failed');
       const msg = error.message || 'Signup failed. Please try again.';
       setErrorMessage(msg);
@@ -117,242 +104,253 @@ export function StudentAuth() {
 
   const isInAction = status === 'authenticating' || status === 'verifying';
 
-  // Global Loading State
   if (isAuthLoading) {
     return (
-      <div className="min-h-screen bg-slate-50 flex flex-col items-center justify-center p-4">
-        <RefreshCw className="h-10 w-10 text-blue-600 animate-spin mb-4" />
-        <p className="text-slate-600 font-medium animate-pulse">Initializing Secure Session...</p>
+      <div className="min-h-screen bg-background flex flex-col items-center justify-center p-4">
+        <RefreshCw className="h-10 w-10 text-primary animate-spin mb-4" />
+        <p className="text-muted-foreground font-medium animate-pulse">Initializing Secure Session...</p>
       </div>
     );
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 flex items-center justify-center p-4">
-      <Card className="w-full max-w-md shadow-xl border-t-4 border-t-blue-600">
-        <CardHeader className="space-y-4 text-center">
-          <div className="mx-auto w-24 h-24 bg-slate-900 rounded-2xl flex items-center justify-center shadow-lg border border-slate-800">
-            <img src="/logo.png" alt="MyHostel.com Logo" className={`h-20 w-20 object-contain ${isInAction ? 'animate-pulse scale-95' : ''}`} />
+    <div className="min-h-screen bg-gradient-to-br from-background via-muted/30 to-primary/5 px-4 py-10 sm:py-14">
+      <div className="mx-auto grid w-full max-w-5xl gap-8 lg:grid-cols-[0.95fr_1.05fr] lg:items-center">
+        <div className="hidden lg:block">
+          <div className="rounded-[2rem] border border-border/60 bg-card/85 p-8 shadow-rich">
+            <p className="text-sm font-black uppercase tracking-[0.28em] text-primary">Student Access</p>
+            <h2 className="mt-4 text-4xl font-display font-black tracking-tight text-foreground">
+              Keep your hostel search, saved stays, and bookings in one place.
+            </h2>
+            <p className="mt-5 max-w-md text-base leading-7 text-muted-foreground">
+              Sign in as a student to manage reservations, review listing details, and stay on top of payments and inquiries.
+            </p>
+            <div className="mt-8 grid gap-4">
+              {[
+                'Track bookings and reservation status',
+                'Save hostels and compare options later',
+                'Use the same student account across the platform',
+              ].map((item) => (
+                <div key={item} className="rounded-2xl border border-border/60 bg-background/70 px-4 py-4 text-sm text-muted-foreground">
+                  {item}
+                </div>
+              ))}
+            </div>
           </div>
-          <div>
-            <CardTitle className="text-2xl font-bold text-slate-900">Student Portal</CardTitle>
-            <CardDescription className="text-slate-500 font-medium">
-              {isLogin ? 'Sign in to access your dashboard' : 'Create your student account to start booking'}
-            </CardDescription>
+        </div>
+
+        <div className="w-full max-w-md justify-self-center">
+          <div className="mb-9 text-center">
+            <div className="mx-auto mb-5 flex h-20 w-20 items-center justify-center overflow-hidden rounded-2xl border border-primary/20 bg-background shadow-xl shadow-primary/10">
+              <img src="/logo.png" alt="MyHostel.com Logo" className={`h-16 w-16 object-contain ${isInAction ? 'animate-pulse' : ''}`} />
+            </div>
+            <h1 className="text-3xl font-display font-black text-foreground tracking-tight">Student Login</h1>
+            <p className="mt-2 text-sm font-medium text-muted-foreground">
+              Sign in to manage bookings or create your student account.
+            </p>
           </div>
-        </CardHeader>
-        <CardContent>
-          {connectionError && (
-            <div className="mb-6 p-4 bg-amber-50 border border-amber-200 rounded-lg flex items-start gap-3 text-amber-800">
-              <WifiOff className="h-5 w-5 mt-0.5 flex-shrink-0" />
-              <div>
-                <p className="font-semibold text-sm">Connection Issues Detected</p>
-                <p className="text-xs opacity-90">{connectionError}</p>
-                <Button 
-                  variant="link" 
-                  className="h-auto p-0 text-xs text-amber-900 underline mt-1"
-                  onClick={() => window.location.reload()}
+
+          <Card className="overflow-hidden rounded-3xl border border-border/60 shadow-2xl shadow-primary/5">
+            <div className={`h-1 w-full transition-colors duration-500 ${isLogin ? 'bg-primary' : 'bg-secondary'}`} />
+
+            <CardHeader className="pb-2 pt-6 text-center">
+              <CardTitle className="text-xl font-display font-bold">
+                {isLogin ? 'Student Login' : 'Create Student Account'}
+              </CardTitle>
+              <CardDescription className="text-sm">
+                {isLogin ? 'Access your dashboard, saved stays, and bookings' : 'Join thousands of students finding better housing'}
+              </CardDescription>
+            </CardHeader>
+
+            <CardContent className="px-6 pb-7 pt-3">
+              {connectionError && (
+                <div className="mb-4 flex items-start gap-3 rounded-xl border border-warning/20 bg-warning/10 p-3 text-sm text-warning">
+                  <WifiOff className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                  <div>
+                    <p className="font-semibold">Connection Issues</p>
+                    <p className="text-xs opacity-90">{connectionError}</p>
+                  </div>
+                </div>
+              )}
+
+              <div className="mb-6 flex gap-1.5 rounded-xl bg-muted p-1">
+                <Button
+                  variant={isLogin ? 'default' : 'ghost'}
+                  onClick={() => setIsLogin(true)}
+                  className="h-9 flex-1 rounded-lg text-sm font-semibold"
+                  disabled={isInAction}
                 >
-                  Retry Connection
+                  Login
+                </Button>
+                <Button
+                  variant={!isLogin ? 'default' : 'ghost'}
+                  onClick={() => setIsLogin(false)}
+                  className="h-9 flex-1 rounded-lg text-sm font-semibold"
+                  disabled={isInAction}
+                >
+                  Sign Up
                 </Button>
               </div>
-            </div>
-          )}
 
-          <div className="flex gap-2 mb-6 p-1 bg-gray-100 rounded-lg">
+              {errorMessage && (
+                <div
+                  className={`mb-4 flex items-start gap-2 rounded-xl border p-3 text-sm animate-slide-up ${
+                    status === 'success'
+                      ? 'border-success/20 bg-success/10 text-success'
+                      : 'border-destructive/20 bg-destructive/10 text-destructive'
+                  }`}
+                >
+                  <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0" />
+                  <p>{errorMessage}</p>
+                </div>
+              )}
+
+              {isLogin ? (
+                <form onSubmit={handleLogin} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="login-email" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Email Address
+                    </Label>
+                    <Input
+                      id="login-email"
+                      type="email"
+                      placeholder="your.email@university.mw"
+                      value={loginForm.email}
+                      onChange={(e) => setLoginForm({ ...loginForm, email: e.target.value })}
+                      required
+                      disabled={isInAction}
+                      className="h-11 rounded-xl border-border/60 bg-muted/40 focus:border-primary/50"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="login-password" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Password
+                    </Label>
+                    <Input
+                      id="login-password"
+                      type="password"
+                      placeholder="••••••••"
+                      value={loginForm.password}
+                      onChange={(e) => setLoginForm({ ...loginForm, password: e.target.value })}
+                      required
+                      disabled={isInAction}
+                      className="h-11 rounded-xl border-border/60 bg-muted/40 focus:border-primary/50"
+                    />
+                  </div>
+                  <Button type="submit" className="mt-2 h-11 w-full rounded-xl text-sm font-bold bg-gradient-premium shadow-lg shadow-primary/20" disabled={isInAction}>
+                    {isInAction ? (
+                      <span className="flex items-center gap-2">
+                        <RefreshCw className="h-4 w-4 animate-spin" />
+                        Signing in...
+                      </span>
+                    ) : 'Sign In'}
+                  </Button>
+                </form>
+              ) : (
+                <form onSubmit={handleSignup} className="space-y-4">
+                  <div className="space-y-1.5">
+                    <Label htmlFor="signup-name" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Full Name
+                    </Label>
+                    <Input
+                      id="signup-name"
+                      placeholder="Your Full Name"
+                      value={signupForm.name}
+                      onChange={(e) => setSignupForm({ ...signupForm, name: e.target.value })}
+                      required
+                      disabled={isInAction}
+                      className="h-11 rounded-xl border-border/60 bg-muted/40"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="signup-email" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Email Address
+                    </Label>
+                    <Input
+                      id="signup-email"
+                      type="email"
+                      placeholder="your.email@university.mw"
+                      value={signupForm.email}
+                      onChange={(e) => setSignupForm({ ...signupForm, email: e.target.value })}
+                      required
+                      disabled={isInAction}
+                      className="h-11 rounded-xl border-border/60 bg-muted/40"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="signup-password" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      Password
+                    </Label>
+                    <Input
+                      id="signup-password"
+                      type="password"
+                      placeholder="At least 6 characters"
+                      value={signupForm.password}
+                      onChange={(e) => setSignupForm({ ...signupForm, password: e.target.value })}
+                      required
+                      disabled={isInAction}
+                      className="h-11 rounded-xl border-border/60 bg-muted/40"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <Label htmlFor="signup-university" className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">
+                      University <span className="text-muted-foreground/50">(optional)</span>
+                    </Label>
+                    <Select
+                      value={signupForm.university}
+                      onValueChange={(value) => setSignupForm({ ...signupForm, university: value })}
+                      disabled={isInAction}
+                    >
+                      <SelectTrigger id="signup-university" className="h-11 rounded-xl border-border/60 bg-muted/40">
+                        <SelectValue placeholder="Select your university" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        <SelectItem value="University of Malawi (UNIMA)">University of Malawi (UNIMA)</SelectItem>
+                        <SelectItem value="Mzuzu University">Mzuzu University</SelectItem>
+                        <SelectItem value="Malawi University of Business and Applied Sciences (MUBAS)">MUBAS</SelectItem>
+                        <SelectItem value="Lilongwe University of Agriculture and Natural Resources (LUANAR)">LUANAR</SelectItem>
+                        <SelectItem value="Malawi University of Science and Technology (MUST)">MUST</SelectItem>
+                        <SelectItem value="Catholic University of Malawi">Catholic University of Malawi</SelectItem>
+                        <SelectItem value="Kamuzu University of Health Sciences">Kamuzu University of Health Sciences</SelectItem>
+                        <SelectItem value="DMI St. John the Baptist University">DMI St. John the Baptist University</SelectItem>
+                        <SelectItem value="African Bible College">African Bible College</SelectItem>
+                        <SelectItem value="Other">Other</SelectItem>
+                      </SelectContent>
+                    </Select>
+                  </div>
+                  <Button type="submit" className="mt-2 h-11 w-full rounded-xl text-sm font-bold bg-gradient-premium shadow-lg shadow-primary/20" disabled={isInAction}>
+                    {isInAction ? (
+                      <span className="flex items-center gap-2">
+                        <RefreshCw className="h-4 w-4 animate-spin" />
+                        Creating account...
+                      </span>
+                    ) : 'Create Account'}
+                  </Button>
+                </form>
+              )}
+            </CardContent>
+          </Card>
+
+          <div className="mt-6 flex flex-col justify-center gap-3 sm:flex-row">
             <Button
-              variant={isLogin ? 'default' : 'ghost'}
-              onClick={() => setIsLogin(true)}
-              className={`flex-1 transition-all ${isLogin ? 'shadow-sm' : ''}`}
-              disabled={isInAction}
+              variant="ghost"
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+              onClick={() => navigate('/')}
             >
-              Login
+              <Home className="h-4 w-4" />
+              Browse Hostels
             </Button>
             <Button
-              variant={!isLogin ? 'default' : 'ghost'}
-              onClick={() => setIsLogin(false)}
-              className={`flex-1 transition-all ${!isLogin ? 'shadow-sm' : ''}`}
-              disabled={isInAction}
+              variant="ghost"
+              className="flex items-center gap-2 text-muted-foreground hover:text-foreground"
+              onClick={() => navigate(-1)}
             >
-              Sign Up
+              <ArrowLeft className="h-4 w-4" />
+              Go Back
             </Button>
           </div>
-
-          {errorMessage && (
-            <div className={`mb-4 p-3 border rounded-md flex items-start gap-2 text-sm animate-in fade-in slide-in-from-top-1 ${
-              status === 'success' ? 'bg-green-50 border-green-200 text-green-700' : 'bg-red-50 border-red-200 text-red-700'
-            }`}>
-              <AlertCircle className="h-4 w-4 mt-0.5 flex-shrink-0" />
-              <p>{errorMessage}</p>
-            </div>
-          )}
-
-          {isLogin ? (
-            <form onSubmit={handleLogin} className="space-y-4">
-              <div className="space-y-2">
-                <Label htmlFor="login-email">Email Address</Label>
-                <Input
-                  id="login-email"
-                  type="email"
-                  placeholder="your.email@university.mw"
-                  value={loginForm.email}
-                  onChange={(e) => setLoginForm({...loginForm, email: e.target.value})}
-                  required
-                  disabled={isInAction}
-                  className="bg-gray-50 border-gray-200 focus:bg-white transition-colors"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="login-password">Password</Label>
-                <Input
-                  id="login-password"
-                  type="password"
-                  placeholder="••••••••"
-                  value={loginForm.password}
-                  onChange={(e) => setLoginForm({...loginForm, password: e.target.value})}
-                  required
-                  disabled={isInAction}
-                  className="bg-gray-50 border-gray-200 focus:bg-white transition-colors"
-                />
-              </div>
-              <div className="pt-4 space-y-3">
-                <Button type="submit" className="w-full h-11 text-base font-semibold" disabled={isInAction}>
-                  {isInAction ? (
-                    <span className="flex items-center gap-2">
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                      Signing in...
-                    </span>
-                  ) : 'Sign In'}
-                </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  className="w-full h-11"
-                  onClick={() => navigate('/')}
-                  disabled={isInAction}
-                >
-                  Back to Home
-                </Button>
-              </div>
-            </form>
-          ) : (
-            <form onSubmit={handleSignup} className="space-y-4 max-h-[400px] overflow-y-auto pr-2 custom-scrollbar">
-              <div className="space-y-2">
-                <Label htmlFor="signup-name">Full Name *</Label>
-                <Input
-                  id="signup-name"
-                  placeholder="Precious Kaipa"
-                  value={signupForm.name}
-                  onChange={(e) => setSignupForm({...signupForm, name: e.target.value})}
-                  required
-                  disabled={isInAction}
-                  className="bg-gray-50 border-gray-200 focus:bg-white transition-colors"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="signup-email">Email Address *</Label>
-                <Input
-                  id="signup-email"
-                  type="email"
-                  placeholder="your.email@university.mw"
-                  value={signupForm.email}
-                  onChange={(e) => setSignupForm({...signupForm, email: e.target.value})}
-                  required
-                  disabled={isInAction}
-                  className="bg-gray-50 border-gray-200 focus:bg-white transition-colors"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="signup-password">Password *</Label>
-                <Input
-                  id="signup-password"
-                  type="password"
-                  placeholder="At least 6 characters"
-                  value={signupForm.password}
-                  onChange={(e) => setSignupForm({...signupForm, password: e.target.value})}
-                  required
-                  disabled={isInAction}
-                  className="bg-gray-50 border-gray-200 focus:bg-white transition-colors"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="signup-phone">Phone Number *</Label>
-                <Input
-                  id="signup-phone"
-                  type="tel"
-                  placeholder="+265 991 234 567"
-                  value={signupForm.phone}
-                  onChange={(e) => setSignupForm({...signupForm, phone: e.target.value})}
-                  required
-                  disabled={isInAction}
-                  className="bg-gray-50 border-gray-200 focus:bg-white transition-colors"
-                />
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="signup-university">University *</Label>
-                <Select
-                  value={signupForm.university}
-                  onValueChange={(value) => setSignupForm({...signupForm, university: value})}
-                  disabled={isInAction}
-                >
-                  <SelectTrigger id="signup-university" className="bg-gray-50 border-gray-200 focus:bg-white transition-colors">
-                    <SelectValue placeholder="Select your university" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="University of Malawi (UNIMA)">University of Malawi (UNIMA)</SelectItem>
-                    <SelectItem value="Mzuzu University">Mzuzu University</SelectItem>
-                    <SelectItem value="Malawi University of Business and Applied Sciences (MUBAS)">MUBAS</SelectItem>
-                    <SelectItem value="Lilongwe University of Agriculture and Natural Resources (LUANAR)">LUANAR</SelectItem>
-                    <SelectItem value="Malawi University of Science and Technology (MUST)">MUST</SelectItem>
-                    <SelectItem value="Catholic University of Malawi">Catholic University of Malawi</SelectItem>
-                    <SelectItem value="Kamuzu University of Health Sciences">Kamuzu University of Health Sciences</SelectItem>
-                    <SelectItem value="DMI St. John the Baptist University">DMI St. John the Baptist University</SelectItem>
-                    <SelectItem value="African Bible College">African Bible College</SelectItem>
-                    <SelectItem value="Other">Other</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-              <div className="space-y-2">
-                <Label htmlFor="signup-studentId">Student ID Number *</Label>
-                <Input
-                  id="signup-studentId"
-                  placeholder="e.g. UNIMA/2024/001"
-                  value={signupForm.studentId}
-                  onChange={(e) => setSignupForm({...signupForm, studentId: e.target.value})}
-                  required
-                  disabled={isInAction}
-                  className="bg-gray-50 border-gray-200 focus:bg-white transition-colors"
-                />
-              </div>
-              <div className="pt-4 space-y-3">
-                <Button type="submit" className="w-full h-11 text-base font-semibold" disabled={isInAction}>
-                  {isInAction ? (
-                    <span className="flex items-center gap-2">
-                      <RefreshCw className="h-4 w-4 animate-spin" />
-                      Creating account...
-                    </span>
-                  ) : 'Create Account'}
-                </Button>
-                <Button 
-                  type="button" 
-                  variant="outline" 
-                  className="w-full h-11"
-                  onClick={() => navigate('/')}
-                  disabled={isInAction}
-                >
-                  Back to Home
-                </Button>
-              </div>
-            </form>
-          )}
-        </CardContent>
-      </Card>
-      <style>{`
-        .custom-scrollbar::-webkit-scrollbar { width: 6px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
-        .custom-scrollbar::-webkit-scrollbar-thumb:hover { background: #cbd5e1; }
-      `}</style>
+        </div>
+      </div>
     </div>
   );
 }

@@ -78,7 +78,7 @@ interface DataContextType {
   updateHostel: (id: string, hostel: Partial<Hostel>) => Promise<void>;
   deleteHostel: (id: string) => Promise<void>;
   getHostelById: (id: string) => Hostel | undefined;
-  addInquiry: (inquiry: Omit<Inquiry, 'id' | 'date'>) => Promise<void>;
+  addInquiry: (inquiry: Omit<Inquiry, 'id' | 'date'> & { studentId?: string }) => Promise<void>;
   getInquiriesByLandlord: (landlordId: string) => Inquiry[];
   addBooking: (booking: Omit<Booking, 'id' | 'createdAt' | 'status' | 'depositDeadline'>) => Promise<string>;
   updateBooking: (id: string, updates: Partial<Booking>) => Promise<void>;
@@ -154,17 +154,20 @@ export function DataProvider({ children }: { children: ReactNode }) {
           .select('*');
 
         if (inquiriesResult.data) {
-          setInquiries(inquiriesResult.data.map((raw: any) => ({
-            id: raw.id,
-            hostelId: raw.hostel_id,
-            hostelName: '',
-            studentName: raw.student_name,
-            studentEmail: raw.student_email,
-            studentPhone: raw.student_phone || '',
-            roomType: raw.room_type || '',
-            message: raw.message || '',
-            date: raw.created_at,
-          })));
+          setInquiries(inquiriesResult.data.map((raw: any) => {
+            const hostel = hostelsResult.data?.find((h: any) => h.id === raw.hostel_id);
+            return {
+              id: raw.id,
+              hostelId: raw.hostel_id,
+              hostelName: hostel?.name || 'Unknown Hostel',
+              studentName: raw.student_name,
+              studentEmail: raw.student_email,
+              studentPhone: raw.student_phone || '',
+              roomType: raw.room_type || '',
+              message: raw.message || '',
+              date: raw.created_at,
+            };
+          }));
         }
 
         const bookingsResult: any = await supabase
@@ -251,11 +254,12 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
   const getHostelById = (id: string) => hostels.find(h => h.id === id);
 
-  const addInquiry = async (inquiry: Omit<Inquiry, 'id' | 'date'>) => {
+  const addInquiry = async (inquiry: Omit<Inquiry, 'id' | 'date'> & { studentId?: string }) => {
     const result: any = await supabase
       .from('inquiries')
       .insert({
         hostel_id: inquiry.hostelId,
+        student_id: inquiry.studentId, // Pass studentId if available
         student_name: inquiry.studentName,
         student_email: inquiry.studentEmail,
         student_phone: inquiry.studentPhone,
