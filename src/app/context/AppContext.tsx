@@ -87,7 +87,24 @@ interface DataContextType {
   uploadReceipt: (bookingId: string, file: File) => Promise<string>;
 }
 
-const DataContext = createContext<DataContextType | undefined>(undefined);
+const defaultDataContext: DataContextType = {
+  hostels: [],
+  inquiries: [],
+  bookings: [],
+  addHostel: async () => {},
+  updateHostel: async () => {},
+  deleteHostel: async () => {},
+  getHostelById: () => undefined,
+  addInquiry: async () => {},
+  getInquiriesByLandlord: () => [],
+  addBooking: async () => '',
+  updateBooking: async () => {},
+  getBookingsByStudent: () => [],
+  getBookingsByLandlord: () => [],
+  uploadReceipt: async () => '',
+};
+
+const DataContext = createContext<DataContextType>(defaultDataContext);
 
 export function DataProvider({ children }: { children: ReactNode }) {
   const [hostels, setHostels] = useState<Hostel[]>([]);
@@ -384,6 +401,5 @@ export function DataProvider({ children }: { children: ReactNode }) {
 
 export function useData() {
   const context = useContext(DataContext);
-  if (context === undefined) throw new Error('useData must be used within a DataProvider');
   return context;
 }
