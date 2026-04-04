@@ -87,25 +87,17 @@ export function HomePage() {
               Browse verified student hostels near your campus. Safe, affordable, and just a click away.
             </p>
 
-            <div className="mx-auto mt-10 max-w-2xl rounded-[1.75rem] border border-white/20 bg-white/95 p-2 shadow-2xl backdrop-blur-xl">
-              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-                <div className="flex h-14 flex-1 items-center gap-3 rounded-2xl px-5 text-foreground">
-                  <MapPin className="h-5 w-5 shrink-0 text-muted-foreground" />
+            <div className="mx-auto mt-10 max-w-2xl rounded-[2rem] border border-white/20 bg-white/95 p-1.5 shadow-2xl backdrop-blur-xl transition-all hover:bg-white active:scale-[0.99]">
+              <div className="flex items-center">
+                <div className="flex h-12 sm:h-14 flex-1 items-center gap-3 rounded-2xl px-4 sm:px-5 text-foreground">
+                  <Search className="h-5 w-5 shrink-0 text-primary animate-in fade-in zoom-in" />
                   <Input
                     placeholder="Search by location, hostel name..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
-                    className="h-auto border-0 bg-transparent p-0 text-base shadow-none focus-visible:ring-0"
+                    className="h-auto border-0 bg-transparent p-0 text-base shadow-none focus-visible:ring-0 placeholder:text-muted-foreground/60"
                   />
                 </div>
-                <Button
-                  size="lg"
-                  className="h-12 rounded-2xl bg-[#D4AF37] px-8 font-semibold text-white shadow-lg shadow-[#D4AF37]/30 hover:bg-[#C5A017] sm:h-14"
-                  onClick={scrollToListings}
-                >
-                  <Search className="mr-2 h-4 w-4" />
-                  Search
-                </Button>
               </div>
             </div>
           </div>
