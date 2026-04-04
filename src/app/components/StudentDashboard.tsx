@@ -46,7 +46,7 @@ export function StudentDashboard() {
     <div className="min-h-screen bg-background text-foreground pb-20">
       
       {/* ================= HEADER ================= */}
-      <div className="sticky top-0 z-40 glass border-b border-border/50 bg-card/50 backdrop-blur-md">
+      <div className="sticky top-[65px] lg:top-[81px] z-40 glass border-b border-border/50 bg-card/50 backdrop-blur-md transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -108,8 +108,8 @@ export function StudentDashboard() {
                     const hostel = hostels.find(h => h.id === booking.hostelId);
                     return (
                       <Card key={booking.id} className="glass border-border/50 shadow-rich overflow-hidden group hover:scale-[1.01] transition-all duration-300">
-                        <div className="p-6">
-                          <div className="flex flex-col md:flex-row md:items-center justify-between gap-6 mb-8">
+                        <div className="p-4 sm:p-6">
+                          <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-6 mb-8">
                             <div className="space-y-2">
                               <h3 className="font-display font-bold text-xl group-hover:text-primary transition-colors">{hostel?.name || 'Loading...'}</h3>
                               <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -151,10 +151,10 @@ export function StudentDashboard() {
                             </div>
                           </div>
 
-                          <div className="flex items-center justify-end">
+                          <div className="flex items-center justify-center sm:justify-end">
                             {booking.status === 'pending' ? (
                               <Button 
-                                className="bg-gradient-premium shadow-lg shadow-primary/20 hover:scale-105 transition-all rounded-xl" 
+                                className="w-full sm:w-auto bg-gradient-premium shadow-lg shadow-primary/20 hover:scale-105 transition-all rounded-xl" 
                                 onClick={() => navigate(`/hostel/${booking.hostelId}`)}
                               >
                                 Complete Payment <ArrowRight className="h-4 w-4 ml-2" />
@@ -315,7 +315,7 @@ function StatCard({ label, value, icon }: any) {
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">{label}</p>
-            <p className="text-4xl font-display font-black text-gradient leading-none group-hover:scale-110 transition-transform origin-left">{value}</p>
+            <p className="text-2xl sm:text-4xl font-display font-black text-gradient leading-none group-hover:scale-110 transition-transform origin-left">{value}</p>
           </div>
           <div className="w-14 h-14 bg-muted/50 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-card transition-colors duration-500">
             {icon}

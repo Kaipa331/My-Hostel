@@ -72,14 +72,14 @@ const Auth = () => {
     <div className="min-h-screen bg-background flex items-center justify-center p-4">
       <div className="w-full max-w-md">
         <div className="text-center mb-8">
-          <div className="flex items-center justify-center mx-auto mb-8 animate-in fade-in zoom-in duration-700">
+          <div className="flex items-center justify-center mx-auto mb-6 sm:mb-8 animate-in fade-in zoom-in duration-700">
             <img
               src="/logo.jpg"
               alt="MyHostel Logo"
-              className="w-32 h-32 object-contain rounded-3xl shadow-2xl shadow-primary/10 border border-border/50 bg-white p-2"
+              className="w-20 h-20 sm:w-32 sm:h-32 object-contain rounded-2xl sm:rounded-3xl shadow-2xl shadow-primary/10 border border-border/50 bg-white p-2"
             />
           </div>
-          <h1 className="text-3xl font-black text-foreground mb-4">
+          <h1 className="text-2xl sm:text-3xl font-black text-foreground mb-2 sm:mb-4">
             {isLogin ? "Welcome back" : "Create your account"}
           </h1>
           <p className="text-muted-foreground font-medium">
@@ -87,8 +87,8 @@ const Auth = () => {
           </p>
         </div>
 
-        <div className="bg-card rounded-3xl border border-border/50 shadow-rich p-8 sm:p-10">
-          <form onSubmit={handleSubmit} className="space-y-6">
+        <div className="bg-card rounded-3xl border border-border/50 shadow-rich p-6 sm:p-10">
+          <form onSubmit={handleSubmit} className="space-y-4 sm:space-y-6">
             {!isLogin && (
               <>
                 <div>

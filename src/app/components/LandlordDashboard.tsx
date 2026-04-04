@@ -67,7 +67,7 @@ export function LandlordDashboard() {
     <div className="min-h-screen bg-background text-foreground pb-20">
       
       {/* ================= HEADER ================= */}
-      <div className="sticky top-0 z-40 glass border-b border-border/50 bg-card/50 backdrop-blur-md">
+      <div className="sticky top-[65px] lg:top-[81px] z-40 glass border-b border-border/50 bg-card/50 backdrop-blur-md transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -134,8 +134,8 @@ export function LandlordDashboard() {
                     const hostel = hostels.find(h => h.id === booking.hostelId);
                     return (
                       <Card key={booking.id} className="glass border-border/50 shadow-rich overflow-hidden hover:scale-[1.01] transition-transform">
-                        <div className="p-6">
-                          <div className="flex flex-col sm:flex-row items-start justify-between gap-6 mb-6">
+                        <div className="p-4 sm:p-6">
+                          <div className="flex flex-col lg:flex-row items-start justify-between gap-6 mb-6">
                             <div className="space-y-2">
                               <div className="flex items-center gap-3">
                                 <h3 className="text-xl font-display font-bold">{hostel?.name || 'Unknown Hostel'}</h3>
@@ -150,15 +150,15 @@ export function LandlordDashboard() {
                                   {booking.status.replace('_', ' ')}
                                 </Badge>
                               </div>
-                              <div className="flex items-center gap-6">
+                              <div className="flex items-center gap-4 sm:gap-6">
                                 <div>
                                   <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Total Rent</p>
-                                  <p className="font-semibold text-primary">MK {booking.totalRent.toLocaleString()}</p>
+                                  <p className="font-semibold text-primary text-sm sm:text-base">MK {booking.totalRent.toLocaleString()}</p>
                                 </div>
                                 <div className="w-px h-8 bg-border/50" />
                                 <div>
                                   <p className="text-[10px] text-muted-foreground uppercase font-bold tracking-tighter">Deposit Paid</p>
-                                  <p className="font-semibold text-success">MK {booking.depositAmount.toLocaleString()}</p>
+                                  <p className="font-semibold text-success text-sm sm:text-base">MK {booking.depositAmount.toLocaleString()}</p>
                                 </div>
                               </div>
                             </div>
@@ -213,8 +213,8 @@ export function LandlordDashboard() {
                 <div className="grid gap-6">
                   {myHostels.map(hostel => (
                     <Card key={hostel.id} className="glass border-border/50 shadow-rich overflow-hidden group">
-                      <div className="p-6">
-                        <div className="flex flex-col sm:flex-row items-start justify-between gap-6 mb-6">
+                      <div className="p-4 sm:p-6">
+                        <div className="flex flex-col lg:flex-row items-start justify-between gap-6 mb-6">
                           <div className="space-y-3 flex-1">
                             <h3 className="text-2xl font-display font-bold group-hover:text-primary transition-colors">{hostel.name}</h3>
                             <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
@@ -332,7 +332,7 @@ function StatCard({ label, value, icon }: any) {
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">{label}</p>
-            <p className="text-3xl font-display font-black text-gradient leading-none group-hover:scale-110 transition-transform origin-left">{value}</p>
+            <p className="text-2xl sm:text-3xl font-display font-black text-gradient leading-none group-hover:scale-110 transition-transform origin-left">{value}</p>
           </div>
           <div className="w-14 h-14 bg-muted/50 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-card transition-colors duration-500 text-2xl">
             {icon}

@@ -49,7 +49,7 @@ export function AdminDashboard() {
     <div className="min-h-screen bg-background text-foreground pb-20">
       
       {/* ================= HEADER ================= */}
-      <div className="sticky top-0 z-40 glass border-b border-border/50 bg-card/50 backdrop-blur-md">
+      <div className="sticky top-[65px] lg:top-[81px] z-40 glass border-b border-border/50 bg-card/50 backdrop-blur-md transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -89,42 +89,42 @@ export function AdminDashboard() {
                 <div className="space-y-6">
                   {pendingLandlords.map(landlord => (
                     <Card key={landlord.id} className="glass border-warning/10 bg-warning/5 shadow-rich overflow-hidden group">
-                      <div className="p-6">
-                        <div className="flex items-center justify-between flex-wrap gap-6 mb-6">
-                          <div className="space-y-1.5 flex-1">
-                            <div className="flex items-center gap-3">
-                              <h3 className="text-xl font-display font-bold">{landlord.name}</h3>
-                              <Badge className="bg-warning/10 text-warning border-warning/20 rounded-full px-2.5 py-0.5 text-[10px] uppercase font-bold tracking-widest">
-                                Pending
-                              </Badge>
-                            </div>
-                            <div className="flex items-center gap-4 text-sm text-muted-foreground font-medium">
-                               <div className="flex items-center gap-2">
-                                <Shield className="h-3.5 w-3.5" />
-                                <span>{landlord.email}</span>
+                        <div className="p-4 sm:p-6">
+                          <div className="flex flex-col lg:flex-row items-center justify-between gap-6 mb-6">
+                            <div className="space-y-1.5 flex-1 min-w-0">
+                              <div className="flex items-center gap-3 flex-wrap">
+                                <h3 className="text-lg sm:text-xl font-display font-bold truncate">{landlord.name}</h3>
+                                <Badge className="bg-warning/10 text-warning border-warning/20 rounded-full px-2.5 py-0.5 text-[10px] uppercase font-bold tracking-widest">
+                                  Pending
+                                </Badge>
                               </div>
-                              <div className="flex items-center gap-2">
-                                <Clock className="h-3.5 w-3.5" />
-                                <span>{new Date(landlord.createdAt).toLocaleDateString()}</span>
+                              <div className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 text-xs sm:text-sm text-muted-foreground font-medium">
+                                 <div className="flex items-center gap-2 truncate">
+                                  <Shield className="h-3.5 w-3.5 flex-shrink-0" />
+                                  <span className="truncate">{landlord.email}</span>
+                                </div>
+                                <div className="flex items-center gap-2">
+                                  <Clock className="h-3.5 w-3.5 flex-shrink-0" />
+                                  <span>{new Date(landlord.createdAt).toLocaleDateString()}</span>
+                                </div>
                               </div>
                             </div>
-                          </div>
                           
-                          <div className="flex gap-2">
+                          <div className="flex gap-2 w-full sm:w-auto">
                             <Button 
                               onClick={() => handleApproveLandlord(landlord.id, landlord.name)}
-                              className="rounded-xl px-6 bg-success hover:bg-success/90 shadow-lg shadow-success/10 gap-2"
+                              className="flex-1 sm:flex-initial rounded-xl px-4 sm:px-6 bg-success hover:bg-success/90 shadow-lg shadow-success/10 gap-2 text-xs sm:text-sm"
                             >
                               <CheckCircle className="h-4 w-4" />
-                              Approve
+                              <span className="hidden xs:inline">Approve</span>
                             </Button>
                             <Button 
                               onClick={() => handleRejectLandlord(landlord.id, landlord.name)}
                               variant="destructive"
-                              className="rounded-xl px-6 shadow-lg shadow-destructive/10 gap-2"
+                              className="flex-1 sm:flex-initial rounded-xl px-4 sm:px-6 shadow-lg shadow-destructive/10 gap-2 text-xs sm:text-sm"
                             >
                               <XCircle className="h-4 w-4" />
-                              Reject
+                              <span className="hidden xs:inline">Reject</span>
                             </Button>
                           </div>
                         </div>
@@ -246,7 +246,7 @@ function StatCard({ label, value, icon, color }: any) {
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none">{label}</p>
-            <p className="text-3xl font-display font-black text-gradient leading-none group-hover:scale-110 transition-transform origin-left">{value}</p>
+            <p className="text-2xl sm:text-3xl font-display font-black text-gradient leading-none group-hover:scale-110 transition-transform origin-left">{value}</p>
           </div>
           <div className={`w-14 h-14 bg-muted/50 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-card transition-colors duration-500 text-2xl ${color}`}>
             {icon}
