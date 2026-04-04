@@ -102,10 +102,25 @@ h5,
 h6 {
   text-wrap: balance;
   overflow-wrap: break-word;
+  color: inherit;
+  margin-bottom: 0.75em;
+  line-height: var(--line-height-tight);
 }
+
+h1 { font-size: clamp(2.5rem, 5vw, 4rem); font-weight: 800; letter-spacing: -0.05em; }
+h2 { font-size: clamp(2rem, 4vw, 3rem); font-weight: 700; letter-spacing: -0.04em; }
+h3 { font-size: clamp(1.5rem, 3vw, 2.25rem); font-weight: 700; letter-spacing: -0.03em; }
+h4 { font-size: 1.5rem; font-weight: 600; }
+h5 { font-size: 1.25rem; font-weight: 600; }
+h6 { font-size: 1.125rem; font-weight: 600; }
 
 p {
   overflow-wrap: break-word;
+  margin-bottom: 1.25rem;
+}
+
+p:last-child {
+  margin-bottom: 0;
 }
 
 a {

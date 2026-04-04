@@ -67,29 +67,27 @@ export function HostelCard({ hostel }: HostelCardProps) {
         )}
       </Link>
 
-      <CardContent className="space-y-3 p-4">
-        <div className="flex items-start justify-between gap-3">
+      <CardContent className="space-y-4 p-6">
+        <div className="flex items-start justify-between gap-4">
           <Link to={`/hostel/${hostel.id}`} className="min-w-0 hover:underline">
-            <h3 className="line-clamp-1 text-lg font-semibold tracking-tight text-foreground">
+            <h3 className="line-clamp-1 text-xl font-bold tracking-tight text-foreground">
               {hostel.name}
             </h3>
           </Link>
-
-          <div className="flex shrink-0 items-center gap-1 text-sm font-semibold text-slate-700">
+          
+          <div className="flex shrink-0 items-center gap-1.5 px-2 py-1 bg-muted/50 rounded-lg text-sm font-black text-amber-600 border border-border/20">
             <Star className="h-4 w-4 fill-amber-400 text-amber-400" />
             <span>{hostel.rating.toFixed(1)}</span>
-            <span className="text-xs font-medium text-muted-foreground">
-              ({reviewCount})
-            </span>
+            <span className="text-[10px] font-bold text-muted-foreground/60 ml-0.5">({reviewCount})</span>
           </div>
         </div>
-
-        <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
-          <MapPin className="h-3.5 w-3.5 shrink-0" />
+        
+        <div className="flex items-center gap-2 text-sm text-muted-foreground font-medium">
+          <MapPin className="h-4 w-4 shrink-0 text-primary/70" />
           <span className="line-clamp-1">{hostel.address}</span>
         </div>
 
-        <div className="flex flex-wrap gap-2">
+        <div className="flex flex-wrap gap-2.5 pt-1">
           {hostel.amenities.slice(0, 4).map((amenity) => {
             const Icon = amenityIcons[amenity];
 
@@ -97,25 +95,28 @@ export function HostelCard({ hostel }: HostelCardProps) {
               <Badge
                 key={amenity}
                 variant="secondary"
-                className="h-6 rounded-full border border-amber-100 bg-amber-50 px-2.5 text-[10px] font-medium text-amber-900"
+                className="h-7 rounded-lg border border-border/40 bg-muted/30 px-2.5 text-[10px] font-bold text-muted-foreground tracking-wide uppercase"
               >
-                {Icon ? <Icon className="h-3 w-3 opacity-70" /> : <Users className="h-3 w-3 opacity-50" />}
+                {Icon ? <Icon className="h-3.5 w-3.5 opacity-70" /> : <Users className="h-3.5 w-3.5 opacity-50" />}
                 {amenity}
               </Badge>
             );
           })}
         </div>
 
-        <div className="flex items-end justify-between border-t border-border/60 pt-3">
-          <div className="leading-none">
-            <span className="text-2xl font-bold tracking-tight text-teal-600">
-              MK {minRent.toLocaleString()}
-            </span>
-            <span className="ml-1 text-sm text-muted-foreground">/month</span>
+        <div className="flex items-center justify-between border-t border-border/50 pt-5 mt-2">
+          <div className="flex flex-col">
+            <span className="text-[10px] font-black uppercase tracking-[0.1em] text-muted-foreground leading-none mb-1">Monthly Rate</span>
+            <div className="flex items-baseline gap-1">
+              <span className="text-2xl font-black tracking-tighter text-teal-600">
+                MK {minRent.toLocaleString()}
+              </span>
+              <span className="text-xs font-bold text-muted-foreground">/mo</span>
+            </div>
           </div>
 
-          <div className="text-right text-xs text-muted-foreground">
-            {hostel.distance} km from campus
+          <div className="text-right text-[10px] font-black uppercase tracking-widest text-muted-foreground/60 bg-muted px-2 py-1 rounded-md">
+            {hostel.distance} km away
           </div>
         </div>
       </CardContent>

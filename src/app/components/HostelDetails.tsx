@@ -242,8 +242,8 @@ export function HostelDetails() {
                 </div>
                 <div className="flex items-center gap-1.5">
                   <Star className="h-4 w-4 fill-yellow-400 text-yellow-400" />
-                  <span className="text-sm font-bold">{hostel.rating.toFixed(1)}</span>
-                  <span className="text-xs text-white/60">({hostel.reviews.length} reviews)</span>
+                  <span className="text-sm font-bold text-white">{hostel.rating.toFixed(1)}</span>
+                  <span className="text-xs text-white/70">({hostel.reviews.length} reviews)</span>
                 </div>
               </div>
             </div>
@@ -273,14 +273,14 @@ export function HostelDetails() {
           </div>
         )}
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-16">
           
           {/* ================= MAIN CONTENT ================= */}
           <div className="lg:col-span-2 space-y-12">
             
             {/* Description Section */}
             <section className="animate-slide-up animation-delay-200">
-              <Card className="glass border-border/50 shadow-rich rounded-4xl overflow-hidden">
+              <Card className="bg-card border-border/50 shadow-rich rounded-4xl overflow-hidden">
                 <CardHeader>
                   <CardTitle className="font-display font-bold text-2xl flex items-center gap-3">
                     <Info className="h-6 w-6 text-primary" /> About This Property
@@ -319,10 +319,10 @@ export function HostelDetails() {
             {/* Available Rooms Section */}
             <section className="animate-slide-up animation-delay-400">
               <SectionHeader title="Available Rooms" icon={<Users className="h-6 w-6" />} />
-              <div className="grid gap-6">
+              <div className="grid gap-10">
                 {hostel.rooms.map(room => (
-                  <Card key={room.id} className="glass border-border/50 shadow-rich rounded-3xl overflow-hidden group hover:scale-[1.01] transition-all">
-                    <div className="p-6 md:p-10">
+                  <Card key={room.id} className="glass border-border/50 shadow-rich rounded-4xl overflow-hidden group hover:scale-[1.01] transition-all">
+                    <div className="p-8 md:p-12">
                       <div className="flex flex-col md:flex-row items-start justify-between gap-6 mb-8">
                         <div className="space-y-4">
                           <div className="flex items-center gap-3">
@@ -400,7 +400,7 @@ export function HostelDetails() {
             <div className="sticky top-28 space-y-8 animate-slide-left">
               
               {/* Inquiry Sidebar Card */}
-              <Card className="glass border-border/50 shadow-premium rounded-4xl overflow-hidden">
+              <Card className="bg-card border-border/50 shadow-premium rounded-4xl overflow-hidden">
                 <div className="h-2 bg-gradient-premium w-full" />
                 <CardHeader className="text-center pb-2">
                   <CardTitle className="font-display font-bold">Contact & Reservation</CardTitle>
@@ -421,7 +421,7 @@ export function HostelDetails() {
                           Send Inquiry
                         </Button>
                       </DialogTrigger>
-                      <DialogContent className="max-w-md glass border-white/20 backdrop-blur-2xl rounded-4xl overflow-hidden shadow-2xl">
+                      <DialogContent className="max-w-md bg-card border-border/50 rounded-4xl overflow-hidden shadow-2xl">
                         <DialogHeader>
                           <DialogTitle className="font-display font-black text-2xl text-center">Inquiry Form</DialogTitle>
                         </DialogHeader>
@@ -521,7 +521,7 @@ export function HostelDetails() {
 
       {/* ===== GUEST DETAILS DIALOG ===== */}
       <Dialog open={isGuestOpen} onOpenChange={setIsGuestOpen}>
-        <DialogContent className="max-w-sm glass border-white/20 backdrop-blur-2xl rounded-4xl overflow-hidden shadow-2xl">
+        <DialogContent className="max-w-sm bg-card border-border/50 rounded-4xl overflow-hidden shadow-2xl">
           <DialogHeader>
             <DialogTitle className="font-display font-black text-xl text-center">Your Contact Details</DialogTitle>
           </DialogHeader>
@@ -566,7 +566,7 @@ export function HostelDetails() {
             </Button>
             <p className="text-center text-xs text-muted-foreground">
               Already have an account?{' '}
-              <a href="/student/auth" className="text-primary font-semibold hover:underline">Sign in</a>
+              <a href="/auth" className="text-primary font-semibold hover:underline">Sign in</a>
             </p>
           </form>
         </DialogContent>
@@ -574,7 +574,7 @@ export function HostelDetails() {
 
       {/* Booking Confirmation Dialog */}
       <Dialog open={isBookingOpen} onOpenChange={setIsBookingOpen}>
-        <DialogContent className="max-w-md glass border-white/20 backdrop-blur-2xl rounded-4xl overflow-hidden shadow-2xl">
+        <DialogContent className="max-w-md bg-card border-border/50 rounded-4xl overflow-hidden shadow-2xl">
           <DialogHeader>
             <DialogTitle className="font-display font-black text-2xl text-center">Confirm Reservation</DialogTitle>
           </DialogHeader>
@@ -617,7 +617,7 @@ export function HostelDetails() {
 
       {/* Payment Instructions & Receipt Upload Dialog */}
       <Dialog open={isPaymentOpen} onOpenChange={setIsPaymentOpen}>
-        <DialogContent className="max-w-md glass border-white/20 backdrop-blur-2xl rounded-4xl overflow-hidden shadow-2xl">
+        <DialogContent className="max-w-md bg-card border-border/50 rounded-4xl overflow-hidden shadow-2xl">
           <DialogHeader>
             <DialogTitle className="font-display font-black text-2xl text-center">Final Payment Steps</DialogTitle>
           </DialogHeader>

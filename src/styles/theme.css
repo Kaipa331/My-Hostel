@@ -35,13 +35,13 @@
      2. RADIUS & SPACING 
      ========================================================================== */
   
-  --radius: 1rem;
+  --radius: 1.25rem;
 
   /* ==========================================================================
      3. TYPOGRAPHY
      ========================================================================== */
-  --font-sans: 'Roboto', system-ui, -apple-system, sans-serif;
-  --font-display: var(--font-sans);
+  --font-sans: 'Inter', system-ui, -apple-system, sans-serif;
+  --font-display: 'Outfit', var(--font-sans);
   --font-mono: 'JetBrains Mono', monospace;
 }
 
@@ -106,6 +106,8 @@
   --radius-lg: var(--radius);
   --radius-md: calc(var(--radius) - 2px);
   --radius-sm: calc(var(--radius) - 4px);
+  --radius-4xl: 2rem;
+  --radius-5xl: 3rem;
 
   /* Font Families */
   --font-sans: var(--font-sans);

@@ -11,7 +11,7 @@ export function ListYourProperty() {
       title="Turn your hostel into a stronger, more trusted student listing."
       description="Create a landlord account, publish your property details, and start reaching students who are already searching for accommodation."
       actions={
-        <Link to="/landlord/auth" className="w-full sm:w-auto">
+        <Link to="/auth" className="w-full sm:w-auto">
           <Button className="w-full">Create Landlord Account</Button>
         </Link>
       }
@@ -24,7 +24,7 @@ export function ListYourProperty() {
             <p className="mx-auto mb-6 max-w-2xl opacity-90">
               Create your landlord account and list your first property. It is free to get started and easy to expand as your portfolio grows.
             </p>
-            <Link to="/landlord/auth">
+            <Link to="/auth">
               <Button variant="secondary" size="lg">
                 Create Landlord Account
               </Button>
@@ -196,7 +196,7 @@ export function ListYourProperty() {
               Join the growing community of successful landlords on MyHostel. List your property today and start receiving bookings from quality tenants.
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link to="/landlord/auth" className="w-full sm:w-auto">
+              <Link to="/auth" className="w-full sm:w-auto">
                 <Button variant="secondary" size="lg" className="w-full">
                   List Your Property Now
                 </Button>

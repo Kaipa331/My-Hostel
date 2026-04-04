@@ -19,7 +19,7 @@ export function StudentDashboard() {
 
   useEffect(() => {
     if (!student) {
-      navigate('/student/auth');
+      navigate('/auth');
     }
   }, [student, navigate]);
 

@@ -12,7 +12,7 @@ import {
 } from './ui/select';
 import { Slider } from './ui/slider';
 import { Card, CardContent } from './ui/card';
-import { Search, MapPin, Home, Building2, ShieldCheck, Clock } from 'lucide-react';
+import { Search, MapPin, Home } from 'lucide-react';
 
 const heroImage = '/hero-hostel.jpg';
 
@@ -24,6 +24,7 @@ export function HomePage() {
   const [maxPrice, setMaxPrice] = useState(200000);
   const [selectedRoomType, setSelectedRoomType] = useState('all');
   const [maxDistance, setMaxDistance] = useState(10);
+
   const universities = useMemo(
     () => Array.from(new Set(hostels.map((h) => h.university).filter((u) => u && u.trim()))),
     [hostels]
@@ -66,28 +67,29 @@ export function HomePage() {
 
   return (
     <div className="min-h-screen bg-background text-foreground">
+      {/* HERO SECTION */}
       <section className="relative isolate overflow-hidden">
         <div className="absolute inset-0">
           <div
             className="absolute inset-0 bg-cover bg-center"
             style={{ backgroundImage: `url(${heroImage})` }}
           />
-          <div className="absolute inset-0 bg-slate-950/36" />
-          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(13,148,136,0.44),rgba(15,23,42,0.2))]" />
+          <div className="absolute inset-0 bg-slate-950/40" />
+          <div className="absolute inset-0 bg-[linear-gradient(90deg,rgba(13,148,136,0.44),rgba(15,23,42,0.25))]" />
         </div>
 
         <div className="relative mx-auto flex min-h-[58vh] w-full max-w-6xl items-center justify-center px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
           <div className="w-full max-w-3xl text-center">
-            <h1 className="font-display text-4xl font-black leading-tight tracking-tight text-white sm:text-5xl lg:text-6xl">
-              Find Your Perfect Hostel
+            <h1 className="font-display text-4xl font-black leading-tight tracking-tight !text-white sm:text-5xl lg:text-7xl">
+              Find Your Own Hostel
             </h1>
-            <p className="mx-auto mt-4 max-w-2xl text-base leading-7 text-white/85 sm:text-lg">
+            <p className="mx-auto mt-6 max-w-2xl text-base leading-7 !text-white/90 sm:text-lg">
               Browse verified student hostels near your campus. Safe, affordable, and just a click away.
             </p>
 
-            <div className="mx-auto mt-8 max-w-2xl rounded-[1.5rem] border border-white/20 bg-white/92 p-2 shadow-2xl backdrop-blur-xl sm:mt-10">
-              <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-                <div className="flex h-14 flex-1 items-center gap-3 rounded-2xl px-4 text-foreground">
+            <div className="mx-auto mt-10 max-w-2xl rounded-[1.75rem] border border-white/20 bg-white/95 p-2 shadow-2xl backdrop-blur-xl">
+              <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
+                <div className="flex h-14 flex-1 items-center gap-3 rounded-2xl px-5 text-foreground">
                   <MapPin className="h-5 w-5 shrink-0 text-muted-foreground" />
                   <Input
                     placeholder="Search by location, hostel name..."
@@ -98,7 +100,7 @@ export function HomePage() {
                 </div>
                 <Button
                   size="lg"
-                  className="h-12 rounded-2xl bg-teal-500 px-6 font-semibold text-white hover:bg-teal-400 sm:h-14 sm:px-8"
+                  className="h-12 rounded-2xl bg-[#D4AF37] px-8 font-semibold text-white shadow-lg shadow-[#D4AF37]/30 hover:bg-[#C5A017] sm:h-14"
                   onClick={scrollToListings}
                 >
                   <Search className="mr-2 h-4 w-4" />
@@ -108,41 +110,20 @@ export function HomePage() {
             </div>
           </div>
         </div>
-
-        <div className="relative z-10 mx-auto -mt-8 grid max-w-5xl gap-4 px-4 pb-10 sm:-mt-10 sm:gap-5 sm:px-6 lg:grid-cols-3 lg:px-8">
-          {[
-            { icon: Building2, label: 'Verified Hostels', value: `${hostels.length}+` },
-            { icon: ShieldCheck, label: 'Trusted Landlords', value: `${Math.max(universities.length * 10, 50)}+` },
-            { icon: Clock, label: 'Avg. Booking Time', value: '< 24hrs' },
-          ].map(({ icon: Icon, label, value }) => (
-            <div
-              key={label}
-              className="rounded-[1.5rem] border border-border/50 bg-background/95 p-6 shadow-[0_18px_50px_-24px_rgba(15,23,42,0.35)] backdrop-blur-md"
-            >
-              <div className="flex items-center gap-4">
-                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-teal-500/10">
-                  <Icon className="h-6 w-6 text-primary" />
-                </div>
-                <div>
-                  <p className="text-3xl font-black tracking-tight text-foreground">{value}</p>
-                  <p className="text-sm text-muted-foreground">{label}</p>
-                </div>
-              </div>
-            </div>
-          ))}
-        </div>
       </section>
 
-      <section className="mx-auto max-w-6xl px-4 pb-24 sm:px-6 lg:px-8">
-        <div id="home-listings" className="grid gap-8 lg:grid-cols-[296px_minmax(0,1fr)] lg:gap-10">
+      {/* LISTINGS + FILTERS SECTION */}
+      <section className="mx-auto max-w-7xl px-6 pt-24 pb-32 sm:px-8 lg:px-10">
+        <div id="home-listings" className="grid gap-14 lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-20">
+          {/* Sidebar Filters */}
           <aside className="lg:col-span-1">
-            <div className="sticky top-24 space-y-6">
+            <div className="sticky top-24 space-y-8">
               <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Refine search</p>
-                <h2 className="mt-2 font-display text-3xl font-black tracking-tight">Find the right fit</h2>
+                <p className="text-sm font-semibold uppercase tracking-widest text-primary">Refine search</p>
+                <h2 className="mt-3 font-display text-3xl font-black tracking-tight">Find the right fit</h2>
               </div>
 
-              <div className="space-y-7 rounded-[2rem] border border-border/60 bg-card p-5 shadow-lg sm:p-6">
+              <div className="space-y-8 rounded-3xl border border-border/60 bg-card p-6 shadow-lg sm:p-8">
                 <FilterSelect
                   label="University"
                   value={selectedUniversity}
@@ -157,9 +138,9 @@ export function HomePage() {
                   options={['all', 'single', 'double', 'shared']}
                 />
 
-                <div className="space-y-4">
+                <div className="space-y-5">
                   <label className="text-sm font-medium">
-                    Max Price: MK {maxPrice.toLocaleString()}
+                    Max Price: <span className="font-semibold">MK {maxPrice.toLocaleString()}</span>
                   </label>
                   <Slider
                     min={0}
@@ -170,7 +151,7 @@ export function HomePage() {
                   />
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-5">
                   <label className="text-sm font-medium">
                     Distance: Up to {maxDistance} km
                   </label>
@@ -183,38 +164,50 @@ export function HomePage() {
                   />
                 </div>
 
-                <Button variant="outline" onClick={resetFilters} className="w-full">
-                  Clear Filters
+                <Button variant="outline" onClick={resetFilters} className="w-full h-11">
+                  Clear All Filters
                 </Button>
               </div>
             </div>
           </aside>
 
+          {/* Main Content */}
           <div className="lg:col-span-3">
-            <div className="mb-8 flex flex-col gap-4 rounded-[2rem] border border-border/60 bg-gradient-to-br from-primary/[0.08] via-background to-amber-100/40 p-5 shadow-sm sm:mb-10 sm:gap-5 sm:p-7 sm:flex-row sm:items-end sm:justify-between">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-[0.24em] text-primary">Available now</p>
-                <h2 className="mt-2 max-w-2xl font-display text-3xl font-black tracking-tight text-foreground">
-                  Verified hostels near campus
-                </h2>
-                <p className="mt-2 text-muted-foreground">
-                  Showing {filteredHostels.length} listing{filteredHostels.length === 1 ? '' : 's'} that match your search.
-                </p>
-              </div>
-              <div className="rounded-2xl border border-primary/10 bg-background/80 px-4 py-4 text-sm leading-6 text-muted-foreground shadow-sm sm:px-5">
-                Compare price, location, and amenities at a glance.
+            {/* Verified Hostels Header */}
+            <div className="mb-12 rounded-3xl border border-border/60 bg-gradient-to-br from-card/30 via-card to-card p-8 shadow-rich">
+              <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
+                <div className="space-y-3">
+                  <p className="text-sm font-semibold uppercase tracking-[0.08em] text-primary">
+                    AVAILABLE NOW
+                  </p>
+                  <h2 className="font-display text-3xl font-black tracking-tight text-foreground lg:text-4xl">
+                    Verified hostels near campus
+                  </h2>
+                  <p className="text-lg text-muted-foreground">
+                    Showing{' '}
+                    <span className="font-semibold text-foreground">{filteredHostels.length}</span>{' '}
+                    listing{filteredHostels.length === 1 ? '' : 's'} that match your search.
+                  </p>
+                </div>
+
+                <div className="rounded-2xl border border-border/30 bg-background/50 px-6 py-6 text-sm text-muted-foreground shadow-inner max-w-xs sm:text-right">
+                  Compare price, location, amenities, and availability at a glance.
+                </div>
               </div>
             </div>
 
-            {filteredHostels.length ? (
-              <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
-                {filteredHostels.map((h) => (
-                  <HostelCard key={h.id} hostel={h} />
-                ))}
-              </div>
-            ) : (
-              <EmptyState onReset={resetFilters} />
-            )}
+            {/* Hostel Cards Grid - Added extra top spacing */}
+            <div className="pt-4">
+              {filteredHostels.length > 0 ? (
+                <div className="grid gap-10 sm:grid-cols-2 xl:grid-cols-3">
+                  {filteredHostels.map((h) => (
+                    <HostelCard key={h.id} hostel={h} />
+                  ))}
+                </div>
+              ) : (
+                <EmptyState onReset={resetFilters} />
+              )}
+            </div>
           </div>
         </div>
       </section>
@@ -228,10 +221,10 @@ function FilterSelect({ label, value, onChange, options }: any) {
   const validOptions = options.filter((opt: string) => opt && opt.trim());
 
   return (
-    <div className="space-y-2">
+    <div className="space-y-2.5">
       <label className="text-sm font-medium">{label}</label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="h-11 rounded-xl">
+        <SelectTrigger className="h-11 rounded-2xl">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>
@@ -248,14 +241,14 @@ function FilterSelect({ label, value, onChange, options }: any) {
 
 function EmptyState({ onReset }: any) {
   return (
-    <Card className="border-dashed bg-muted/30 shadow-none rounded-[2rem]">
-      <CardContent className="py-20 text-center">
-        <Home className="w-12 h-12 text-muted-foreground mx-auto mb-4 opacity-50" />
-        <h3 className="text-lg font-semibold text-foreground mb-1">No hostels found</h3>
-        <p className="text-muted-foreground mb-6">
-          Try adjusting your search or resetting filters.
+    <Card className="border-dashed bg-muted/30 shadow-none rounded-3xl">
+      <CardContent className="py-24 text-center">
+        <Home className="mx-auto mb-6 h-14 w-14 text-muted-foreground opacity-60" />
+        <h3 className="text-xl font-semibold">No hostels found</h3>
+        <p className="mt-3 text-muted-foreground max-w-sm mx-auto">
+          Try adjusting your filters or search terms.
         </p>
-        <Button variant="outline" onClick={onReset}>
+        <Button variant="outline" onClick={onReset} className="mt-8">
           Reset Filters
         </Button>
       </CardContent>

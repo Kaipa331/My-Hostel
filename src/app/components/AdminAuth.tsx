@@ -42,11 +42,11 @@ export function AdminAuth() {
 
       <div className="w-full max-w-sm relative z-10">
         <div className="text-center mb-8">
-          <div className="mx-auto w-20 h-20 bg-destructive/10 border border-destructive/20 rounded-2xl flex items-center justify-center mb-5 shadow-2xl shadow-destructive/10">
-            <Shield className="h-10 w-10 text-destructive" />
+          <div className="mx-auto w-28 h-28 bg-neutral-900 border border-neutral-800 rounded-3xl flex items-center justify-center mb-8 shadow-2xl shadow-destructive/20 overflow-hidden p-2 animate-in fade-in zoom-in duration-1000">
+            <img src="/logo.jpg" alt="MyHostel Logo" className="w-full h-full object-contain rounded-2xl" />
           </div>
-          <h1 className="text-3xl font-display font-black text-white tracking-tight">System Admin</h1>
-          <p className="text-neutral-500 mt-2 text-sm">Secure access to the MyHostel platform</p>
+          <h1 className="text-4xl font-display font-black text-white mb-6">System Admin</h1>
+          <p className="text-neutral-500 text-sm font-medium">Secure access to the MyHostel platform</p>
         </div>
 
         <Card className="border border-neutral-800 shadow-2xl overflow-hidden rounded-3xl bg-neutral-900/80 backdrop-blur-md text-white">
@@ -55,8 +55,8 @@ export function AdminAuth() {
             <CardTitle className="text-white text-xl font-display font-bold">Admin Login</CardTitle>
             <CardDescription className="text-neutral-400">Enter your credentials to manage the platform</CardDescription>
           </CardHeader>
-          <CardContent className="px-6 pb-6 pt-2">
-            <form onSubmit={handleSubmit} className="space-y-4">
+          <CardContent className="px-8 pb-8 pt-4">
+            <form onSubmit={handleSubmit} className="space-y-6">
               <div className="space-y-1.5">
                 <Label htmlFor="email" className="text-xs font-semibold uppercase tracking-wide text-neutral-500">Email Address</Label>
                 <Input
@@ -89,9 +89,9 @@ export function AdminAuth() {
                 )}
               </Button>
 
-              <div className="text-center p-3 bg-neutral-800/60 rounded-xl border border-neutral-700/50 mt-2">
-                <p className="text-xs text-neutral-500 font-medium uppercase tracking-wider mb-1">Internal Access Only</p>
-                <p className="text-xs text-neutral-400 font-mono">admin@hostelfinder.mw / admin123</p>
+              <div className="text-center p-4 bg-neutral-800/40 rounded-2xl border border-neutral-700/50 mt-10">
+                <p className="text-[10px] text-neutral-500 font-bold uppercase tracking-widest mb-2 opacity-60">Internal Access Only</p>
+                <p className="text-xs text-neutral-300 font-mono font-medium">admin@hostelfinder.mw / admin123</p>
               </div>
             </form>
           </CardContent>

@@ -19,7 +19,7 @@ export function LandlordDashboard() {
 
   useEffect(() => {
     if (!user || user.role !== 'landlord') {
-      navigate('/landlord/auth');
+      navigate('/auth');
     }
   }, [user, navigate]);
 

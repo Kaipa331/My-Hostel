@@ -12,7 +12,7 @@ export function ForLandlords() {
       description="MyHostel helps landlords reach serious student renters, manage listings, and present properties with more credibility."
       actions={
         <div className="flex flex-col gap-3 sm:flex-row">
-          <Link to="/landlord/auth" className="w-full sm:w-auto">
+          <Link to="/auth" className="w-full sm:w-auto">
             <Button className="w-full">Start Listing</Button>
           </Link>
           <Link to="/contact" className="w-full sm:w-auto">
@@ -28,7 +28,7 @@ export function ForLandlords() {
               <Building className="mx-auto mb-4 h-12 w-12 text-amber-500" />
               <h3 className="mb-2 text-lg font-semibold">List Your Property</h3>
               <p className="mb-4 text-muted-foreground">Add your hostel to our platform and reach thousands of students.</p>
-              <Link to="/landlord/auth">
+              <Link to="/auth">
                 <Button className="w-full">Get Started</Button>
               </Link>
             </CardContent>
@@ -39,7 +39,7 @@ export function ForLandlords() {
               <Users className="mx-auto mb-4 h-12 w-12 text-primary" />
               <h3 className="mb-2 text-lg font-semibold">Manage Tenants</h3>
               <p className="mb-4 text-muted-foreground">Easily manage bookings, payments, and tenant communication.</p>
-              <Link to="/landlord/auth">
+              <Link to="/auth">
                 <Button variant="outline" className="w-full">Sign In</Button>
               </Link>
             </CardContent>
@@ -50,7 +50,7 @@ export function ForLandlords() {
               <TrendingUp className="mx-auto mb-4 h-12 w-12 text-emerald-500" />
               <h3 className="mb-2 text-lg font-semibold">Track Performance</h3>
               <p className="mb-4 text-muted-foreground">Monitor occupancy rates and revenue with clearer analytics.</p>
-              <Link to="/landlord/auth">
+              <Link to="/auth">
                 <Button variant="outline" className="w-full">View Dashboard</Button>
               </Link>
             </CardContent>
@@ -195,7 +195,7 @@ export function ForLandlords() {
                 Join hundreds of successful landlords who have increased their occupancy and revenue with MyHostel.
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link to="/landlord/auth" className="w-full sm:w-auto">
+              <Link to="/auth" className="w-full sm:w-auto">
                 <Button variant="secondary" size="lg" className="w-full">
                   Start Listing Today
                 </Button>

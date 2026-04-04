@@ -15,7 +15,7 @@ export function ForStudents() {
           <Link to="/" className="w-full sm:w-auto">
             <Button className="w-full">Browse Hostels</Button>
           </Link>
-          <Link to="/student/auth" className="w-full sm:w-auto">
+          <Link to="/auth" className="w-full sm:w-auto">
             <Button variant="outline" className="w-full">Create Account</Button>
           </Link>
         </div>
@@ -39,7 +39,7 @@ export function ForStudents() {
               <Heart className="mx-auto mb-4 h-12 w-12 text-rose-500" />
               <h3 className="mb-2 text-lg font-semibold">Save Favorites</h3>
               <p className="mb-4 text-muted-foreground">Save your favorite hostels and compare options easily.</p>
-              <Link to="/student/auth">
+              <Link to="/auth">
                 <Button variant="outline" className="w-full">Create Account</Button>
               </Link>
             </CardContent>
@@ -50,7 +50,7 @@ export function ForStudents() {
               <Shield className="mx-auto mb-4 h-12 w-12 text-emerald-500" />
               <h3 className="mb-2 text-lg font-semibold">Book Securely</h3>
               <p className="mb-4 text-muted-foreground">Safe and secure booking process with verified hostels.</p>
-              <Link to="/student/auth">
+              <Link to="/auth">
                 <Button variant="outline" className="w-full">Sign In</Button>
               </Link>
             </CardContent>
@@ -150,7 +150,7 @@ export function ForStudents() {
                 Join thousands of students who have found their perfect accommodation through MyHostel.
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link to="/student/auth" className="w-full sm:w-auto">
+              <Link to="/auth" className="w-full sm:w-auto">
                 <Button variant="secondary" size="lg" className="w-full">
                   Get Started
                 </Button>

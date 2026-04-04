@@ -91,7 +91,7 @@ export function AboutUs() {
                 Whether you're a student looking for accommodation or a landlord wanting to list your property, MyHostel is here to help.
             </p>
             <div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
-              <Link to="/student/auth" className="w-full sm:w-auto">
+              <Link to="/auth" className="w-full sm:w-auto">
                 <Button variant="secondary" size="lg" className="w-full">
                   Join as Student
                 </Button>

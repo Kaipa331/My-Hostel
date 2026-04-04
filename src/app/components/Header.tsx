@@ -144,24 +144,13 @@ export function Header() {
               </div>
             ) : (
               <div className="flex flex-1 items-center justify-end gap-1.5 sm:flex-none sm:gap-2">
-                <Link to="/student/auth">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="rounded-xl px-3 text-[10px] font-black uppercase tracking-[0.14em] hover:bg-background sm:px-5 sm:tracking-[0.18em]"
-                  >
-                    <span className="sm:hidden">Student</span>
-                    <span className="hidden sm:inline">Student Login</span>
-                  </Button>
-                </Link>
-
-                <Link to="/landlord/auth">
+                <Link to="/auth">
                   <Button 
                     size="sm"
                     className="rounded-xl bg-accent px-3 text-[10px] font-black uppercase tracking-[0.14em] text-accent-foreground shadow-lg shadow-accent/20 transition-all hover:scale-105 hover:bg-accent/90 active:scale-95 sm:px-5 sm:tracking-[0.18em]"
                   >
-                    <span className="sm:hidden">Landlord</span>
-                    <span className="hidden sm:inline">Landlord Login</span>
+                    <span className="sm:hidden">Login</span>
+                    <span className="hidden sm:inline">Sign In</span>
                   </Button>
                 </Link>
               </div>

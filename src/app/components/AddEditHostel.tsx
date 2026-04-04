@@ -51,7 +51,7 @@ export function AddEditHostel() {
 
   useEffect(() => {
     if (!user || user.role !== 'landlord') {
-      navigate('/landlord/auth');
+      navigate('/auth');
       return;
     }
 
@@ -348,7 +348,7 @@ export function AddEditHostel() {
                 />
                 <label 
                   htmlFor="photos" 
-                  className="flex flex-col items-center justify-center px-12 py-16 border-2 border-dashed border-border/50 rounded-4xl bg-muted/10 hover:bg-muted/20 cursor-pointer transition-all hover:border-primary/50 group"
+                  className="flex flex-col items-center justify-center px-12 py-20 border-2 border-dashed border-border/50 rounded-4xl bg-muted/10 hover:bg-muted/20 cursor-pointer transition-all hover:border-primary/50 group"
                 >
                   <div className={`w-16 h-16 rounded-full bg-muted/50 flex items-center justify-center mb-4 transition-transform group-hover:scale-110 ${isUploading ? 'animate-pulse' : ''}`}>
                     <Plus className="h-8 w-8 text-muted-foreground" />
