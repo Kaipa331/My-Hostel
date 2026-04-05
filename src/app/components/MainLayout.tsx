@@ -17,7 +17,7 @@ export function MainLayout() {
       <Header />
 
       {/* Main Content */}
-      <main className="flex-1 w-full animate-slide-up pt-[65px] lg:pt-[81px] pb-[88px] lg:pb-0">
+      <main className="flex-1 w-full animate-slide-up pt-16 lg:pt-24 pb-24 lg:pb-0">
         <Outlet />
       </main>
 
