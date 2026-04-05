@@ -10,7 +10,7 @@ export function WhatsAppButton() {
       rel="noopener noreferrer"
       id="whatsapp-float-btn"
       aria-label="Chat on WhatsApp"
-      className="fixed bottom-4 right-4 sm:bottom-6 sm:right-6 z-50 flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 group"
+      className="fixed bottom-[100px] lg:bottom-6 right-4 sm:right-6 z-50 flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 rounded-full shadow-2xl hover:scale-110 active:scale-95 transition-all duration-300 group"
       style={{ backgroundColor: '#25D366' }}
     >
       {/* WhatsApp SVG Icon */}
