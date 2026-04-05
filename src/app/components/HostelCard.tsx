@@ -50,7 +50,7 @@ export function HostelCard({ hostel }: HostelCardProps) {
 
         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 via-transparent to-transparent" />
 
-        <Badge className="absolute left-3 top-3 rounded-full border-0 bg-white/95 px-2.5 py-1 text-[10px] font-semibold text-slate-700 shadow-sm">
+        <Badge className="absolute left-3 top-3 rounded-full border-0 bg-white/95 px-2.5 py-1 text-[10px] font-semibold text-slate-700 shadow-sm whitespace-nowrap">
           {formatRoomType(cheapestRoom?.type || 'room')}
         </Badge>
 
@@ -61,7 +61,7 @@ export function HostelCard({ hostel }: HostelCardProps) {
             </span>
           </div>
         ) : (
-          <Badge className="absolute right-3 top-3 rounded-full border-0 bg-amber-400 px-2.5 py-1 text-[10px] font-semibold text-amber-950 shadow-sm">
+          <Badge className="absolute right-3 top-3 rounded-full border-0 bg-amber-400 px-2.5 py-1 text-[10px] font-semibold text-amber-950 shadow-sm whitespace-nowrap">
             {totalAvailable} room{totalAvailable === 1 ? '' : 's'}
           </Badge>
         )}
@@ -87,7 +87,7 @@ export function HostelCard({ hostel }: HostelCardProps) {
           <span className="line-clamp-1">{hostel.address}</span>
         </div>
 
-        <div className="flex flex-wrap gap-2.5 pt-1">
+        <div className="flex flex-wrap gap-3 pt-1">
           {hostel.amenities.slice(0, 4).map((amenity) => {
             const Icon = amenityIcons[amenity];
 

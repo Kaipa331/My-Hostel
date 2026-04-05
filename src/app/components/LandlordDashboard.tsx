@@ -67,7 +67,7 @@ export function LandlordDashboard() {
     <div className="min-h-screen bg-background text-foreground pb-20">
       
       {/* ================= HEADER ================= */}
-      <div className="sticky top-[65px] lg:top-[81px] z-40 glass border-b border-border/50 bg-card/50 backdrop-blur-md transition-all">
+      <div className="sticky top-[64px] lg:top-[80px] z-40 glass border-b border-border/50 bg-card/50 backdrop-blur-md transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -75,7 +75,7 @@ export function LandlordDashboard() {
                 <Building2 className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-display font-bold tracking-tight">Landlord Dashboard</h1>
+                <h1 className="text-xl font-display font-bold tracking-tight text-foreground">Landlord Dashboard</h1>
                 <p className="text-sm text-muted-foreground font-medium">Welcome back, {user.name}</p>
               </div>
             </div>
@@ -98,7 +98,7 @@ export function LandlordDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 animate-slide-up">
         
         {/* ================= STATS ================= */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12">
           <StatCard 
             label="Total Hostels" 
             value={myHostels.length} 
@@ -122,6 +122,51 @@ export function LandlordDashboard() {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+          <aside className="space-y-10 order-first lg:order-last">
+            <section>
+              <SectionHeader title="Recent Inquiries" count={myInquiries.length} icon={<Mail className="h-5 w-5 text-primary" />} />
+              
+              {myInquiries.length > 0 ? (
+                <div className="space-y-4">
+                  {myInquiries.slice(0, 10).map(inquiry => (
+                    <Card key={inquiry.id} className="glass border-border/30 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group/inq">
+                      <div className="p-4 space-y-4 text-foreground">
+                        <div>
+                          <p className="font-display font-bold text-sm mb-1">{inquiry.studentName}</p>
+                          <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter mb-2">{inquiry.hostelName}</p>
+                          <Badge variant="outline" className="bg-primary/5 text-primary border-primary/10 rounded-md text-[10px] py-0">{inquiry.roomType}</Badge>
+                        </div>
+                        
+                        <div className="space-y-1.5 text-xs text-muted-foreground font-medium border-t border-border/30 pt-3">
+                          <div className="flex items-center gap-2 group-hover/inq:text-primary transition-colors">
+                            <Mail className="h-3.5 w-3.5" />
+                            <span className="truncate">{inquiry.studentEmail}</span>
+                          </div>
+                          <div className="flex items-center gap-2">
+                            <Phone className="h-3.5 w-3.5" />
+                            <span>{inquiry.studentPhone}</span>
+                          </div>
+                        </div>
+                        
+                        {inquiry.message && (
+                          <p className="text-xs text-muted-foreground italic bg-muted/30 p-2 rounded-lg line-clamp-2 text-foreground">"{inquiry.message}"</p>
+                        )}
+                        
+                        <div className="flex justify-end">
+                          <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tight">
+                            {new Date(inquiry.date).toLocaleDateString()}
+                          </span>
+                        </div>
+                      </div>
+                    </Card>
+                  ))}
+                </div>
+              ) : (
+                <EmptyState icon={<Mail className="h-10 w-10" />} message="No inquiries yet" />
+              )}
+            </section>
+          </aside>
+
           <div className="lg:col-span-2 space-y-12">
             
             {/* ================= MANAGE BOOKINGS ================= */}
@@ -134,7 +179,7 @@ export function LandlordDashboard() {
                     const hostel = hostels.find(h => h.id === booking.hostelId);
                     return (
                       <Card key={booking.id} className="glass border-border/50 shadow-rich overflow-hidden hover:scale-[1.01] transition-transform">
-                        <div className="p-4 sm:p-6">
+                        <div className="p-4 sm:p-6 text-foreground">
                           <div className="flex flex-col lg:flex-row items-start justify-between gap-6 mb-6">
                             <div className="space-y-2">
                               <div className="flex items-center gap-3">
@@ -213,7 +258,7 @@ export function LandlordDashboard() {
                 <div className="grid gap-6">
                   {myHostels.map(hostel => (
                     <Card key={hostel.id} className="glass border-border/50 shadow-rich overflow-hidden group">
-                      <div className="p-4 sm:p-6">
+                      <div className="p-4 sm:p-6 text-foreground">
                         <div className="flex flex-col lg:flex-row items-start justify-between gap-6 mb-6">
                           <div className="space-y-3 flex-1">
                             <h3 className="text-2xl font-display font-bold group-hover:text-primary transition-colors">{hostel.name}</h3>
@@ -271,52 +316,6 @@ export function LandlordDashboard() {
               )}
             </section>
           </div>
-
-          {/* ================= SIDEBAR ================= */}
-          <aside className="space-y-10">
-            <section>
-              <SectionHeader title="Recent Inquiries" count={myInquiries.length} icon={<Mail className="h-5 w-5 text-primary" />} />
-              
-              {myInquiries.length > 0 ? (
-                <div className="space-y-4">
-                  {myInquiries.slice(0, 10).map(inquiry => (
-                    <Card key={inquiry.id} className="glass border-border/30 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group/inq">
-                      <div className="p-4 space-y-4">
-                        <div>
-                          <p className="font-display font-bold text-sm mb-1">{inquiry.studentName}</p>
-                          <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tighter mb-2">{inquiry.hostelName}</p>
-                          <Badge variant="outline" className="bg-primary/5 text-primary border-primary/10 rounded-md text-[10px] py-0">{inquiry.roomType}</Badge>
-                        </div>
-                        
-                        <div className="space-y-1.5 text-xs text-muted-foreground font-medium border-t border-border/30 pt-3">
-                          <div className="flex items-center gap-2 group-hover/inq:text-primary transition-colors">
-                            <Mail className="h-3.5 w-3.5" />
-                            <span className="truncate">{inquiry.studentEmail}</span>
-                          </div>
-                          <div className="flex items-center gap-2">
-                            <Phone className="h-3.5 w-3.5" />
-                            <span>{inquiry.studentPhone}</span>
-                          </div>
-                        </div>
-                        
-                        {inquiry.message && (
-                          <p className="text-xs text-muted-foreground italic bg-muted/30 p-2 rounded-lg line-clamp-2">"{inquiry.message}"</p>
-                        )}
-                        
-                        <div className="flex justify-end">
-                          <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tight">
-                            {new Date(inquiry.date).toLocaleDateString()}
-                          </span>
-                        </div>
-                      </div>
-                    </Card>
-                  ))}
-                </div>
-              ) : (
-                <EmptyState icon={<Mail className="h-10 w-10" />} message="No inquiries yet" />
-              )}
-            </section>
-          </aside>
         </div>
       </div>
     </div>
@@ -332,7 +331,7 @@ function StatCard({ label, value, icon }: any) {
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">{label}</p>
-            <p className="text-2xl sm:text-3xl font-display font-black text-gradient leading-none group-hover:scale-110 transition-transform origin-left">{value}</p>
+            <p className="text-xl sm:text-3xl lg:text-4xl font-display font-black text-gradient leading-none group-hover:scale-105 transition-transform origin-left">{value}</p>
           </div>
           <div className="w-14 h-14 bg-muted/50 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-card transition-colors duration-500 text-2xl">
             {icon}
@@ -347,10 +346,10 @@ function SectionHeader({ title, count, icon }: any) {
   return (
     <div className="flex items-center justify-between mb-6 group">
       <div className="flex items-center gap-3">
-        <div className="p-2.5 bg-muted rounded-xl shadow-sm group-hover:scale-110 transition-transform duration-500">
+        <div className="p-2.5 bg-muted rounded-xl shadow-sm group-hover:scale-110 transition-transform duration-500 text-foreground">
           {icon}
         </div>
-        <h2 className="text-2xl font-display font-bold tracking-tight">{title}</h2>
+        <h2 className="text-2xl font-display font-bold tracking-tight text-foreground">{title}</h2>
       </div>
       <Badge variant="secondary" className="px-3 rounded-full font-bold text-muted-foreground">
         {count}

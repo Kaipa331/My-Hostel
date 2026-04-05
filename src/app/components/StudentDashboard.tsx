@@ -46,7 +46,7 @@ export function StudentDashboard() {
     <div className="min-h-screen bg-background text-foreground pb-20">
       
       {/* ================= HEADER ================= */}
-      <div className="sticky top-[65px] lg:top-[81px] z-40 glass border-b border-border/50 bg-card/50 backdrop-blur-md transition-all">
+      <div className="sticky top-[64px] lg:top-[80px] z-40 glass border-b border-border/50 bg-card/50 backdrop-blur-md transition-all">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -54,7 +54,7 @@ export function StudentDashboard() {
                 <GraduationCap className="h-6 w-6 text-white" />
               </div>
               <div>
-                <h1 className="text-xl font-display font-bold tracking-tight">Student Dashboard</h1>
+                <h1 className="text-xl font-display font-bold tracking-tight text-foreground">Student Dashboard</h1>
                 <p className="text-sm text-muted-foreground font-medium">{student.name}</p>
               </div>
             </div>
@@ -69,7 +69,7 @@ export function StudentDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 animate-slide-up">
         
         {/* ================= QUICK STATS ================= */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
           <StatCard 
             label="Saved Hostels" 
             value={savedHostels.length} 
@@ -87,10 +87,67 @@ export function StudentDashboard() {
           />
         </div>
 
-        <div className="grid lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
           
+          <aside className="space-y-10 order-first lg:order-last">
+            {/* ================= PROFILE CARD ================= */}
+            <Card className="glass border-border/50 shadow-rich rounded-3xl overflow-hidden sticky top-28">
+              <div className="h-2 bg-gradient-premium w-full" />
+              <CardHeader className="text-center pb-2">
+                <div className="mx-auto w-20 h-20 bg-muted/50 rounded-full flex items-center justify-center border-4 border-background shadow-lg mb-4">
+                  <User className="h-10 w-10 text-muted-foreground" />
+                </div>
+                <CardTitle className="font-display font-bold">My Profile</CardTitle>
+              </CardHeader>
+              <CardContent className="space-y-6">
+                <ProfileItem icon={<User className="h-4 w-4" />} label="Name" value={student.name} />
+                <ProfileItem icon={<Mail className="h-4 w-4" />} label="Email" value={student.email} />
+                <ProfileItem icon={<Phone className="h-4 w-4" />} label="Phone" value={student.phone} />
+                <ProfileItem icon={<Building className="h-4 w-4" />} label="University" value={student.university} />
+                <ProfileItem icon={<GraduationCap className="h-4 w-4" />} label="Student ID" value={student.studentId} />
+                
+                <Button variant="outline" className="w-full rounded-xl border-border/50 hover:bg-muted/50">
+                  Edit Profile
+                </Button>
+              </CardContent>
+            </Card>
+
+            {/* ================= RECENT INQUIRIES ================= */}
+            <section>
+              <SectionHeader title="Recent Inquiries" count={studentInquiries.length} icon={<Mail className="h-5 w-5 text-primary" />} />
+              
+              {studentInquiries.length === 0 ? (
+                <EmptyState 
+                  icon={<Mail className="h-10 w-10" />} 
+                  message="No inquiries sent yet" 
+                />
+              ) : (
+                <div className="space-y-4">
+                  {studentInquiries.slice(0, 3).map(inquiry => (
+                    <Card key={inquiry.id} className="glass border-border/30 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
+                      <div className="p-4 space-y-3">
+                        <div className="flex justify-between items-start">
+                          <h4 className="font-bold text-sm leading-tight text-primary">{inquiry.hostelName}</h4>
+                          <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tight">
+                            {new Date(inquiry.date).toLocaleDateString()}
+                          </span>
+                        </div>
+                        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/10 rounded-md text-[10px] py-0">{inquiry.roomType}</Badge>
+                        <p className="text-xs text-muted-foreground line-clamp-2 italic bg-muted/30 p-2 rounded-lg">"{inquiry.message}"</p>
+                      </div>
+                    </Card>
+                  ))}
+                  {studentInquiries.length > 3 && (
+                    <Button variant="link" className="w-full text-xs text-muted-foreground font-bold">
+                      View All Inquiries
+                    </Button>
+                  )}
+                </div>
+              )}
+            </section>
+          </aside>
+
           <div className="lg:col-span-2 space-y-10">
-            
             {/* ================= ACTIVE BOOKINGS ================= */}
             <section>
               <SectionHeader title="My Bookings" count={studentBookings.length} icon={<Receipt className="h-5 w-5 text-success" />} />
@@ -139,15 +196,15 @@ export function StudentDashboard() {
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 bg-muted/30 p-4 rounded-2xl text-sm mb-6 border border-border/20">
                             <div>
                               <p className="text-muted-foreground mb-1 uppercase tracking-tighter font-bold text-[10px]">Monthly Rent</p>
-                              <p className="font-display font-bold text-lg">MK {booking.totalRent.toLocaleString()}</p>
+                              <p className="font-display font-bold text-lg text-foreground">MK {booking.totalRent.toLocaleString()}</p>
                             </div>
                             <div>
                               <p className="text-muted-foreground mb-1 uppercase tracking-tighter font-bold text-[10px]">Booking Fee (5%)</p>
-                              <p className="font-display font-bold text-lg">MK {booking.bookingFee.toLocaleString()}</p>
+                              <p className="font-display font-bold text-lg text-foreground">MK {booking.bookingFee.toLocaleString()}</p>
                             </div>
                             <div>
                               <p className="text-muted-foreground mb-1 uppercase tracking-tighter font-bold text-[10px]">Deposit (50%)</p>
-                              <p className="font-display font-bold text-lg">MK {booking.depositAmount.toLocaleString()}</p>
+                              <p className="font-display font-bold text-lg text-foreground">MK {booking.depositAmount.toLocaleString()}</p>
                             </div>
                           </div>
 
@@ -202,7 +259,7 @@ export function StudentDashboard() {
                         <div className="p-5">
                           <div className="flex items-start justify-between mb-4">
                             <div className="space-y-1">
-                              <h3 className="font-display font-bold text-lg leading-tight group-hover:text-primary transition-colors">{hostel.name}</h3>
+                              <h3 className="font-display font-bold text-lg leading-tight group-hover:text-primary transition-colors text-foreground">{hostel.name}</h3>
                               <div className="flex items-center gap-1.5 text-xs text-muted-foreground uppercase tracking-tight font-medium">
                                 <MapPin className="h-3.5 w-3.5" />
                                 <span>{hostel.university}</span>
@@ -221,7 +278,7 @@ export function StudentDashboard() {
                             </Button>
                           </div>
                           
-                          <div className="mb-6">
+                          <div className="mb-6 text-foreground">
                             <span className="text-2xl font-bold font-display text-gradient">MK {minRent.toLocaleString()}</span>
                             <span className="text-muted-foreground text-xs font-medium ml-1">/month</span>
                           </div>
@@ -242,64 +299,6 @@ export function StudentDashboard() {
               )}
             </section>
           </div>
-
-          <aside className="space-y-10">
-            {/* ================= PROFILE CARD ================= */}
-            <Card className="glass border-border/50 shadow-rich rounded-3xl overflow-hidden sticky top-28">
-              <div className="h-2 bg-gradient-premium w-full" />
-              <CardHeader className="text-center pb-2">
-                <div className="mx-auto w-20 h-20 bg-muted/50 rounded-full flex items-center justify-center border-4 border-background shadow-lg mb-4">
-                  <User className="h-10 w-10 text-muted-foreground" />
-                </div>
-                <CardTitle className="font-display font-bold">My Profile</CardTitle>
-              </CardHeader>
-              <CardContent className="space-y-6">
-                <ProfileItem icon={<User />} label="Name" value={student.name} />
-                <ProfileItem icon={<Mail />} label="Email" value={student.email} />
-                <ProfileItem icon={<Phone />} label="Phone" value={student.phone} />
-                <ProfileItem icon={<Building />} label="University" value={student.university} />
-                <ProfileItem icon={<GraduationCap />} label="Student ID" value={student.studentId} />
-                
-                <Button variant="outline" className="w-full rounded-xl border-border/50 hover:bg-muted/50">
-                  Edit Profile
-                </Button>
-              </CardContent>
-            </Card>
-
-            {/* ================= RECENT INQUIRIES ================= */}
-            <section>
-              <SectionHeader title="Recent Inquiries" count={studentInquiries.length} icon={<Mail className="h-5 w-5 text-primary" />} />
-              
-              {studentInquiries.length === 0 ? (
-                <EmptyState 
-                  icon={<Mail className="h-10 w-10" />} 
-                  message="No inquiries sent yet" 
-                />
-              ) : (
-                <div className="space-y-4">
-                  {studentInquiries.slice(0, 3).map(inquiry => (
-                    <Card key={inquiry.id} className="glass border-border/30 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow">
-                      <div className="p-4 space-y-3">
-                        <div className="flex justify-between items-start">
-                          <h4 className="font-bold text-sm leading-tight text-primary">{inquiry.hostelName}</h4>
-                          <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-tight">
-                            {new Date(inquiry.date).toLocaleDateString()}
-                          </span>
-                        </div>
-                        <Badge variant="outline" className="bg-primary/5 text-primary border-primary/10 rounded-md text-[10px] py-0">{inquiry.roomType}</Badge>
-                        <p className="text-xs text-muted-foreground line-clamp-2 italic bg-muted/30 p-2 rounded-lg">"{inquiry.message}"</p>
-                      </div>
-                    </Card>
-                  ))}
-                  {studentInquiries.length > 3 && (
-                    <Button variant="link" className="w-full text-xs text-muted-foreground font-bold">
-                      View All Inquiries
-                    </Button>
-                  )}
-                </div>
-              )}
-            </section>
-          </aside>
         </div>
       </div>
     </div>
@@ -315,7 +314,7 @@ function StatCard({ label, value, icon }: any) {
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">{label}</p>
-            <p className="text-2xl sm:text-4xl font-display font-black text-gradient leading-none group-hover:scale-110 transition-transform origin-left">{value}</p>
+            <p className="text-xl sm:text-3xl lg:text-4xl font-display font-black text-gradient leading-none group-hover:scale-105 transition-transform origin-left">{value}</p>
           </div>
           <div className="w-14 h-14 bg-muted/50 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-card transition-colors duration-500">
             {icon}
@@ -330,10 +329,10 @@ function SectionHeader({ title, count, icon }: any) {
   return (
     <div className="flex items-center justify-between mb-6 group">
       <div className="flex items-center gap-3">
-        <div className="p-2.5 bg-muted rounded-xl shadow-sm group-hover:scale-110 transition-transform duration-500">
+        <div className="p-2.5 bg-muted rounded-xl shadow-sm group-hover:scale-110 transition-transform duration-500 text-foreground">
           {icon}
         </div>
-        <h2 className="text-2xl font-display font-bold tracking-tight">{title}</h2>
+        <h2 className="text-2xl font-display font-bold tracking-tight text-foreground">{title}</h2>
       </div>
       <Badge variant="secondary" className="px-3 rounded-full font-bold text-muted-foreground">
         {count}
@@ -346,9 +345,9 @@ function ProfileItem({ icon, label, value }: any) {
   return (
     <div className="flex items-center gap-4 group/item">
       <div className="w-9 h-9 bg-muted/40 rounded-xl flex items-center justify-center text-muted-foreground shadow-sm group-hover/item:bg-primary group-hover/item:text-white transition-all duration-300">
-        {icon && <div className="h-4 w-4">{icon}</div>}
+        {icon}
       </div>
-      <div className="flex-1">
+      <div className="flex-1 min-w-0">
         <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-tight">{label}</p>
         <p className="text-sm font-semibold truncate text-foreground">{value}</p>
       </div>

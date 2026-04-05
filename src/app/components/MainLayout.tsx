@@ -3,6 +3,7 @@ import { Header } from './Header';
 import { useEffect } from 'react';
 import { Facebook, Instagram, Twitter, Mail } from 'lucide-react';
 import { WhatsAppButton } from './WhatsAppButton';
+import { MobileNav } from './MobileNav';
 
 export function MainLayout() {
   // Scroll to top on route change
@@ -16,9 +17,12 @@ export function MainLayout() {
       <Header />
 
       {/* Main Content */}
-      <main className="flex-1 w-full animate-slide-up pt-[65px] lg:pt-[81px]">
+      <main className="flex-1 w-full animate-slide-up pt-[65px] lg:pt-[81px] pb-[88px] lg:pb-0">
         <Outlet />
       </main>
+
+      {/* Bottom Mobile Navigation */}
+      <MobileNav />
 
       {/* Floating WhatsApp Button */}
       <WhatsAppButton />
