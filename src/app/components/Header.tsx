@@ -46,7 +46,7 @@ export function Header() {
   const isStudent = !!student;
 
   return (
-    <header className="sticky top-0 z-50 w-full border-b border-accent/15 bg-background/80 backdrop-blur-xl">
+    <header className="fixed top-0 z-50 w-full border-b border-accent/15 bg-background/80 backdrop-blur-xl">
       {/* Subtle top gold line */}
       <div className="absolute top-0 left-0 right-0 h-[1px] bg-gradient-to-r from-transparent via-accent/40 to-transparent" />
       
