@@ -35,7 +35,7 @@ export function MarketingPageShell({
         </Link>
 
         <section className="overflow-hidden rounded-[2rem] border border-border/60 bg-card/90 shadow-rich">
-          <div className="grid gap-8 px-6 py-10 sm:px-8 lg:grid-cols-[1.2fr_0.8fr] lg:px-10 lg:py-12">
+          <div className="grid gap-12 px-6 py-10 sm:px-8 lg:grid-cols-[1.2fr_0.8fr] lg:px-10 lg:py-12">
             <div className="max-w-3xl">
               <p className="text-sm font-black uppercase tracking-[0.28em] text-primary">{eyebrow}</p>
               <h1 className="mt-4 max-w-3xl font-display text-4xl font-black tracking-tight text-foreground sm:text-5xl">

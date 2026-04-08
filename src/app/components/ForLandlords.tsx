@@ -21,10 +21,10 @@ export function ForLandlords() {
         </div>
       }
     >
-      <div className="mx-auto max-w-6xl">
-        <div className="grid gap-6 md:grid-cols-3 mb-12">
+      <div className="mx-auto max-w-6xl space-y-16 py-8">
+        <div className="grid gap-12 md:grid-cols-3 mb-16 py-6">
           <Card className="text-center">
-            <CardContent className="pt-8">
+            <CardContent className="pt-10">
               <Building className="mx-auto mb-4 h-12 w-12 text-amber-500" />
               <h3 className="mb-2 text-lg font-semibold">List Your Property</h3>
               <p className="mb-4 text-muted-foreground">Add your hostel to our platform and reach thousands of students.</p>
@@ -57,7 +57,7 @@ export function ForLandlords() {
           </Card>
         </div>
 
-        <div className="grid gap-8 md:grid-cols-2 mb-12">
+        <div className="grid gap-14 md:grid-cols-2 mb-16 py-6">
           <Card className="glass border-border/60">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
@@ -66,7 +66,7 @@ export function ForLandlords() {
                 </CardTitle>
               </CardHeader>
               <CardContent>
-              <ul className="space-y-2 leading-7 text-muted-foreground">
+              <ul className="space-y-3 leading-8 text-muted-foreground">
                   <li>• Access to thousands of university students</li>
                   <li>• Targeted exposure to students from specific universities</li>
                   <li>• Professional property listings with high-quality photos</li>
@@ -95,42 +95,54 @@ export function ForLandlords() {
             </Card>
         </div>
 
-        <Card className="mb-12">
+        <Card className="mb-16">
             <CardHeader>
               <CardTitle className="text-center">Powerful Management Tools</CardTitle>
             </CardHeader>
             <CardContent>
-            <div className="grid gap-6 md:grid-cols-3">
-                <div className="text-center">
-                <CheckCircle className="mx-auto mb-2 h-8 w-8 text-emerald-500" />
-                  <h4 className="font-semibold mb-2">Easy Listing Management</h4>
-                <p className="text-sm text-muted-foreground">Add, edit, and manage multiple properties with our dashboard.</p>
-                </div>
-                <div className="text-center">
-                <CheckCircle className="mx-auto mb-2 h-8 w-8 text-emerald-500" />
-                  <h4 className="font-semibold mb-2">Automated Bookings</h4>
-                <p className="text-sm text-muted-foreground">Handle inquiries and bookings with a more streamlined process.</p>
-                </div>
-                <div className="text-center">
-                <CheckCircle className="mx-auto mb-2 h-8 w-8 text-emerald-500" />
-                  <h4 className="font-semibold mb-2">Payment Processing</h4>
-                <p className="text-sm text-muted-foreground">Secure payment collection with multiple payment methods.</p>
-                </div>
-                <div className="text-center">
-                <CheckCircle className="mx-auto mb-2 h-8 w-8 text-emerald-500" />
-                  <h4 className="font-semibold mb-2">Tenant Screening</h4>
-                <p className="text-sm text-muted-foreground">Verified student profiles and background checks for peace of mind.</p>
-                </div>
-                <div className="text-center">
-                <CheckCircle className="mx-auto mb-2 h-8 w-8 text-emerald-500" />
-                  <h4 className="font-semibold mb-2">24/7 Support</h4>
-                <p className="text-sm text-muted-foreground">Round-the-clock support for you and your tenants.</p>
-                </div>
-                <div className="text-center">
-                <CheckCircle className="mx-auto mb-2 h-8 w-8 text-emerald-500" />
-                  <h4 className="font-semibold mb-2">Analytics & Reports</h4>
-                <p className="text-sm text-muted-foreground">Detailed insights into occupancy, revenue, and tenant demographics.</p>
-                </div>
+              <div className="grid gap-14 md:grid-cols-3">
+                <Card className="text-center border-border/50">
+                  <CardContent>
+                    <CheckCircle className="mx-auto mb-3 h-8 w-8 text-emerald-500" />
+                    <h4 className="text-base sm:text-lg font-semibold mb-3">Easy Listing Management</h4>
+                    <p className="text-sm sm:text-base text-muted-foreground leading-7">Add, edit, and manage multiple properties with our dashboard.</p>
+                  </CardContent>
+                </Card>
+                <Card className="text-center border-border/50">
+                  <CardContent>
+                    <CheckCircle className="mx-auto mb-3 h-8 w-8 text-emerald-500" />
+                    <h4 className="text-base sm:text-lg font-semibold mb-3">Automated Bookings</h4>
+                    <p className="text-sm sm:text-base text-muted-foreground leading-7">Handle inquiries and bookings with a more streamlined process.</p>
+                  </CardContent>
+                </Card>
+                <Card className="text-center border-border/50">
+                  <CardContent>
+                    <CheckCircle className="mx-auto mb-3 h-8 w-8 text-emerald-500" />
+                    <h4 className="text-base sm:text-lg font-semibold mb-3">Payment Processing</h4>
+                    <p className="text-sm sm:text-base text-muted-foreground leading-7">Secure payment collection with multiple payment methods.</p>
+                  </CardContent>
+                </Card>
+                <Card className="text-center border-border/50">
+                  <CardContent>
+                    <CheckCircle className="mx-auto mb-3 h-8 w-8 text-emerald-500" />
+                    <h4 className="text-base sm:text-lg font-semibold mb-3">Tenant Screening</h4>
+                    <p className="text-sm sm:text-base text-muted-foreground leading-7">Verified student profiles and background checks for peace of mind.</p>
+                  </CardContent>
+                </Card>
+                <Card className="text-center border-border/50">
+                  <CardContent>
+                    <CheckCircle className="mx-auto mb-3 h-8 w-8 text-emerald-500" />
+                    <h4 className="text-base sm:text-lg font-semibold mb-3">24/7 Support</h4>
+                    <p className="text-sm sm:text-base text-muted-foreground leading-7">Round-the-clock support for you and your tenants.</p>
+                  </CardContent>
+                </Card>
+                <Card className="text-center border-border/50">
+                  <CardContent>
+                    <CheckCircle className="mx-auto mb-3 h-8 w-8 text-emerald-500" />
+                    <h4 className="text-base sm:text-lg font-semibold mb-3">Analytics & Reports</h4>
+                    <p className="text-sm sm:text-base text-muted-foreground leading-7">Detailed insights into occupancy, revenue, and tenant demographics.</p>
+                  </CardContent>
+                </Card>
               </div>
             </CardContent>
           </Card>
@@ -140,10 +152,10 @@ export function ForLandlords() {
               <CardTitle className="text-center">Simple, Transparent Pricing</CardTitle>
             </CardHeader>
             <CardContent>
-            <div className="grid gap-6 md:grid-cols-3">
+            <div className="grid gap-8 md:grid-cols-3">
               <Card className="text-center border-2 border-primary/15">
-                  <CardContent className="pt-6">
-                  <h3 className="mb-2 text-2xl font-bold text-primary">Free</h3>
+                  <CardContent>
+                  <h3 className="mb-2 text-xl sm:text-2xl font-bold text-primary">Free</h3>
                   <p className="mb-4 text-muted-foreground">Basic listing and management.</p>
                   <ul className="mb-6 space-y-1 text-sm text-muted-foreground">
                       <li>• Property listing</li>
@@ -156,8 +168,8 @@ export function ForLandlords() {
                 </Card>
 
               <Card className="text-center border-2 border-emerald-200 bg-emerald-50/60">
-                  <CardContent className="pt-6">
-                  <h3 className="mb-2 text-2xl font-bold text-emerald-600">MK 5,000/month</h3>
+                  <CardContent>
+                  <h3 className="mb-2 text-xl sm:text-2xl font-bold text-emerald-600">MK 5,000/month</h3>
                   <p className="mb-4 text-muted-foreground">Premium features for growth.</p>
                   <ul className="mb-6 space-y-1 text-sm text-muted-foreground">
                       <li>• Everything in Free</li>
@@ -171,8 +183,8 @@ export function ForLandlords() {
                 </Card>
 
               <Card className="text-center border-2 border-amber-200">
-                  <CardContent className="pt-6">
-                  <h3 className="mb-2 text-2xl font-bold text-amber-600">Custom</h3>
+                  <CardContent>
+                  <h3 className="mb-2 text-xl sm:text-2xl font-bold text-amber-600">Custom</h3>
                   <p className="mb-4 text-muted-foreground">For large property portfolios.</p>
                   <ul className="mb-6 space-y-1 text-sm text-muted-foreground">
                       <li>• Everything in Premium</li>

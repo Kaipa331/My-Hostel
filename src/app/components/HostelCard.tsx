@@ -67,10 +67,10 @@ export function HostelCard({ hostel }: HostelCardProps) {
         )}
       </Link>
 
-      <CardContent className="space-y-4 p-6">
+      <CardContent className="space-y-4">
         <div className="flex items-start justify-between gap-4">
           <Link to={`/hostel/${hostel.id}`} className="min-w-0 hover:underline">
-            <h3 className="line-clamp-1 text-xl font-bold tracking-tight text-foreground">
+            <h3 className="line-clamp-1 text-lg sm:text-xl font-bold tracking-tight text-foreground">
               {hostel.name}
             </h3>
           </Link>
@@ -108,7 +108,7 @@ export function HostelCard({ hostel }: HostelCardProps) {
           <div className="flex flex-col">
             <span className="text-[10px] font-black uppercase tracking-[0.1em] text-muted-foreground leading-none mb-1">Monthly Rate</span>
             <div className="flex items-baseline gap-1">
-              <span className="text-2xl font-black tracking-tighter text-teal-600">
+              <span className="text-xl sm:text-2xl font-black tracking-tighter text-teal-600">
                 MK {minRent.toLocaleString()}
               </span>
               <span className="text-xs font-bold text-muted-foreground">/mo</span>

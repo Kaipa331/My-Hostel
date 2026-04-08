@@ -80,7 +80,7 @@ export function HomePage() {
 
         <div className="relative mx-auto flex min-h-[58vh] w-full max-w-6xl items-center justify-center px-4 py-16 sm:px-6 sm:py-20 lg:px-8 lg:py-24">
           <div className="w-full max-w-3xl text-center">
-            <h1 className="font-display text-4xl font-black leading-tight tracking-tight !text-white sm:text-5xl lg:text-7xl">
+            <h1 className="font-display text-2xl font-black leading-tight tracking-tight !text-white sm:text-4xl lg:text-7xl">
               Find Your Own Hostel
             </h1>
             <p className="mx-auto mt-6 max-w-2xl text-base leading-7 !text-white/90 sm:text-lg">
@@ -105,66 +105,70 @@ export function HomePage() {
       </section>
 
       {/* LISTINGS + FILTERS SECTION */}
-      <section className="mx-auto max-w-7xl px-6 pt-24 pb-32 sm:px-8 lg:px-10">
-        <div id="home-listings" className="grid gap-14 lg:grid-cols-[320px_minmax(0,1fr)] lg:gap-20">
-          {/* Sidebar Filters */}
-          <aside className="lg:col-span-1">
-            <div className="sticky top-24 space-y-8">
-              <div>
-                <p className="text-sm font-semibold uppercase tracking-widest text-primary">Refine search</p>
-                <h2 className="mt-3 font-display text-3xl font-black tracking-tight">Find the right fit</h2>
-              </div>
+      <section className="mx-auto max-w-7xl px-6 pt-12 pb-16 sm:px-8 lg:px-10">
+        <div id="home-listings" className="space-y-10">
+          {/* Full-width Filters */}
+          <div className="mb-10 rounded-3xl border border-border/60 bg-card p-6 shadow-lg sm:p-8">
+            <div className="mb-6">
+              <p className="text-sm font-semibold uppercase tracking-widest text-primary">Refine search</p>
+              <h2 className="mt-3 font-display text-xl font-black tracking-tight sm:text-3xl">Find the right fit</h2>
+            </div>
 
-              <div className="space-y-8 rounded-3xl border border-border/60 bg-card p-6 shadow-lg sm:p-8">
+            <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
+              <div className="w-full">
                 <FilterSelect
                   label="University"
                   value={selectedUniversity}
                   onChange={setSelectedUniversity}
                   options={['all', ...universities]}
                 />
+              </div>
 
+              <div className="w-full">
                 <FilterSelect
                   label="Room Type"
                   value={selectedRoomType}
                   onChange={setSelectedRoomType}
                   options={['all', 'single', 'double', 'shared']}
                 />
+              </div>
 
-                <div className="space-y-5">
-                  <label className="text-sm font-medium">
-                    Max Price: <span className="font-semibold">MK {maxPrice.toLocaleString()}</span>
-                  </label>
-                  <Slider
-                    min={0}
-                    max={200000}
-                    step={10000}
-                    value={[maxPrice]}
-                    onValueChange={(val) => setMaxPrice(val[0])}
-                  />
-                </div>
+              <div className="space-y-5 w-full">
+                <label className="text-sm font-medium">
+                  Max Price: <span className="font-semibold">MK {maxPrice.toLocaleString()}</span>
+                </label>
+                <Slider
+                  min={0}
+                  max={200000}
+                  step={10000}
+                  value={[maxPrice]}
+                  onValueChange={(val) => setMaxPrice(val[0])}
+                />
+              </div>
 
-                <div className="space-y-5">
-                  <label className="text-sm font-medium">
-                    Distance: Up to {maxDistance} km
-                  </label>
-                  <Slider
-                    min={0}
-                    max={15}
-                    step={1}
-                    value={[maxDistance]}
-                    onValueChange={(val) => setMaxDistance(val[0])}
-                  />
-                </div>
-
-                <Button variant="outline" onClick={resetFilters} className="w-full h-11">
-                  Clear All Filters
-                </Button>
+              <div className="space-y-5 w-full">
+                <label className="text-sm font-medium">
+                  Distance: Up to {maxDistance} km
+                </label>
+                <Slider
+                  min={0}
+                  max={15}
+                  step={1}
+                  value={[maxDistance]}
+                  onValueChange={(val) => setMaxDistance(val[0])}
+                />
               </div>
             </div>
-          </aside>
+
+            <div className="mt-6 flex w-full justify-center">
+              <Button variant="outline" onClick={resetFilters} className="h-11 w-full max-w-sm">
+                Clear All Filters
+              </Button>
+            </div>
+          </div>
 
           {/* Main Content */}
-          <div className="lg:col-span-3">
+          <div className="mt-14">
             {/* Verified Hostels Header */}
             <div className="mb-12 rounded-3xl border border-border/60 bg-gradient-to-br from-card/30 via-card to-card p-8 shadow-rich">
               <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
@@ -172,7 +176,7 @@ export function HomePage() {
                   <p className="text-sm font-semibold uppercase tracking-[0.08em] text-primary">
                     AVAILABLE NOW
                   </p>
-                  <h2 className="font-display text-3xl font-black tracking-tight text-foreground lg:text-4xl">
+                  <h2 className="font-display text-xl font-black tracking-tight text-foreground sm:text-2xl lg:text-4xl">
                     Verified hostels near campus
                   </h2>
                   <p className="text-lg text-muted-foreground">
@@ -191,7 +195,7 @@ export function HomePage() {
             {/* Hostel Cards Grid - Added extra top spacing */}
             <div className="pt-4">
               {filteredHostels.length > 0 ? (
-                <div className="grid gap-10 sm:grid-cols-2 xl:grid-cols-3">
+                <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
                   {filteredHostels.map((h) => (
                     <HostelCard key={h.id} hostel={h} />
                   ))}
@@ -213,10 +217,10 @@ function FilterSelect({ label, value, onChange, options }: any) {
   const validOptions = options.filter((opt: string) => opt && opt.trim());
 
   return (
-    <div className="space-y-2.5">
+    <div className="space-y-2.5 w-full">
       <label className="text-sm font-medium">{label}</label>
       <Select value={value} onValueChange={onChange}>
-        <SelectTrigger className="h-11 rounded-2xl">
+        <SelectTrigger className="h-11 w-full rounded-2xl">
           <SelectValue />
         </SelectTrigger>
         <SelectContent>

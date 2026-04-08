@@ -241,11 +241,11 @@ export function AdminDashboard() {
 function StatCard({ label, value, icon, color }: any) {
   return (
     <Card className="glass border-border/50 shadow-rich rounded-3xl overflow-hidden hover:scale-105 transition-all group">
-      <CardContent className="p-6">
+      <CardContent className="pt-8 pb-10">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-[10px] text-muted-foreground font-bold uppercase tracking-widest leading-none">{label}</p>
-            <p className="text-xl sm:text-3xl font-display font-black text-gradient leading-none group-hover:scale-105 transition-transform origin-left">{value}</p>
+            <p className="text-lg sm:text-3xl font-display font-black text-gradient leading-none group-hover:scale-105 transition-transform origin-left">{value}</p>
           </div>
           <div className={`w-14 h-14 bg-muted/50 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-card transition-colors duration-500 text-2xl ${color}`}>
             {icon}

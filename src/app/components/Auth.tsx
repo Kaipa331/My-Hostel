@@ -69,9 +69,9 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center p-4">
-      <div className="w-full max-w-md">
-        <div className="text-center mb-8">
+    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-10 sm:px-6">
+      <div className="w-full max-w-lg">
+        <div className="text-center mb-10">
           <div className="flex items-center justify-center mx-auto mb-6 sm:mb-8 animate-in fade-in zoom-in duration-700">
             <img
               src="/logo.jpg"
@@ -79,7 +79,7 @@ const Auth = () => {
               className="w-20 h-20 sm:w-32 sm:h-32 object-contain rounded-2xl sm:rounded-3xl shadow-2xl shadow-primary/10 border border-border/50 bg-white p-2"
             />
           </div>
-          <h1 className="text-2xl sm:text-3xl font-black text-foreground mb-2 sm:mb-4">
+          <h1 className="text-xl sm:text-3xl font-black text-foreground mb-2 sm:mb-4">
             {isLogin ? "Welcome back" : "Create your account"}
           </h1>
           <p className="text-muted-foreground font-medium">

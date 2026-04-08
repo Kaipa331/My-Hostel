@@ -1,0 +1,7 @@
+{
+  "appId": "com.myhostel.app",
+  "appName": "myHostel",
+  "webDir": "dist",
+  "bundledWebRuntime": false,
+  "linuxAndroidStudioPath": "/snap/android-studio/209/bin/studio.sh"
+}

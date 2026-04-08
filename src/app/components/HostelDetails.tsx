@@ -71,7 +71,7 @@ export function HostelDetails() {
           <Info className="h-12 w-12" />
         </div>
         <div className="space-y-2">
-          <h1 className="text-3xl font-display font-bold">Hostel Not Found</h1>
+          <h1 className="text-2xl sm:text-3xl font-display font-bold">Hostel Not Found</h1>
           <p className="text-muted-foreground">The property you are looking for does not exist or has been removed.</p>
         </div>
         <Link to="/">
@@ -232,7 +232,7 @@ export function HostelDetails() {
               </Badge>
             </div>
             <div>
-              <h1 className="text-4xl md:text-6xl font-display font-black text-white leading-tight drop-shadow-2xl">
+              <h1 className="text-3xl md:text-6xl font-display font-black text-white leading-tight drop-shadow-2xl">
                 {hostel.name}
               </h1>
               <div className="flex items-center gap-6 mt-2 text-white/80">
@@ -339,7 +339,7 @@ export function HostelDetails() {
                             </div>
                             <div className="w-px h-4 bg-border/50" />
                             <div className="flex items-center gap-2">
-                              <span className="text-3xl font-display font-black text-gradient">MK {room.rent.toLocaleString()}</span>
+                              <span className="text-2xl sm:text-3xl font-display font-black text-gradient">MK {room.rent.toLocaleString()}</span>
                               <span className="text-muted-foreground text-xs font-bold uppercase tracking-tighter mt-2">/month</span>
                             </div>
                           </div>
@@ -716,7 +716,7 @@ function SectionHeader({ title, icon }: any) {
       <div className="w-12 h-12 bg-muted rounded-2xl flex items-center justify-center text-primary shadow-sm">
         {icon}
       </div>
-      <h2 className="text-3xl font-display font-black tracking-tight">{title}</h2>
+      <h2 className="text-xl sm:text-3xl font-display font-black tracking-tight">{title}</h2>
     </div>
   );
 }

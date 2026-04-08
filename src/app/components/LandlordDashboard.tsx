@@ -98,7 +98,7 @@ export function LandlordDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 animate-slide-up">
         
         {/* ================= STATS ================= */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-12">
           <StatCard 
             label="Total Hostels" 
             value={myHostels.length} 
@@ -121,7 +121,7 @@ export function LandlordDashboard() {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
           <aside className="space-y-10 order-first lg:order-last">
             <section>
               <SectionHeader title="Recent Inquiries" count={myInquiries.length} icon={<Mail className="h-5 w-5 text-primary" />} />
@@ -327,11 +327,11 @@ export function LandlordDashboard() {
 function StatCard({ label, value, icon }: any) {
   return (
     <Card className="glass border-border/50 shadow-rich rounded-3xl overflow-hidden hover:scale-105 transition-all group">
-      <CardContent className="p-6">
+      <CardContent className="pt-8 pb-10">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">{label}</p>
-            <p className="text-xl sm:text-3xl lg:text-4xl font-display font-black text-gradient leading-none group-hover:scale-105 transition-transform origin-left">{value}</p>
+            <p className="text-lg sm:text-3xl lg:text-4xl font-display font-black text-gradient leading-none group-hover:scale-105 transition-transform origin-left">{value}</p>
           </div>
           <div className="w-14 h-14 bg-muted/50 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-card transition-colors duration-500 text-2xl">
             {icon}

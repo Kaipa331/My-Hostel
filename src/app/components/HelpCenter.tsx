@@ -102,7 +102,7 @@ export function HelpCenter() {
 
         <div className="max-w-4xl mx-auto">
           <div className="text-center mb-12">
-            <h1 className="text-4xl font-display font-black text-foreground mb-4 tracking-tight">Help Center</h1>
+            <h1 className="text-2xl sm:text-4xl font-display font-black text-foreground mb-4 tracking-tight">Help Center</h1>
             <p className="text-xl text-muted-foreground mb-8">
               Find answers to common questions and get the help you need.
             </p>
@@ -154,7 +154,7 @@ export function HelpCenter() {
             <div className="absolute inset-0 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] opacity-10 mix-blend-overlay"></div>
             <CardContent className="text-center py-10 relative z-10 text-primary-foreground">
               <AlertTriangle className="h-12 w-12 mx-auto mb-4 opacity-90" />
-              <h2 className="text-3xl font-display font-bold mb-4">Still Need Help?</h2>
+              <h2 className="text-2xl sm:text-3xl font-display font-bold mb-4">Still Need Help?</h2>
               <p className="mb-8 opacity-90 text-lg max-w-xl mx-auto">
                 Can't find what you're looking for? Our support team is here to help via WhatsApp or Email.
               </p>

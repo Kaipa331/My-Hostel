@@ -144,21 +144,25 @@ export function ListYourProperty() {
             <CardTitle className="text-center">Success Stories</CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="grid gap-6 md:grid-cols-2">
-              <div className="rounded-2xl bg-muted/50 p-6">
-                <Star className="mb-2 h-8 w-8 text-yellow-400" />
-                <p className="mb-4 text-muted-foreground">
-                  "Since listing on MyHostel, our occupancy rate has increased by 40%. The platform makes it so easy to manage bookings and communicate with students."
-                </p>
-                <p className="font-semibold">- Mary K., Lilongwe Hostel Owner</p>
-              </div>
-              <div className="rounded-2xl bg-muted/50 p-6">
-                <Star className="mb-2 h-8 w-8 text-yellow-400" />
-                <p className="mb-4 text-muted-foreground">
-                  "The verification process gave our tenants peace of mind, and the automated booking system saved us hours of work every week."
-                </p>
-                <p className="font-semibold">- John M., Blantyre Property Manager</p>
-              </div>
+            <div className="grid gap-8 md:grid-cols-2">
+              <Card className="text-center">
+                <CardContent>
+                  <Star className="mb-2 h-8 w-8 text-yellow-400 mx-auto" />
+                  <p className="mb-4 text-muted-foreground">
+                    "Since listing on MyHostel, our occupancy rate has increased by 40%. The platform makes it so easy to manage bookings and communicate with students."
+                  </p>
+                  <p className="font-semibold">- Mary K., Lilongwe Hostel Owner</p>
+                </CardContent>
+              </Card>
+              <Card className="text-center">
+                <CardContent>
+                  <Star className="mb-2 h-8 w-8 text-yellow-400 mx-auto" />
+                  <p className="mb-4 text-muted-foreground">
+                    "The verification process gave our tenants peace of mind, and the automated booking system saved us hours of work every week."
+                  </p>
+                  <p className="font-semibold">- John M., Blantyre Property Manager</p>
+                </CardContent>
+              </Card>
             </div>
           </CardContent>
         </Card>

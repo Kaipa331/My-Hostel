@@ -100,35 +100,43 @@ export function ForStudents() {
               <CardTitle className="text-center">How It Works</CardTitle>
             </CardHeader>
             <CardContent>
-            <div className="grid gap-6 md:grid-cols-4">
-                <div className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <span className="text-lg font-bold text-primary">1</span>
-                  </div>
-                  <h4 className="font-semibold mb-2">Create Account</h4>
-                <p className="text-sm text-muted-foreground">Sign up with your university email and basic details.</p>
-                </div>
-                <div className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <span className="text-lg font-bold text-primary">2</span>
-                  </div>
-                  <h4 className="font-semibold mb-2">Browse & Compare</h4>
-                <p className="text-sm text-muted-foreground">Search hostels by location and filter by your preferences.</p>
-                </div>
-                <div className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <span className="text-lg font-bold text-primary">3</span>
-                  </div>
-                  <h4 className="font-semibold mb-2">Book & Pay</h4>
-                <p className="text-sm text-muted-foreground">Secure your room with simple booking and payment options.</p>
-                </div>
-                <div className="text-center">
-                <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
-                  <span className="text-lg font-bold text-primary">4</span>
-                  </div>
-                  <h4 className="font-semibold mb-2">Move In</h4>
-                <p className="text-sm text-muted-foreground">Get your keys and start your university journey.</p>
-                </div>
+            <div className="grid gap-8 md:grid-cols-4">
+                <Card className="text-center">
+                  <CardContent>
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                      <span className="text-lg font-bold text-primary">1</span>
+                    </div>
+                    <h4 className="font-semibold mb-2">Create Account</h4>
+                    <p className="text-sm text-muted-foreground">Sign up with your university email and basic details.</p>
+                  </CardContent>
+                </Card>
+                <Card className="text-center">
+                  <CardContent>
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                      <span className="text-lg font-bold text-primary">2</span>
+                    </div>
+                    <h4 className="font-semibold mb-2">Browse & Compare</h4>
+                    <p className="text-sm text-muted-foreground">Search hostels by location and filter by your preferences.</p>
+                  </CardContent>
+                </Card>
+                <Card className="text-center">
+                  <CardContent>
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                      <span className="text-lg font-bold text-primary">3</span>
+                    </div>
+                    <h4 className="font-semibold mb-2">Book & Pay</h4>
+                    <p className="text-sm text-muted-foreground">Secure your room with simple booking and payment options.</p>
+                  </CardContent>
+                </Card>
+                <Card className="text-center">
+                  <CardContent>
+                    <div className="mx-auto mb-4 flex h-12 w-12 items-center justify-center rounded-full bg-primary/10">
+                      <span className="text-lg font-bold text-primary">4</span>
+                    </div>
+                    <h4 className="font-semibold mb-2">Move In</h4>
+                    <p className="text-sm text-muted-foreground">Get your keys and start your university journey.</p>
+                  </CardContent>
+                </Card>
               </div>
             </CardContent>
           </Card>

@@ -2,7 +2,6 @@ import { Outlet, Link } from 'react-router';
 import { Header } from './Header';
 import { useEffect } from 'react';
 import { Facebook, Instagram, Twitter, Mail } from 'lucide-react';
-import { WhatsAppButton } from './WhatsAppButton';
 import { MobileNav } from './MobileNav';
 
 export function MainLayout() {
@@ -23,9 +22,6 @@ export function MainLayout() {
 
       {/* Bottom Mobile Navigation */}
       <MobileNav />
-
-      {/* Floating WhatsApp Button */}
-      <WhatsAppButton />
 
       {/* ================= FOOTER ================= */}
       <footer className="relative mt-20 overflow-hidden border-t border-accent/10 bg-neutral-950 pt-14 pb-12 text-neutral-400 sm:mt-24 sm:pt-20 sm:pb-16">

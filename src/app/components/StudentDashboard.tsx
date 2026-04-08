@@ -69,7 +69,7 @@ export function StudentDashboard() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 animate-slide-up">
         
         {/* ================= QUICK STATS ================= */}
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-4 sm:gap-6">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-6 sm:gap-8">
           <StatCard 
             label="Saved Hostels" 
             value={savedHostels.length} 
@@ -87,7 +87,7 @@ export function StudentDashboard() {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
           
           <aside className="space-y-10 order-first lg:order-last">
             {/* ================= PROFILE CARD ================= */}
@@ -310,11 +310,11 @@ export function StudentDashboard() {
 function StatCard({ label, value, icon }: any) {
   return (
     <Card className="glass border-border/50 shadow-rich rounded-3xl overflow-hidden hover:scale-105 transition-all group">
-      <CardContent className="p-6">
+      <CardContent className="pt-5 pb-6">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
             <p className="text-xs text-muted-foreground font-bold uppercase tracking-widest">{label}</p>
-            <p className="text-xl sm:text-3xl lg:text-4xl font-display font-black text-gradient leading-none group-hover:scale-105 transition-transform origin-left">{value}</p>
+            <p className="text-lg sm:text-3xl lg:text-4xl font-display font-black text-gradient leading-none group-hover:scale-105 transition-transform origin-left">{value}</p>
           </div>
           <div className="w-14 h-14 bg-muted/50 rounded-2xl flex items-center justify-center shadow-inner group-hover:bg-card transition-colors duration-500">
             {icon}
