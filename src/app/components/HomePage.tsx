@@ -66,7 +66,7 @@ export function HomePage() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-background text-foreground">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 text-foreground">
       {/* HERO SECTION */}
       <section className="relative isolate overflow-hidden">
         <div className="absolute inset-0">
@@ -105,10 +105,10 @@ export function HomePage() {
       </section>
 
       {/* LISTINGS + FILTERS SECTION */}
-      <section className="mx-auto max-w-7xl px-6 pt-12 pb-16 sm:px-8 lg:px-10">
+      <section className="mx-auto max-w-7xl px-6 pt-24 pb-24 sm:px-8 lg:px-10">
         <div id="home-listings" className="space-y-10">
           {/* Full-width Filters */}
-          <div className="mb-10 rounded-3xl border border-border/60 bg-card p-6 shadow-lg sm:p-8">
+          <div className="mb-20 rounded-3xl border border-border/60 bg-card p-6 shadow-lg sm:p-8">
             <div className="mb-6">
               <p className="text-sm font-semibold uppercase tracking-widest text-primary">Refine search</p>
               <h2 className="mt-3 font-display text-xl font-black tracking-tight sm:text-3xl">Find the right fit</h2>
@@ -168,9 +168,9 @@ export function HomePage() {
           </div>
 
           {/* Main Content */}
-          <div className="mt-14">
+          <div className="mt-28">
             {/* Verified Hostels Header */}
-            <div className="mb-12 rounded-3xl border border-border/60 bg-gradient-to-br from-card/30 via-card to-card p-8 shadow-rich">
+            <div className="mb-20 rounded-3xl border border-border/60 bg-gradient-to-br from-card/30 via-card to-card p-8 shadow-rich">
               <div className="flex flex-col gap-8 sm:flex-row sm:items-end sm:justify-between">
                 <div className="space-y-3">
                   <p className="text-sm font-semibold uppercase tracking-[0.08em] text-primary">

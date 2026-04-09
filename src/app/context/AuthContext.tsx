@@ -14,6 +14,7 @@ export interface UserProfile {
   email: string;
   phone: string;
   role: 'student' | 'landlord' | 'admin';
+  status?: 'pending' | 'approved' | 'rejected' | null;
 }
 
 export interface Admin {
@@ -273,7 +274,8 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
       name: profile.name,
       email: profile.email,
       phone: profile.phone || '',
-      role: profile.role as 'student' | 'landlord' | 'admin'
+      role: profile.role as 'student' | 'landlord' | 'admin',
+      status: profile.status
     });
 
     if (profile.role === 'admin') {
@@ -340,6 +342,8 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
         return { error: 'Access denied: landlord account required.' };
       }
 
+      /* Relaxing login restriction for unapproved landlords as per user request */
+      /* 
       if (profileResult.data?.status === 'pending') {
         await supabase.auth.signOut();
         return { error: 'Your landlord account is pending approval.' };
@@ -349,6 +353,7 @@ export function AllAuthProvider({ children }: { children: ReactNode }) {
         await supabase.auth.signOut();
         return { error: 'Your landlord account was rejected. Please contact support.' };
       }
+      */
 
       return true;
     } catch (e: any) {

@@ -1,10 +1,10 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { ArrowLeft, Shield, Eye, Lock, Database, FileText, Mail } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 
 export function PrivacyPolicy() {
   return (
-    <div className="min-h-screen bg-background py-12 sm:py-20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 py-12 sm:py-20">
       <div className="max-w-3xl mx-auto px-4 sm:px-6 lg:px-8">
 
         {/* Back link */}

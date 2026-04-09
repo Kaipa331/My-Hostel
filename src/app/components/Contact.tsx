@@ -5,7 +5,7 @@ import { Input } from './ui/input';
 import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 import { Mail, Phone, MapPin, Clock, Send } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { MarketingPageShell } from './MarketingPageShell';
 
@@ -44,7 +44,7 @@ export function Contact() {
       <div className="mx-auto max-w-6xl">
         <div className="grid gap-8 lg:grid-cols-2">
           <div className="space-y-6">
-            <Card className="glass border-border/60">
+            <Card className="border-border/60">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                   <Mail className="h-5 w-5 text-primary" />
@@ -89,7 +89,7 @@ export function Contact() {
             </Card>
           </div>
 
-          <Card className="glass border-border/60">
+          <Card className="border-border/60">
             <CardHeader>
               <CardTitle>Send us a Message</CardTitle>
             </CardHeader>

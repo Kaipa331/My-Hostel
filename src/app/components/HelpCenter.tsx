@@ -3,7 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Input } from './ui/input';
 import { ArrowLeft, Search, HelpCircle, User, Building, CreditCard, AlertTriangle } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from './ui/accordion';
 
 export function HelpCenter() {
@@ -93,7 +93,7 @@ export function HelpCenter() {
   })).filter(category => category.questions.length > 0);
 
   return (
-    <div className="min-h-screen bg-background py-16 sm:py-24">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 py-16 sm:py-24">
       <div className="w-full max-w-none mx-auto px-8 sm:px-12 lg:px-16 xl:px-20">
         <Link to="/" className="inline-flex items-center gap-2 text-primary hover:text-primary/80 mb-10 font-medium transition-colors group">
           <ArrowLeft className="h-4 w-4 group-hover:-translate-x-1 transition-transform" />
@@ -108,7 +108,7 @@ export function HelpCenter() {
             </p>
 
             {/* Search Bar */}
-            <div className="max-w-md mx-auto relative glass rounded-xl shadow-lg border-border/50">
+            <div className="max-w-md mx-auto relative rounded-3xl border border-border/60 bg-card p-2 shadow-sm">
               <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-muted-foreground" />
               <Input
                 placeholder="Search for help..."

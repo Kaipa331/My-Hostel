@@ -6,7 +6,7 @@ import { Textarea } from './ui/textarea';
 import { Label } from './ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 import { AlertTriangle, Send, CheckCircle, Phone } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { toast } from 'sonner';
 import { MarketingPageShell } from './MarketingPageShell';
 
@@ -55,7 +55,7 @@ export function ReportIssue() {
       <div className="mx-auto max-w-6xl">
         <div className="grid grid-cols-1 gap-6 lg:grid-cols-3 lg:gap-8">
           <div className="order-2 space-y-6 lg:order-1 lg:col-span-1">
-            <Card className="glass border-border/60 shadow-md">
+            <Card className="border-border/60 shadow-md">
               <CardHeader className="pb-2">
                 <CardTitle className="text-base font-semibold">What to Report</CardTitle>
               </CardHeader>
@@ -90,7 +90,7 @@ export function ReportIssue() {
           </div>
 
           <div className="order-1 lg:order-2 lg:col-span-2">
-            <Card className="glass border-border/60 shadow-md">
+            <Card className="border-border/60 shadow-md">
               <CardHeader>
                 <CardTitle className="text-lg font-semibold">Submit Your Report</CardTitle>
               </CardHeader>

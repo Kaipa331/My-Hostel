@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Search, Heart, Shield, Clock, Star } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { MarketingPageShell } from './MarketingPageShell';
 
 export function ForStudents() {
@@ -58,7 +58,7 @@ export function ForStudents() {
         </div>
 
         <div className="grid gap-8 md:grid-cols-2 mb-12">
-          <Card className="glass border-border/60">
+          <Card className="border-border/60">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                 <Clock className="h-5 w-5 text-primary" />
@@ -76,7 +76,7 @@ export function ForStudents() {
               </CardContent>
             </Card>
 
-          <Card className="glass border-border/60">
+          <Card className="border-border/60">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                 <Shield className="h-5 w-5 text-emerald-500" />

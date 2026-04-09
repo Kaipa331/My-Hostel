@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Users, Target, Award, Heart } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { MarketingPageShell } from './MarketingPageShell';
 
 export function AboutUs() {
@@ -22,8 +22,8 @@ export function AboutUs() {
       }
     >
       <div className="mx-auto max-w-5xl">
-        <div className="grid gap-8 md:grid-cols-2 mb-12">
-          <Card className="glass border-border/60">
+        <div className="grid gap-8 md:grid-cols-2 mb-28">
+          <Card className="border-border/60">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="h-6 w-6 text-primary" />
@@ -37,7 +37,7 @@ export function AboutUs() {
             </CardContent>
           </Card>
 
-          <Card className="glass border-border/60">
+          <Card className="border-border/60">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Target className="h-6 w-6 text-amber-500" />
@@ -52,7 +52,7 @@ export function AboutUs() {
           </Card>
         </div>
 
-        <div className="grid gap-6 md:grid-cols-3 mb-12">
+        <div className="grid gap-6 md:grid-cols-3 mb-28">
           <Card className="text-center">
             <CardContent className="pt-8">
               <Award className="mx-auto mb-4 h-12 w-12 text-amber-500" />

@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useParams, useNavigate, Link } from 'react-router';
+import { useParams, useNavigate, Link } from 'react-router-dom';
 import { useAllAuth } from '../context/AuthContext';
 import { useData, Room } from '../context/AppContext';
 import { supabase } from '../../lib/supabase';
@@ -118,14 +118,40 @@ export function AddEditHostel() {
     const files = e.target.files;
     if (!files) return;
 
+    const MAX_PHOTOS = 20;
+    const MAX_FILE_SIZE = 5 * 1024 * 1024; // 5MB
+    const ALLOWED_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
+
+    if (formData.photos.length + files.length > MAX_PHOTOS) {
+      toast.error(`Maximum ${MAX_PHOTOS} photos allowed`);
+      return;
+    }
+
+    const validFiles: File[] = [];
+    for (let file of Array.from(files)) {
+      if (file.size > MAX_FILE_SIZE) {
+        toast.error(`${file.name} exceeds 5MB limit`);
+        continue;
+      }
+      if (!ALLOWED_TYPES.includes(file.type)) {
+        toast.error(`${file.name} must be JPEG, PNG, or WebP`);
+        continue;
+      }
+      validFiles.push(file);
+    }
+
+    if (validFiles.length === 0) {
+      toast.error('No valid files to upload');
+      return;
+    }
+
     setIsUploading(true);
     const uploadedUrls: string[] = [];
 
     try {
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const fileExt = file.name.split('.').pop();
-        const uniqueFileName = `hostels/${Date.now()}-${Math.random().toString(36).substring(2)}.${fileExt}`;
+      for (let file of validFiles) {
+        const fileExt = file.type.split('/')[1]; // More reliable than file.name
+        const uniqueFileName = `hostels/${user!.id}/${Date.now()}-${crypto.randomUUID().substring(0, 8)}.${fileExt}`;
         const { data, error } = await supabase.storage
           .from('hostel-photos')
           .upload(uniqueFileName, file, {
@@ -168,6 +194,12 @@ export function AddEditHostel() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (user?.status !== 'approved') {
+      toast.error('Submission blocked: Your account must be approved by an admin before you can list or update hostels.');
+      setIsLoading(false);
+      return;
+    }
+
     setIsLoading(true);
 
     try {
@@ -210,10 +242,10 @@ export function AddEditHostel() {
   }
 
   return (
-    <div className="min-h-screen bg-background text-foreground pb-24">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 text-foreground pb-24">
       
       {/* ================= HEADER ================= */}
-      <div className="sticky top-0 z-40 glass border-b border-border/50 bg-card/50 backdrop-blur-md">
+      <div className="sticky top-0 z-40 border-b border-border/50 bg-white/80 shadow-sm backdrop-blur-sm">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
@@ -237,7 +269,8 @@ export function AddEditHostel() {
       </div>
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
-        <form onSubmit={handleSubmit} className="space-y-12 animate-slide-up">
+        <div className="rounded-[2rem] border border-border/60 bg-card/95 shadow-sm p-8">
+          <form onSubmit={handleSubmit} className="space-y-12 animate-slide-up">
           
           {/* ================= BASIC INFORMATION ================= */}
           <FormSection title="Basic Information" icon={<Info className="h-5 w-5" />}>
@@ -261,7 +294,7 @@ export function AddEditHostel() {
                   <SelectTrigger className="h-14 bg-muted/30 border-border/50 rounded-2xl focus:ring-primary/20">
                     <SelectValue placeholder="Select university" />
                   </SelectTrigger>
-                  <SelectContent className="glass border-white/20">
+                  <SelectContent className="border border-border/50 bg-card/95">
                     <SelectItem value="University of Malawi (UNIMA)">University of Malawi (UNIMA)</SelectItem>
                     <SelectItem value="Mzuzu University">Mzuzu University</SelectItem>
                     <SelectItem value="Malawi University of Business and Applied Sciences (MUBAS)">MUBAS</SelectItem>
@@ -395,7 +428,7 @@ export function AddEditHostel() {
           >
             <div className="space-y-10">
               {rooms.map((room, index) => (
-                <Card key={index} className="glass border-border/50 shadow-rich rounded-4xl overflow-hidden group">
+                <Card key={index} className="bg-card/95 border border-border/50 shadow-rich rounded-4xl overflow-hidden group">
                   <div className="p-8">
                     <div className="flex items-center justify-between mb-8 pb-4 border-b border-border/30">
                       <h4 className="font-display font-black text-xl uppercase tracking-tight flex items-center gap-2">
@@ -515,11 +548,9 @@ export function AddEditHostel() {
         </form>
       </div>
     </div>
+    </div>
   );
 }
-
-/* ================= HELPER COMPONENTS ================= */
-
 function FormSection({ title, icon, children, action }: any) {
   return (
     <section className="space-y-8">

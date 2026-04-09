@@ -1,4 +1,4 @@
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useAllAuth } from '../context/AuthContext';
 import { useData } from '../context/AppContext';
@@ -46,11 +46,11 @@ export function AdminDashboard() {
   ];
 
   return (
-    <div className="min-h-screen bg-background text-foreground pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 pb-16">
       
       {/* ================= HEADER ================= */}
-      <div className="sticky top-[64px] lg:top-[80px] z-40 glass border-b border-border/50 bg-card/50 backdrop-blur-md transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="sticky top-0 z-40 backdrop-blur-xl bg-white/90 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-destructive rounded-2xl flex items-center justify-center shadow-lg shadow-destructive/20 border border-destructive/20">
@@ -69,24 +69,24 @@ export function AdminDashboard() {
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-12 animate-slide-up">
+      <div className="max-w-7xl mx-auto px-6 py-8 space-y-10 animate-slide-up">
         
         {/* ================= STATS ================= */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6 text-foreground">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 text-foreground">
           {stats.map((stat, index) => (
             <StatCard key={index} {...stat} />
           ))}
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-10">
-          <aside className="space-y-12 order-first lg:order-last text-foreground">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <aside className="space-y-8 order-first lg:order-last text-foreground">
             {/* ================= LANDLORD DIRECTORY ================= */}
             <section>
               <SectionHeader title="Landlords" count={approvedLandlords.length} icon={<Users className="h-5 w-5 text-primary" />} />
               
               <div className="space-y-4">
                 {approvedLandlords.map(landlord => (
-                  <Card key={landlord.id} className="glass border-border/30 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-all group">
+                  <Card key={landlord.id} className="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-all group">
                     <div className="p-4 space-y-4">
                       <div>
                         <div className="flex items-center justify-between mb-1">
@@ -116,7 +116,7 @@ export function AdminDashboard() {
                  <SectionHeader title="Suspended" count={rejectedLandlords.length} icon={<Shield className="h-5 w-5 text-destructive" />} />
                  <div className="space-y-2 opacity-60 grayscale hover:opacity-100 hover:grayscale-0 transition-all">
                     {rejectedLandlords.map(landlord => (
-                        <Card key={landlord.id} className="glass border-destructive/10 bg-destructive/5 rounded-2xl p-3 flex items-center justify-between">
+                        <Card key={landlord.id} className="bg-white border border-red-200 rounded-2xl p-3 flex items-center justify-between">
                             <span className="text-xs font-bold text-destructive truncate">{landlord.name}</span>
                             <Button 
                               variant="ghost" 
@@ -133,7 +133,7 @@ export function AdminDashboard() {
              )}
           </aside>
 
-          <div className="lg:col-span-2 space-y-12 text-foreground">
+          <div className="lg:col-span-2 space-y-10 text-foreground">
             {/* ================= PENDING LANDLORDS ================= */}
             <section>
               <SectionHeader title="Pending Approvals" count={pendingLandlords.length} icon={<UserPlus className="h-5 w-5 text-warning" />} />
@@ -141,7 +141,7 @@ export function AdminDashboard() {
               {pendingLandlords.length > 0 ? (
                 <div className="space-y-6">
                   {pendingLandlords.map(landlord => (
-                    <Card key={landlord.id} className="glass border-warning/10 bg-warning/5 shadow-rich overflow-hidden group">
+                    <Card key={landlord.id} className="bg-white border border-yellow-200 shadow-sm rounded-2xl overflow-hidden group">
                         <div className="p-4 sm:p-6 text-foreground">
                           <div className="flex flex-col lg:flex-row items-center justify-between gap-6 mb-6">
                             <div className="space-y-1.5 flex-1 min-w-0">
@@ -198,7 +198,7 @@ export function AdminDashboard() {
                 {hostels.map(hostel => {
                   const landlord = landlords.find(l => l.id === hostel.landlordId);
                   return (
-                    <Card key={hostel.id} className="glass border-border/50 shadow-rich rounded-3xl overflow-hidden hover:scale-[1.02] transition-all group">
+                    <Card key={hostel.id} className="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-all group">
                       <div className="p-6">
                         <div className="flex items-start justify-between mb-4">
                           <div className="space-y-1">
@@ -240,7 +240,7 @@ export function AdminDashboard() {
 
 function StatCard({ label, value, icon, color }: any) {
   return (
-    <Card className="glass border-border/50 shadow-rich rounded-3xl overflow-hidden hover:scale-105 transition-all group">
+    <Card className="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-all group">
       <CardContent className="pt-8 pb-10">
         <div className="flex items-center justify-between">
           <div className="space-y-1">

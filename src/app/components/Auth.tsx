@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { Building2, Mail, Lock, User, ArrowRight } from "lucide-react";
 import { Button } from "./ui/button";
 import { Input } from "./ui/input";
@@ -69,7 +69,7 @@ const Auth = () => {
   };
 
   return (
-    <div className="min-h-screen bg-background flex items-center justify-center px-4 py-10 sm:px-6">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 flex items-center justify-center px-4 py-10 sm:px-6">
       <div className="w-full max-w-lg">
         <div className="text-center mb-10">
           <div className="flex items-center justify-center mx-auto mb-6 sm:mb-8 animate-in fade-in zoom-in duration-700">

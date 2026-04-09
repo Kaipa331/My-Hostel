@@ -1,5 +1,5 @@
 import { ReactNode } from 'react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { ArrowLeft } from 'lucide-react';
 
 interface MarketingPageShellProps {
@@ -18,14 +18,14 @@ export function MarketingPageShell({
   actions,
 }: MarketingPageShellProps) {
   return (
-    <div className="relative overflow-hidden bg-background py-8 sm:py-14">
+    <div className="relative overflow-hidden bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 py-16 sm:py-24">
       <div className="pointer-events-none absolute inset-0">
         <div className="absolute left-0 top-0 h-80 w-80 rounded-full bg-primary/10 blur-3xl" />
         <div className="absolute right-0 top-32 h-96 w-96 rounded-full bg-amber-300/20 blur-3xl" />
         <div className="absolute bottom-0 left-1/3 h-72 w-72 rounded-full bg-sky-200/20 blur-3xl" />
       </div>
 
-      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-12 sm:gap-16 px-4 sm:px-6 lg:px-8">
+      <div className="relative mx-auto flex w-full max-w-6xl flex-col gap-20 sm:gap-28 px-4 sm:px-6 lg:px-8">
         <Link
           to="/"
           className="inline-flex w-fit items-center gap-2 rounded-full border border-border/70 bg-card/80 px-4 py-2 text-sm font-medium text-foreground transition-colors hover:border-primary/30 hover:text-primary"

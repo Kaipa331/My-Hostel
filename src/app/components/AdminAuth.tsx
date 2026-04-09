@@ -1,5 +1,5 @@
 import { useState } from 'react';
-import { useNavigate } from 'react-router';
+import { useNavigate } from 'react-router-dom';
 import { useAllAuth } from '../context/AuthContext';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
@@ -34,7 +34,7 @@ export function AdminAuth() {
   };
 
   return (
-    <div className="min-h-screen bg-neutral-950 flex items-center justify-center p-4">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 flex items-center justify-center p-4">
       {/* Subtle radial glow */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-destructive/5 rounded-full blur-3xl" />
@@ -49,11 +49,11 @@ export function AdminAuth() {
           <p className="text-neutral-500 text-sm font-medium">Secure access to the MyHostel platform</p>
         </div>
 
-        <Card className="border border-neutral-800 shadow-2xl overflow-hidden rounded-3xl bg-neutral-900/80 backdrop-blur-md text-white">
-          <div className="h-1 bg-destructive w-full" />
+        <Card className="border border-border/60 shadow-2xl overflow-hidden rounded-3xl bg-card/95 text-foreground">
+          <div className="h-1 bg-primary/80 w-full" />
           <CardHeader className="pt-6 pb-2">
-            <CardTitle className="text-white text-xl font-display font-bold">Admin Login</CardTitle>
-            <CardDescription className="text-neutral-400">Enter your credentials to manage the platform</CardDescription>
+            <CardTitle className="text-foreground text-xl font-display font-bold">Admin Login</CardTitle>
+            <CardDescription className="text-muted-foreground">Enter your credentials to manage the platform</CardDescription>
           </CardHeader>
           <CardContent className="px-8 pb-8 pt-4">
             <form onSubmit={handleSubmit} className="space-y-6">
@@ -66,7 +66,7 @@ export function AdminAuth() {
                   value={form.email}
                   onChange={(e) => setForm({...form, email: e.target.value})}
                   required
-                  className="h-11 rounded-xl bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-600 focus:border-destructive"
+                  className="h-11 rounded-xl bg-muted/30 border-border/60 text-foreground placeholder:text-muted-foreground focus:border-primary"
                 />
               </div>
               <div className="space-y-1.5">
@@ -78,7 +78,7 @@ export function AdminAuth() {
                   value={form.password}
                   onChange={(e) => setForm({...form, password: e.target.value})}
                   required
-                  className="h-11 rounded-xl bg-neutral-800 border-neutral-700 text-white placeholder:text-neutral-600 focus:border-destructive"
+                  className="h-11 rounded-xl bg-muted/30 border-border/60 text-foreground placeholder:text-muted-foreground focus:border-primary"
                 />
               </div>
               <Button type="submit" variant="destructive" className="w-full h-11 font-bold rounded-xl shadow-lg shadow-destructive/20" disabled={isLoading}>
@@ -98,7 +98,7 @@ export function AdminAuth() {
         </Card>
 
         <div className="mt-6 text-center">
-          <Button variant="ghost" className="text-neutral-500 hover:text-white flex items-center gap-2 mx-auto" onClick={() => navigate('/')}>
+          <Button variant="ghost" className="text-primary hover:text-primary/90 flex items-center gap-2 mx-auto" onClick={() => navigate('/') }>
             <ArrowLeft className="h-4 w-4" /> Return to Public Site
           </Button>
         </div>

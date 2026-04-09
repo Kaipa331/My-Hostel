@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Building, TrendingUp, Users, DollarSign, CheckCircle } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { MarketingPageShell } from './MarketingPageShell';
 
 export function ForLandlords() {
@@ -58,7 +58,7 @@ export function ForLandlords() {
         </div>
 
         <div className="grid gap-14 md:grid-cols-2 mb-16 py-6">
-          <Card className="glass border-border/60">
+          <Card className="border-border/60">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-primary" />
@@ -76,7 +76,7 @@ export function ForLandlords() {
               </CardContent>
             </Card>
 
-          <Card className="glass border-border/60">
+          <Card className="border-border/60">
               <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                 <DollarSign className="h-5 w-5 text-emerald-500" />

@@ -1,7 +1,7 @@
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Building, Camera, Star, Users } from 'lucide-react';
-import { Link } from 'react-router';
+import { Link } from 'react-router-dom';
 import { MarketingPageShell } from './MarketingPageShell';
 
 export function ListYourProperty() {
@@ -52,7 +52,7 @@ export function ListYourProperty() {
         </div>
 
         <div className="mb-12 grid gap-8 md:grid-cols-2">
-          <Card className="glass border-border/60">
+          <Card className="border-border/60">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Users className="h-5 w-5 text-primary" />
@@ -70,7 +70,7 @@ export function ListYourProperty() {
             </CardContent>
           </Card>
 
-          <Card className="glass border-border/60">
+          <Card className="border-border/60">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Camera className="h-5 w-5 text-emerald-500" />

@@ -1,4 +1,4 @@
-import { Outlet, Link } from 'react-router';
+import { Outlet, Link } from 'react-router-dom';
 import { Header } from './Header';
 import { useEffect } from 'react';
 import { Facebook, Instagram, Twitter, Mail } from 'lucide-react';
@@ -11,12 +11,12 @@ export function MainLayout() {
   }, []);
 
   return (
-    <div className="min-h-screen flex flex-col bg-background text-foreground transition-colors duration-500">
+    <div className="min-h-screen flex flex-col bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 text-foreground transition-colors duration-500">
       {/* Header */}
       <Header />
 
       {/* Main Content */}
-      <main className="flex-1 w-full animate-slide-up pt-16 lg:pt-24 pb-24 lg:pb-0">
+      <main className="flex-1 w-full animate-slide-up pt-20 lg:pt-32 pb-24 lg:pb-12">
         <Outlet />
       </main>
 
@@ -24,7 +24,7 @@ export function MainLayout() {
       <MobileNav />
 
       {/* ================= FOOTER ================= */}
-      <footer className="relative mt-20 overflow-hidden border-t border-accent/10 bg-neutral-950 pt-14 pb-12 text-neutral-400 sm:mt-24 sm:pt-20 sm:pb-16">
+      <footer className="relative mt-24 overflow-hidden border-t border-accent/10 bg-neutral-950 pt-16 pb-12 text-neutral-400 sm:mt-32 sm:pt-24 sm:pb-16">
         {/* Abstract background glows */}
         <div className="absolute top-0 left-1/4 w-96 h-96 bg-accent/5 rounded-full blur-[120px] pointer-events-none" />
         <div className="absolute bottom-0 right-1/4 w-64 h-64 bg-primary/10 rounded-full blur-[100px] pointer-events-none" />

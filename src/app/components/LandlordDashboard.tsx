@@ -1,5 +1,5 @@
 import { useEffect } from 'react';
-import { useNavigate, Link } from 'react-router';
+import { useNavigate, Link } from 'react-router-dom';
 import { useAllAuth } from '../context/AuthContext';
 import { useData } from '../context/AppContext';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
@@ -8,7 +8,7 @@ import { Badge } from './ui/badge';
 import { 
   Building2, Plus, Edit, Trash2, Mail, 
   Phone, Star, MapPin, Receipt, CheckCircle2, 
-  XCircle, Eye, ArrowRight, Home
+  XCircle, Eye, ArrowRight, Home, Clock
 } from 'lucide-react';
 import { toast } from 'sonner';
 
@@ -64,11 +64,11 @@ export function LandlordDashboard() {
   );
 
   return (
-    <div className="min-h-screen bg-background text-foreground pb-20">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-100 to-gray-50 pb-16">
       
       {/* ================= HEADER ================= */}
-      <div className="sticky top-[64px] lg:top-[80px] z-40 glass border-b border-border/50 bg-card/50 backdrop-blur-md transition-all">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+      <div className="sticky top-0 z-40 backdrop-blur-xl bg-white/90 border-b border-gray-200">
+        <div className="max-w-7xl mx-auto px-6 py-4">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-4">
               <div className="w-12 h-12 bg-gradient-premium rounded-2xl flex items-center justify-center shadow-lg shadow-primary/20">
@@ -84,21 +84,72 @@ export function LandlordDashboard() {
                 <Home className="h-4 w-4 mr-2" />
                 Home
               </Button>
-              <Link to="/landlord/hostel/add">
-                <Button className="bg-gradient-premium shadow-lg shadow-primary/20 hover:scale-105 transition-all rounded-xl">
+              {user.status === 'approved' ? (
+                <Link to="/landlord/hostel/add">
+                  <Button className="bg-gradient-premium shadow-lg shadow-primary/20 hover:scale-105 transition-all rounded-xl">
+                    <Plus className="h-4 w-4 mr-2" />
+                    Add Hostel
+                  </Button>
+                </Link>
+              ) : (
+                <Button 
+                  disabled 
+                  className="bg-gray-400 cursor-not-allowed opacity-70 rounded-xl"
+                  onClick={() => toast.error('Account must be approved to add hostels')}
+                >
                   <Plus className="h-4 w-4 mr-2" />
-                  Add Hostel
+                  Add Hostel (Locked)
                 </Button>
-              </Link>
+              )}
             </div>
           </div>
         </div>
       </div>
 
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-10 animate-slide-up">
+      <div className="max-w-7xl mx-auto px-6 py-8 space-y-10 animate-slide-up">
+        
+        {/* ================= APPROVAL STATUS BANNER ================= */}
+        {user.status !== 'approved' && (
+          <Card className={`border-none shadow-premium transition-all duration-500 overflow-hidden ${
+            user.status === 'rejected' ? 'bg-destructive/10' : 'bg-warning/10'
+          }`}>
+            <CardContent className="p-6">
+              <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+                <div className="flex items-center gap-4">
+                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center shadow-lg ${
+                    user.status === 'rejected' ? 'bg-destructive text-white shadow-destructive/20' : 'bg-warning text-white shadow-warning/20'
+                  }`}>
+                    {user.status === 'rejected' ? <XCircle className="h-6 w-6" /> : <Clock className="h-6 w-6" />}
+                  </div>
+                  <div>
+                    <h3 className={`text-lg font-display font-bold ${user.status === 'rejected' ? 'text-destructive' : 'text-warning-foreground'}`}>
+                      {user.status === 'rejected' ? 'Account Rejected' : 'Verification Pending'}
+                    </h3>
+                    <p className="text-sm text-muted-foreground max-w-md">
+                      {user.status === 'rejected' 
+                        ? 'Your account has been rejected by administrators. Please update your details or contact support for reconsideration.'
+                        : 'Your landlord account is currently being reviewed. You can explore the dashboard, but property listings will be enabled once you are approved.'}
+                    </p>
+                  </div>
+                </div>
+                {user.status === 'rejected' && (
+                  <Button className="bg-destructive hover:bg-destructive/90 text-white rounded-xl px-6 font-bold shadow-lg shadow-destructive/20">
+                    Submit Review Request
+                  </Button>
+                )}
+                {(!user.status || user.status === 'pending') && (
+                  <div className="flex items-center gap-2 bg-white/50 backdrop-blur-sm px-4 py-2 rounded-xl border border-warning/20">
+                    <Clock className="h-4 w-4 text-warning animate-pulse" />
+                    <span className="text-xs font-bold text-warning-foreground uppercase tracking-widest">Awaiting Admin Review</span>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
         
         {/* ================= STATS ================= */}
-        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8 mb-12">
+        <div className="grid grid-cols-2 md:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
           <StatCard 
             label="Total Hostels" 
             value={myHostels.length} 
@@ -121,15 +172,15 @@ export function LandlordDashboard() {
           />
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-12">
-          <aside className="space-y-10 order-first lg:order-last">
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          <aside className="space-y-8 order-first lg:order-last">
             <section>
               <SectionHeader title="Recent Inquiries" count={myInquiries.length} icon={<Mail className="h-5 w-5 text-primary" />} />
               
               {myInquiries.length > 0 ? (
                 <div className="space-y-4">
                   {myInquiries.slice(0, 10).map(inquiry => (
-                    <Card key={inquiry.id} className="glass border-border/30 rounded-2xl overflow-hidden shadow-sm hover:shadow-md transition-shadow group/inq">
+                    <Card key={inquiry.id} className="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-shadow group/inq">
                       <div className="p-4 space-y-4 text-foreground">
                         <div>
                           <p className="font-display font-bold text-sm mb-1">{inquiry.studentName}</p>
@@ -167,7 +218,7 @@ export function LandlordDashboard() {
             </section>
           </aside>
 
-          <div className="lg:col-span-2 space-y-12">
+          <div className="lg:col-span-2 space-y-10">
             
             {/* ================= MANAGE BOOKINGS ================= */}
             <section>
@@ -178,7 +229,7 @@ export function LandlordDashboard() {
                   {myBookings.map(booking => {
                     const hostel = hostels.find(h => h.id === booking.hostelId);
                     return (
-                      <Card key={booking.id} className="glass border-border/50 shadow-rich overflow-hidden hover:scale-[1.01] transition-transform">
+                      <Card key={booking.id} className="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-transform">
                         <div className="p-4 sm:p-6 text-foreground">
                           <div className="flex flex-col lg:flex-row items-start justify-between gap-6 mb-6">
                             <div className="space-y-2">
@@ -257,7 +308,7 @@ export function LandlordDashboard() {
               {myHostels.length > 0 ? (
                 <div className="grid gap-6">
                   {myHostels.map(hostel => (
-                    <Card key={hostel.id} className="glass border-border/50 shadow-rich overflow-hidden group">
+                    <Card key={hostel.id} className="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden group hover:shadow-md transition-all">
                       <div className="p-4 sm:p-6 text-foreground">
                         <div className="flex flex-col lg:flex-row items-start justify-between gap-6 mb-6">
                           <div className="space-y-3 flex-1">
@@ -326,7 +377,7 @@ export function LandlordDashboard() {
 
 function StatCard({ label, value, icon }: any) {
   return (
-    <Card className="glass border-border/50 shadow-rich rounded-3xl overflow-hidden hover:scale-105 transition-all group">
+    <Card className="bg-white border border-gray-200 shadow-sm rounded-2xl overflow-hidden hover:shadow-md transition-all group">
       <CardContent className="pt-8 pb-10">
         <div className="flex items-center justify-between">
           <div className="space-y-1">
