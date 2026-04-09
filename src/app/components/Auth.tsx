@@ -18,25 +18,35 @@ const Auth = () => {
   const navigate = useNavigate();
 
   const signIn = async (email: string, pass: string) => {
-    // Attempt standard login (landlord and student check roles inside context methods but rely on the same supabase auth call)
-    // To handle agnostic login gracefully:
+    // Single source of truth for authentication
     const { data, error } = await supabase.auth.signInWithPassword({ email, password: pass });
     if (error) return { error };
     if (!data.user) return { error: new Error('Login failed') };
 
-    // Check role then route properly
-    const { data: profile } = await supabase.from('profiles').select('role').eq('id', data.user.id).single() as any;
-    if (profile?.role === 'landlord') {
-      const res = await landlordLogin(email, pass);
-      if (res !== true) return res;
-      navigate("/landlord/dashboard");
-      return { error: null };
-    } else {
-      const res = await studentLogin(email, pass);
-      if (res !== true) return res;
-      navigate("/student/dashboard");
-      return { error: null };
+    // Fetch user profile and role
+    const { data: profile, error: profileError } = await supabase
+      .from('profiles')
+      .select('role')
+      .eq('id', data.user.id)
+      .single() as any;
+
+    if (profileError || !profile) {
+      console.error('Profile fetch failed:', profileError);
+      return { error: 'Authentication succeeded, but user profile could not be found.' };
     }
+
+    // Direct routing based on role
+    if (profile.role === 'admin') {
+      navigate("/admin/dashboard");
+    } else if (profile.role === 'landlord') {
+      navigate("/landlord/dashboard");
+    } else if (profile.role === 'student') {
+      navigate("/student/dashboard");
+    } else {
+      navigate("/");
+    }
+
+    return { error: null };
   };
 
   const signUp = async (email: string, pass: string, name: string, role: "student" | "landlord") => {
